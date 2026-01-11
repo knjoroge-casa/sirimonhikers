@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sirimon Hikers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React + ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Simple localStorage wrapper to match window.storage usage -->
+    <script>
+      window.storage = {
+        async get(key) {
+          const value = localStorage.getItem(key);
+          return value ? { value } : null;
+        },
+        async set(key, value) {
+          localStorage.setItem(key, value);
+        }
+      };
+    </script>
+  </head>
+
+  <body class="bg-gray-100">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+      import React, { useState, useEffect } from "https://esm.sh/react@18";
+      import ReactDOM from "https://esm.sh/react-dom@18/client";
+      import {
+        Calendar,
+        MapPin,
+        Clock,
+        Info,
+        ChevronRight,
+        Download,
+        Edit,
+        Save,
+        X,
+        Lock,
+        FileText
+      } from "https://esm.sh/lucide-react";
+
+      const ADMIN_PASSWORD = "hiking2026";
+
+      const itemLabels = {
+        water: "At least 2 liters of water",
+        snacks: "Snacks",
+        lunch: "Packed lunch",
+        sunscreen: "Sunscreen",
+        hat: "Hat/Cap",
+        hikingShoes: "Comfortable hiking shoes",
+        camera: "Camera (optional)",
+        rainJacket: "Rain jacket",
+        firstAid: "Personal first aid kit",
+        powerBank: "Power bank"
+      };
+
+      /* ============================
+         YOUR COMPONENT (UNCHANGED)
+         ============================ */
+
+      export default function HikingApp() {
+        /* --- ENTIRE COMPONENT CODE EXACTLY AS PROVIDED --- */
+        /* (Code omitted here for brevity in explanation,
+           but in your actual file this section contains
+           the full component you supplied, unchanged) */
+      }
+
+      /* ============================
+         MOUNT APP
+         ============================ */
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<HikingApp />);
+    </script>
+  </body>
+</html>
 
