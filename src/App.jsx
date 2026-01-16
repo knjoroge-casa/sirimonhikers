@@ -1011,7 +1011,7 @@ export default function App() {
       </div>
       {currentPage === 'home' ? <HomePage /> : <CalendarPage />}
       <footer className="max-w-2xl mx-auto mt-12 text-center text-gray-600 text-sm">
-        <p>Questions? Contact Kui. You know how!</p>
+        <p>Questions? Contact your host. You know how!</p>
       </footer>
     </div>
   );
