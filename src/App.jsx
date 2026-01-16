@@ -86,10 +86,10 @@ export default function App() {
 
   const loadData = async () => {
     try {
-      const hikeResult = await localStorage.get('upcoming-hike');
-      const calendarResult = await localStorage.get('hike-calendar');
-      const itemsResult = await localStorage.get('custom-items');
-      const notesResult = await localStorage.get('important-notes');
+      const hikeResult = await window.storage.get('upcoming-hike');
+      const calendarResult = await window.storage.get('hike-calendar');
+      const itemsResult = await window.storage.get('custom-items');
+      const notesResult = await window.storage.get('important-notes');
       
       setUpcomingHike(hikeResult?.value ? JSON.parse(hikeResult.value) : defaultUpcomingHike);
       setHikeCalendar(calendarResult?.value ? JSON.parse(calendarResult.value) : defaultCalendar);
@@ -116,7 +116,7 @@ export default function App() {
 
   const saveUpcomingHike = async (data) => {
     try {
-      await localStorage.set('upcoming-hike', JSON.stringify(data));
+      await window.storage.set('upcoming-hike', JSON.stringify(data));
       setUpcomingHike(data);
       alert('Saved!');
       setIsEditing(false);
@@ -127,7 +127,7 @@ export default function App() {
 
   const saveCalendar = async (data) => {
     try {
-      await localStorage.set('hike-calendar', JSON.stringify(data));
+      await window.storage.set('hike-calendar', JSON.stringify(data));
       setHikeCalendar(data);
       alert('Calendar saved!');
       setIsEditingCalendar(false);
@@ -138,7 +138,7 @@ export default function App() {
 
   const saveCustomItems = async (items) => {
     try {
-      await localStorage.set('custom-items', JSON.stringify(items));
+      await window.storage.set('custom-items', JSON.stringify(items));
       setCustomItems(items);
       alert('Items saved!');
       setIsEditingItems(false);
@@ -149,7 +149,7 @@ export default function App() {
 
   const saveImportantNotes = async (notes) => {
     try {
-      await localStorage.set('important-notes', JSON.stringify(notes));
+      await window.storage.set('important-notes', JSON.stringify(notes));
       setImportantNotes(notes);
       alert('Notes saved!');
       setIsEditingNotes(false);
