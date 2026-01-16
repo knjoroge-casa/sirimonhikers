@@ -863,7 +863,7 @@ export default function App() {
                 Add to My Calendar
               </button>
               <div className="space-y-4">
-                <h3 className="font-semibold text-gray-800 text-lg mb-3">Register for this Hike</h3>
+                <h3 className="font-semibold text-gray-800 text-lg mb-3">Are you coming? Register here!</h3>
                 <input
                   type="text"
                   placeholder="Your Name"
