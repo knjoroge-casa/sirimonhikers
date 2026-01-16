@@ -224,7 +224,7 @@ export default function App() {
     <p>${upcomingHike.lastWords}</p>
   </div>
   <div class="footer">
-    <p>Questions? Contact Kui. You know how!</p>
+    <p>Questions? Contact your host. You know how!</p>
   </div>
 </body>
 </html>`;
