@@ -560,7 +560,7 @@ export default function App() {
               >
                 <option>Easy</option>
                 <option>Moderate</option>
-                <option>Hard</option>
+                <option>Kinda Challenging But We Will Overcome</option>
               </select>
             </div>
             <div>
