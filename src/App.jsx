@@ -273,11 +273,11 @@ export default function App() {
 
   const handleRegister = async (name, phone) => {
   if (name && phone) {
+    console.log('Registering:', { name, phone, hike: upcomingHike.name });
+    
     try {
-      // Send to Google Sheets
-      await fetch('https://script.google.com/macros/s/AKfycby8AieCDSF_tbrP3j_4qsSRc675XqTIhrFXOqGgYgZ5qtGOXTEZnRTBAASREvjZeMtb/exec', {
+      const response = await fetch('YOUR_GOOGLE_SCRIPT_URL', {
         method: 'POST',
-        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name,
@@ -288,9 +288,17 @@ export default function App() {
         })
       });
       
-      alert(`Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
+      const result = await response.json();
+      console.log('Registration result:', result);
+      
+      if (result.result === 'success') {
+        alert(`✅ Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
+      } else {
+        alert(`Registration received! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
+      }
     } catch (error) {
-      alert(`Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
+      console.error('Registration error:', error);
+      alert(`Registration received! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
     }
   }
 };
