@@ -276,7 +276,7 @@ export default function App() {
     console.log('Registering:', { name, phone, hike: upcomingHike.name });
     
     try {
-      const response = await fetch('YOUR_GOOGLE_SCRIPT_URL', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycby8AieCDSF_tbrP3j_4qsSRc675XqTIhrFXOqGgYgZ5qtGOXTEZnRTBAASREvjZeMtb/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
