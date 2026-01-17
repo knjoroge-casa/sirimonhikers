@@ -84,23 +84,23 @@ export default function App() {
     loadData();
   }, []);
 
-  const loadData = async () => {
-    try {
-      const hikeResult = await window.storage.get('upcoming-hike');
-      const calendarResult = await window.storage.get('hike-calendar');
-      const itemsResult = await window.storage.get('custom-items');
-      const notesResult = await window.storage.get('important-notes');
-      
-      setUpcomingHike(hikeResult?.value ? JSON.parse(hikeResult.value) : defaultUpcomingHike);
-      setHikeCalendar(calendarResult?.value ? JSON.parse(calendarResult.value) : defaultCalendar);
-      if (itemsResult?.value) setCustomItems(JSON.parse(itemsResult.value));
-      if (notesResult?.value) setImportantNotes(JSON.parse(notesResult.value));
-    } catch (error) {
-      setUpcomingHike(defaultUpcomingHike);
-      setHikeCalendar(defaultCalendar);
-    }
-    setIsLoading(false);
-  };
+  const loadData = () => {
+  try {
+    const hikeData = localStorage.getItem('upcoming-hike');
+    const calendarData = localStorage.getItem('hike-calendar');
+    const itemsData = localStorage.getItem('custom-items');
+    const notesData = localStorage.getItem('important-notes');
+    
+    setUpcomingHike(hikeData ? JSON.parse(hikeData) : defaultUpcomingHike);
+    setHikeCalendar(calendarData ? JSON.parse(calendarData) : defaultCalendar);
+    if (itemsData) setCustomItems(JSON.parse(itemsData));
+    if (notesData) setImportantNotes(JSON.parse(notesData));
+  } catch (error) {
+    setUpcomingHike(defaultUpcomingHike);
+    setHikeCalendar(defaultCalendar);
+  }
+  setIsLoading(false);
+};
 
   const handleAdminLogin = () => {
     if (adminPassword === ADMIN_PASSWORD) {
@@ -114,49 +114,49 @@ export default function App() {
     }
   };
 
-  const saveUpcomingHike = async (data) => {
-    try {
-      await window.storage.set('upcoming-hike', JSON.stringify(data));
-      setUpcomingHike(data);
-      alert('Saved!');
-      setIsEditing(false);
-    } catch (e) {
-      alert('Error saving');
-    }
-  };
+  const saveUpcomingHike = (data) => {
+  try {
+    localStorage.setItem('upcoming-hike', JSON.stringify(data));
+    setUpcomingHike(data);
+    alert('Saved!');
+    setIsEditing(false);
+  } catch (e) {
+    alert('Error saving');
+  }
+};
 
-  const saveCalendar = async (data) => {
-    try {
-      await window.storage.set('hike-calendar', JSON.stringify(data));
-      setHikeCalendar(data);
-      alert('Calendar saved!');
-      setIsEditingCalendar(false);
-    } catch (e) {
-      alert('Error');
-    }
-  };
+  cconst saveCalendar = (data) => {
+  try {
+    localStorage.setItem('hike-calendar', JSON.stringify(data));
+    setHikeCalendar(data);
+    alert('Calendar saved!');
+    setIsEditingCalendar(false);
+  } catch (e) {
+    alert('Error');
+  }
+};
 
-  const saveCustomItems = async (items) => {
-    try {
-      await window.storage.set('custom-items', JSON.stringify(items));
-      setCustomItems(items);
-      alert('Items saved!');
-      setIsEditingItems(false);
-    } catch (e) {
-      alert('Error');
-    }
-  };
+  const saveCustomItems = (items) => {
+  try {
+    localStorage.setItem('custom-items', JSON.stringify(items));
+    setCustomItems(items);
+    alert('Items saved!');
+    setIsEditingItems(false);
+  } catch (e) {
+    alert('Error');
+  }
+};
 
-  const saveImportantNotes = async (notes) => {
-    try {
-      await window.storage.set('important-notes', JSON.stringify(notes));
-      setImportantNotes(notes);
-      alert('Notes saved!');
-      setIsEditingNotes(false);
-    } catch (e) {
-      alert('Error');
-    }
-  };
+  const saveImportantNotes = (notes) => {
+  try {
+    localStorage.setItem('important-notes', JSON.stringify(notes));
+    setImportantNotes(notes);
+    alert('Notes saved!');
+    setIsEditingNotes(false);
+  } catch (e) {
+    alert('Error');
+  }
+};
 
   const saveAsPDF = () => {
     const allItems = { ...itemLabels, ...customItems };
@@ -271,11 +271,29 @@ export default function App() {
     URL.revokeObjectURL(url);
   };
 
-  const handleRegister = (name, phone) => {
-    if (name && phone) {
+  const handleRegister = async (name, phone) => {
+  if (name && phone) {
+    try {
+      // Send to Google Sheets
+      await fetch('https://script.google.com/macros/s/AKfycby8AieCDSF_tbrP3j_4qsSRc675XqTIhrFXOqGgYgZ5qtGOXTEZnRTBAASREvjZeMtb/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          phone: phone,
+          hike: upcomingHike.name,
+          date: upcomingHike.date,
+          timestamp: new Date().toISOString()
+        })
+      });
+      
+      alert(`Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
+    } catch (error) {
       alert(`Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
     }
-  };
+  }
+};
 
   const AdminLoginModal = () => {
     if (!showAdminLogin) return null;
@@ -294,6 +312,7 @@ export default function App() {
             value={adminPassword}
             onChange={(e) => setAdminPassword(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+            autoFocus
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
           />
           <button onClick={handleAdminLogin} className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
