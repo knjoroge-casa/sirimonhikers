@@ -125,7 +125,7 @@ export default function App() {
   }
 };
 
-  cconst saveCalendar = (data) => {
+  const saveCalendar = (data) => {
   try {
     localStorage.setItem('hike-calendar', JSON.stringify(data));
     setHikeCalendar(data);
