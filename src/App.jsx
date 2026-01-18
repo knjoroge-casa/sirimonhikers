@@ -918,7 +918,8 @@ export default function App() {
     setCurrentPage('calendar');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }}
-  className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
+  className="w-full py-3 rounded-2xl font-semibold text-white hover:opacity-90"
+style={{ backgroundColor: '#6B8E23' }}
 >
               View Full Year Calendar
               <ChevronRight className="w-5 h-5 ml-2" />
