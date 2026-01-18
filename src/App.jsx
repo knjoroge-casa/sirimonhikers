@@ -915,6 +915,7 @@ export default function App() {
             </div>
             <button
               onClick={() => setCurrentPage('calendar')}
+              window.scrollTo({ top: 0, behavior: 'smooth' });
               className="w-full glass text-trail-brown py-3 rounded-2xl font-semibold hover:bg-gray-200 transition flex items-center justify-center"
             >
               View Full Year Calendar
@@ -936,7 +937,7 @@ export default function App() {
             <div className="flex justify-between items-center mb-6">
               <button
                 onClick={() => setCurrentPage('home')}
-                className="text-blue-600 hover:text-blue-700 font-semibold flex items-center"
+                className="text-white/90 hover:text-white font-semibold flex items-center"
               >
                 ← Back to Home
               </button>
@@ -952,7 +953,7 @@ export default function App() {
                 )}
                 <button
                   onClick={downloadAllEvents}
-                  className="bg-forest-olive text-white hover:bg-forest-moss px-4 py-2 rounded-lg font-semibold hover:bg-green-700 flex items-center"
+                  className="bg-forest-olive text-white px-4 py-2 rounded-2xl font-semibold hover:brightness-90"
                 >
                   <Download className="w-5 h-5 mr-2" />
                   Download All
@@ -1033,13 +1034,13 @@ export default function App() {
   <div className="min-h-screen py-8 px-4">
     <div className="max-w-4xl mx-auto mb-8">
       <div className="text-center mb-8">
-        <h1 className="text-5xl font-display font-bold text-trail-brown mb-2 drop-shadow-lg">
+        <h1 className="text-5xl font-display font-bold text-white mb-2 drop-shadow-2xl">
           Sirimon Hikers
         </h1>
       </div>
     </div>
     {currentPage === 'home' ? <HomePage /> : <CalendarPage />}
-    <footer className="max-w-2xl mx-auto mt-12 text-center text-trail-earth text-sm">
+    <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
       <p>Questions? Contact Kui. You know how!</p>
     </footer>
   </div>
