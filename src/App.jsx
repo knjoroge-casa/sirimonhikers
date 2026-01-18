@@ -1029,7 +1029,7 @@ export default function App() {
     );
   }
 
-  rreturn (
+  return (
   <div className="min-h-screen py-8 px-4">
     <div className="max-w-4xl mx-auto mb-8">
       <div className="text-center mb-8">
