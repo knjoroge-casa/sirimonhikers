@@ -914,10 +914,12 @@ export default function App() {
               </div>
             </div>
             <button
-              onClick={() => setCurrentPage('calendar')}
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-              className="w-full glass text-trail-brown py-3 rounded-2xl font-semibold hover:bg-gray-200 transition flex items-center justify-center"
-            >
+  onClick={() => {
+    setCurrentPage('calendar');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }}
+  className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
+>
               View Full Year Calendar
               <ChevronRight className="w-5 h-5 ml-2" />
             </button>
