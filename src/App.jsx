@@ -986,7 +986,7 @@ export default function App() {
                         </button>
                       </div>
                     </div>
-                    <div className="mt-3 bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
+                    <div className="mt-3 glass-dark p-3 rounded-2xl border-l-4 border-forest-olive">
                       <p className="text-sm text-gray-700">
                         <span className="font-semibold">Prerequisites:</span> {hike.prerequisites}
                       </p>
