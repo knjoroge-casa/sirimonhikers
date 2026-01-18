@@ -243,15 +243,15 @@ export default function App() {
   };
 
   const downloadSingleEvent = (hike) => {
-    const icsContent = generateICS(hike);
-    const blob = new Blob([icsContent], { type: 'text/calendar' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${(hike.hike || hike.name).replace(/[^a-z0-9]/gi, '_')}.ics`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const icsContent = generateICS(hike);
+  const blob = new Blob([icsContent], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${(hike.hike || hike.name).replace(/[^a-z0-9]/gi, '_')}.ics`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
   const downloadAllEvents = () => {
     const formatDate = (date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
@@ -886,9 +886,10 @@ style={{ backgroundColor: '#6B8E23' }}
                 </button>
               )}
               <button
-                onClick={() => downloadSingleEvent(upcomingHike)}
-                className="w-full mb-4 bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 flex items-center justify-center"
-              >
+  onClick={() => downloadSingleEvent(upcomingHike)}
+  className="w-full mb-4 py-2 rounded-2xl font-semibold text-white hover:opacity-90 flex items-center justify-center"
+  style={{ backgroundColor: '#6B8E23' }}
+>
                 <Download className="w-5 h-5 mr-2" />
                 Add to My Calendar
               </button>
