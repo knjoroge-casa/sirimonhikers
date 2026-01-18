@@ -321,7 +321,7 @@ export default function App() {
             onChange={(e) => setAdminPassword(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
             autoFocus
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+            className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
           />
           <button onClick={handleAdminLogin} className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
             Login
@@ -392,20 +392,20 @@ export default function App() {
               placeholder="Item name (e.g., headlamp)"
               value={newKey}
               onChange={(e) => setNewKey(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3"
+              className="w-full px-4 py-2 glass rounded-2xl border-0 mb-3"
             />
             <input
               type="text"
               placeholder="Item description (e.g., Headlamp with extra batteries)"
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-3"
+              className="w-full px-4 py-2 glass rounded-2xl border-0 mb-3"
             />
             <button onClick={handleAddItem} className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700">
               Add Item
             </button>
           </div>
-          <button onClick={() => saveCustomItems(items)} className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 flex items-center justify-center">
+          <button onClick={() => saveCustomItems(items)} className="w-full bg-forest-green text-white py-3 rounded-2xl hover:bg-forest-olive font-semibold hover:bg-blue-700 flex items-center justify-center">
             <Save className="w-5 h-5 mr-2" />
             Save Items
           </button>
@@ -438,7 +438,7 @@ export default function App() {
     };
 
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="glass rounded-3xl p-6 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800">Edit Calendar</h2>
           <button onClick={() => setIsEditingCalendar(false)} className="text-gray-600 hover:text-gray-800">
@@ -512,7 +512,7 @@ export default function App() {
     };
 
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div className="glass rounded-3xl p-6 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800">Edit Upcoming Hike</h2>
           <button onClick={() => setIsEditing(false)} className="text-gray-600 hover:text-gray-800">
@@ -526,7 +526,7 @@ export default function App() {
               type="text"
               value={editData.name}
               onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 glass rounded-2xl border-0"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -536,7 +536,7 @@ export default function App() {
                 type="date"
                 value={editData.date}
                 onChange={(e) => setEditData({ ...editData, date: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 glass rounded-2xl border-0"
               />
             </div>
             <div>
@@ -546,7 +546,7 @@ export default function App() {
                 value={editData.time}
                 onChange={(e) => setEditData({ ...editData, time: e.target.value })}
                 placeholder="7:00 AM"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 glass rounded-2xl border-0"
               />
             </div>
           </div>
@@ -556,7 +556,7 @@ export default function App() {
               type="text"
               value={editData.location}
               onChange={(e) => setEditData({ ...editData, location: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 glass rounded-2xl border-0"
             />
           </div>
           <div>
@@ -565,7 +565,7 @@ export default function App() {
               value={editData.intro}
               onChange={(e) => setEditData({ ...editData, intro: e.target.value })}
               rows="2"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 glass rounded-2xl border-0"
             />
           </div>
           <div>
@@ -574,7 +574,7 @@ export default function App() {
               value={editData.whatToExpect}
               onChange={(e) => setEditData({ ...editData, whatToExpect: e.target.value })}
               rows="3"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 glass rounded-2xl border-0"
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -583,7 +583,7 @@ export default function App() {
               <select
                 value={editData.difficulty}
                 onChange={(e) => setEditData({ ...editData, difficulty: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 glass rounded-2xl border-0"
               >
                 <option>Easy</option>
                 <option>Moderate</option>
@@ -597,7 +597,7 @@ export default function App() {
                 value={editData.duration}
                 onChange={(e) => setEditData({ ...editData, duration: e.target.value })}
                 placeholder="4-5 hours"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 glass rounded-2xl border-0"
               />
             </div>
             <div>
@@ -607,7 +607,7 @@ export default function App() {
                 value={editData.distance}
                 onChange={(e) => setEditData({ ...editData, distance: e.target.value })}
                 placeholder="12 km"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 glass rounded-2xl border-0"
               />
             </div>
           </div>
@@ -618,7 +618,7 @@ export default function App() {
               onChange={(e) => setEditData({ ...editData, weather: e.target.value })}
               rows="2"
               placeholder="Expected weather conditions"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 glass rounded-2xl border-0"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -628,7 +628,7 @@ export default function App() {
                 type="text"
                 value={editData.meetingPoint}
                 onChange={(e) => setEditData({ ...editData, meetingPoint: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 glass rounded-2xl border-0"
               />
             </div>
             <div>
@@ -638,7 +638,7 @@ export default function App() {
                 value={editData.cost}
                 onChange={(e) => setEditData({ ...editData, cost: e.target.value })}
                 placeholder="KES 500"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                className="w-full px-4 py-2 glass rounded-2xl border-0"
               />
             </div>
           </div>
@@ -649,7 +649,7 @@ export default function App() {
               onChange={(e) => setEditData({ ...editData, postHikeManenos: e.target.value })}
               rows="2"
               placeholder="What happens after the hike?"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 glass rounded-2xl border-0"
             />
           </div>
           <div>
@@ -659,7 +659,7 @@ export default function App() {
               onChange={(e) => setEditData({ ...editData, lastWords: e.target.value })}
               rows="2"
               placeholder="Final tips or encouragement"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              className="w-full px-4 py-2 glass rounded-2xl border-0"
             />
           </div>
           <div>
@@ -686,7 +686,7 @@ export default function App() {
           </div>
           <button
             onClick={() => saveUpcomingHike(editData)}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 flex items-center justify-center"
+            className="w-full bg-forest-green text-white py-3 rounded-2xl hover:bg-forest-olive font-semibold hover:bg-blue-700 flex items-center justify-center"
           >
             <Save className="w-5 h-5 mr-2" />
             Save Changes
@@ -736,7 +736,7 @@ export default function App() {
               placeholder="Add new note"
               value={newNote}
               onChange={(e) => setNewNote(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-2"
+              className="w-full px-4 py-2 glass rounded-2xl border-0 mb-2"
             />
             <button onClick={handleAddNote} className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700">
               Add Note
@@ -744,7 +744,7 @@ export default function App() {
           </div>
           <button
             onClick={() => saveImportantNotes(notes)}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 flex items-center justify-center"
+            className="w-full bg-forest-green text-white py-3 rounded-2xl hover:bg-forest-olive font-semibold hover:bg-blue-700 flex items-center justify-center"
           >
             <Save className="w-5 h-5 mr-2" />
             Save Notes
@@ -785,7 +785,7 @@ export default function App() {
           <EditHikeForm />
         ) : (
           <>
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="glass rounded-3xl p-6 mb-6">
               <div className="flex items-center justify-between mb-4">
                 <h1 className="text-2xl font-bold text-gray-800">{upcomingHike.name}</h1>
                 <div className="flex gap-2">
@@ -826,7 +826,7 @@ export default function App() {
                 <h3 className="font-semibold text-gray-800 mb-2">What to Expect</h3>
                 <p className="text-gray-700">{upcomingHike.whatToExpect}</p>
               </div>
-              <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div className="mb-6 glass-dark p-4 rounded-2xl">
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
                     <span className="font-semibold text-gray-700">Difficulty:</span>
@@ -842,7 +842,7 @@ export default function App() {
                   </div>
                 </div>
               </div>
-              <div className="bg-blue-50 p-4 rounded-lg mb-6">
+              <div className="glass-dark p-4 rounded-2xl mb-6">
                 <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
                   <Info className="w-5 h-5 mr-2 text-blue-600" />
                   Meeting Point
@@ -869,7 +869,7 @@ export default function App() {
                 <h3 className="font-semibold text-gray-800 mb-2">Post Hike Manenos</h3>
                 <p className="text-gray-700">{upcomingHike.postHikeManenos}</p>
               </div>
-              <div className="mb-6 bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+              <div className="mb-6 glass-dark p-4 rounded-2xl border-l-4 border-forest-olive">
                 <h3 className="font-semibold text-gray-800 mb-2">Last Words</h3>
                 <p className="text-gray-700">{upcomingHike.lastWords}</p>
               </div>
@@ -896,18 +896,18 @@ export default function App() {
                   placeholder="Your Name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <input
                   type="tel"
                   placeholder="Phone Number"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   onClick={handleSubmit}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                  className="w-full bg-forest-green text-white py-3 rounded-2xl hover:bg-forest-olive font-semibold hover:bg-blue-700 transition"
                 >
                   Register Now
                 </button>
@@ -915,7 +915,7 @@ export default function App() {
             </div>
             <button
               onClick={() => setCurrentPage('calendar')}
-              className="w-full bg-gray-100 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center"
+              className="w-full glass text-trail-brown py-3 rounded-2xl font-semibold hover:bg-gray-200 transition flex items-center justify-center"
             >
               View Full Year Calendar
               <ChevronRight className="w-5 h-5 ml-2" />
@@ -1029,17 +1029,19 @@ export default function App() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto mb-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Sirimon Hikers</h1>
-        </div>
+  rreturn (
+  <div className="min-h-screen py-8 px-4">
+    <div className="max-w-4xl mx-auto mb-8">
+      <div className="text-center mb-8">
+        <h1 className="text-5xl font-display font-bold text-trail-brown mb-2 drop-shadow-lg">
+          Sirimon Hikers
+        </h1>
       </div>
-      {currentPage === 'home' ? <HomePage /> : <CalendarPage />}
-      <footer className="max-w-2xl mx-auto mt-12 text-center text-gray-600 text-sm">
-        <p>Questions? Contact your host. You know how!</p>
-      </footer>
     </div>
-  );
+    {currentPage === 'home' ? <HomePage /> : <CalendarPage />}
+    <footer className="max-w-2xl mx-auto mt-12 text-center text-trail-earth text-sm">
+      <p>Questions? Contact Kui. You know how!</p>
+    </footer>
+  </div>
+);
 }
