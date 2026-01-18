@@ -952,7 +952,7 @@ export default function App() {
                 )}
                 <button
                   onClick={downloadAllEvents}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 flex items-center"
+                  className="bg-forest-olive text-white hover:bg-forest-moss px-4 py-2 rounded-lg font-semibold hover:bg-green-700 flex items-center"
                 >
                   <Download className="w-5 h-5 mr-2" />
                   Download All
@@ -967,7 +967,7 @@ export default function App() {
                   day: 'numeric'
                 });
                 return (
-                  <div key={hike.id} className="bg-white rounded-lg shadow-md p-5 hover:shadow-lg transition">
+                  <div key={hike.id} className="glass rounded-3xl p-5 hover:shadow-2xl transition-all">
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h3 className="font-bold text-lg text-gray-800">{hike.hike}</h3>
@@ -979,7 +979,7 @@ export default function App() {
                         </span>
                         <button
                           onClick={() => downloadSingleEvent(hike)}
-                          className="text-green-600 hover:text-green-700"
+                          className="text-forest-olive hover:text-forest-moss"
                           title="Add to calendar"
                         >
                           <Download className="w-5 h-5" />
