@@ -9,12 +9,12 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hiking boot background pattern */
+/* Gradient background with hiking boot and mountain patterns */
 body::before {
   content: '';
   position: fixed;
@@ -23,30 +23,49 @@ body::before {
   width: 100%;
   height: 100%;
   background: 
-    linear-gradient(135deg, #f5f1e8 0%, #e8dcc8 100%),
-    url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 80c0-15 10-25 25-25s25 10 25 25v20c0 8-6 14-14 14H54c-8 0-14-6-14-14V80zm25-15c-8 0-15 7-15 15v15h30V80c0-8-7-15-15-15z' fill='%23A0826D' opacity='0.03'/%3E%3C/svg%3E");
-  background-size: cover, 400px 400px;
-  opacity: 0.4;
+    linear-gradient(135deg, #A0826D 0%, #8B7355 50%, #6B8E23 100%);
+  opacity: 1;
+  z-index: -2;
+  pointer-events: none;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.05'%3E%3Cpath d='M100 200c0-20 15-35 35-35s35 15 35 35v30c0 12-8 20-20 20h-30c-12 0-20-8-20-20v-30zm35-25c-12 0-22 10-22 25v25h44v-25c0-15-10-25-22-25z' fill='%23000'/%3E%3Cpath d='M300 150l-40 60-20-30-40 60h100z' fill='%23000'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg width='600' height='600' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.03'%3E%3Cpath d='M150 400l50-100 50 50 50-80 50 60 50-50v120H150z' fill='%23000'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 300px 300px, 500px 500px;
+  background-position: 0 0, 50% 50%;
+  background-repeat: repeat;
   z-index: -1;
   pointer-events: none;
 }
 
-/* Frosted glass effect */
+/* Frosted glass effect - more prominent */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 
-    0 8px 32px 0 rgba(139, 115, 85, 0.1),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+    0 8px 32px 0 rgba(107, 142, 35, 0.15),
+    0 4px 16px 0 rgba(139, 115, 85, 0.1),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
 }
 
 .glass-dark {
-  background: rgba(139, 115, 85, 0.15);
+  background: rgba(139, 115, 85, 0.25);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 115, 85, 0.2);
+  border: 1px solid rgba(160, 130, 109, 0.3);
+  box-shadow: 
+    0 4px 16px 0 rgba(107, 142, 35, 0.1),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Smooth transitions */
@@ -56,4 +75,14 @@ body::before {
 
 button, input, textarea, select {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Button hover effects */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(107, 142, 35, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
 }
