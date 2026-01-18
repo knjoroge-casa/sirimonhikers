@@ -907,7 +907,8 @@ export default function App() {
                 />
                 <button
                   onClick={handleSubmit}
-                  className="w-full bg-forest-green text-white py-3 rounded-2xl hover:bg-forest-olive font-semibold hover:bg-blue-700 transition"
+                  className="w-full py-3 rounded-2xl font-semibold text-white hover:opacity-90"
+style={{ backgroundColor: '#6B8E23' }}
                 >
                   Register Now
                 </button>
