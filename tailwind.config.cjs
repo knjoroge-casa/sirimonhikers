@@ -12,14 +12,14 @@ module.exports = {
           cream: '#f5f1e8',
         },
         forest: {
-          green: '#4A7C59',
           olive: '#6B8E23',
-          moss: '#8FBC8F',
+          moss: '#7C9A3B',
+          sage: '#8B9F6D',
         },
       },
       fontFamily: {
         display: ['Righteous', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        body: ['Poppins', 'sans-serif'],
       },
       backdropBlur: {
         xs: '2px',
