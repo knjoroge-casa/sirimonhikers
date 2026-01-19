@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, Clock, Info, ChevronRight, Download, Edit, Save, X, Lock, FileText } from 'lucide-react';
-import { supabase } from './lib/supabase.js';
+import { supabase } from './lib/supabase';
 
 const ADMIN_PASSWORD = "hiking2026";
 
