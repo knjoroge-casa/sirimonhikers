@@ -287,22 +287,34 @@ export default function App() {
 };
 
   const downloadAllEvents = () => {
-    const formatDate = (date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    const events = hikeCalendar.map(hike => {
-      const startDate = new Date(hike.date + 'T07:00');
-      const endDate = new Date(startDate.getTime() + 6 * 60 * 60 * 1000);
-      return `BEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike}\r\nDESCRIPTION:${hike.prerequisites}\r\nEND:VEVENT`;
-    }).join('\r\n');
-
-    const icsContent = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\n${events}\r\nEND:VCALENDAR`;
-    const blob = new Blob([icsContent], { type: 'text/calendar' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'hiking_calendar_2026.ics';
-    a.click();
-    URL.revokeObjectURL(url);
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const sec = String(date.getSeconds()).padStart(2, '0');
+    return `${year}${month}${day}T${hour}${min}${sec}Z`;
   };
+  
+  const events = hikeCalendar.map(hike => {
+    const startDate = new Date(hike.date);
+    startDate.setHours(7, 0, 0, 0);
+    const endDate = new Date(startDate);
+    endDate.setHours(13, 0, 0, 0);
+    
+    return `BEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike}\r\nDESCRIPTION:${hike.prerequisites}\r\nEND:VEVENT`;
+  }).join('\r\n');
+
+  const icsContent = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\n${events}\r\nEND:VCALENDAR`;
+  const blob = new Blob([icsContent], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'hiking_calendar_2026.ics';
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
   const handleRegister = async (name, phone) => {
   if (name && phone) {
