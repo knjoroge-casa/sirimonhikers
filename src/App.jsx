@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, Clock, Info, ChevronRight, Download, Edit, Save, X, Lock, FileText } from 'lucide-react';
+import { supabase } from './lib/supabase.js';
 
 const ADMIN_PASSWORD = "hiking2026";
 
@@ -28,31 +29,25 @@ export default function App() {
   const [isEditingCalendar, setIsEditingCalendar] = useState(false);
   const [isEditingItems, setIsEditingItems] = useState(false);
   const [customItems, setCustomItems] = useState({});
-  const [importantNotes, setImportantNotes] = useState([
-    "Dates may change due to weather conditions",
-    "Register early for international trips and multi-day hikes",
-    "WhatsApp group link will be shared upon registration",
-    "Contact us for group discounts (5+ people)"
-  ]);
+  const [importantNotes, setImportantNotes] = useState([]);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
 
   const defaultUpcomingHike = {
-    id: 1,
     name: "Ngong Hills Trail",
     date: "2026-02-15",
     time: "7:00 AM",
     location: "Ngong Hills, Kajiado County",
     intro: "Join us for an incredible adventure through one of Kenya's most iconic hiking destinations!",
-    whatToExpect: "A beautiful trail through the Ngong Hills with stunning views of the Great Rift Valley.",
+    what_to_expect: "A beautiful trail through the Ngong Hills with stunning views of the Great Rift Valley.",
     difficulty: "Moderate",
     duration: "4-5 hours",
     distance: "12 km",
     weather: "Cool morning temperatures (15-20C), warming up to 25C by midday. Bring layers.",
-    meetingPoint: "Java House, Karen",
+    meeting_point: "Java House, Karen",
     cost: "KES 500 (transport)",
-    postHikeManenos: "Lunch at a local nyama choma spot. Optional group photos at the summit.",
-    lastWords: "This is a moderately challenging hike suitable for beginners with basic fitness. Stay hydrated!",
-    whatToBring: {
+    post_hike_manenos: "Lunch at a local nyama choma spot. Optional group photos at the summit.",
+    last_words: "This is a moderately challenging hike suitable for beginners with basic fitness. Stay hydrated!",
+    what_to_bring: {
       water: true,
       snacks: true,
       lunch: true,
@@ -67,40 +62,124 @@ export default function App() {
   };
 
   const defaultCalendar = [
-    { id: 1, month: "February", hike: "Ngong Hills Trail", date: "2026-02-15", prerequisites: "None - suitable for beginners" },
-    { id: 2, month: "March", hike: "Mt. Longonot", date: "2026-03-20", prerequisites: "Good fitness level required" },
-    { id: 3, month: "April", hike: "Karura Forest", date: "2026-04-17", prerequisites: "Family-friendly, easy trail" },
-    { id: 4, month: "May", hike: "Hell's Gate National Park", date: "2026-05-15", prerequisites: "Bike rental available" },
-    { id: 5, month: "June", hike: "Elephant Hill, Aberdares", date: "2026-06-19", prerequisites: "Cold weather gear needed" },
-    { id: 6, month: "July", hike: "Lukenya Hills", date: "2026-07-24", prerequisites: "Rock climbing option available" },
-    { id: 7, month: "August", hike: "Mt. Kenya", date: "2026-08-14", prerequisites: "Multi-day trek - register by July 1st" },
-    { id: 8, month: "September", hike: "Oldonyo Sabuk", date: "2026-09-20", prerequisites: "Wildlife present - stay in groups" },
-    { id: 9, month: "October", hike: "Cape Town: Table Mountain", date: "2026-10-10", prerequisites: "INTERNATIONAL - Register by Aug 15th" },
-    { id: 10, month: "November", hike: "Chyulu Hills", date: "2026-11-21", prerequisites: "Remote location - full day trip" },
-    { id: 11, month: "December", hike: "Year-End Hike TBD", date: "2026-12-12", prerequisites: "Location to be announced" }
+    { month: "February", hike: "Ngong Hills Trail", date: "2026-02-15", prerequisites: "None - suitable for beginners" },
+    { month: "March", hike: "Mt. Longonot", date: "2026-03-20", prerequisites: "Good fitness level required" },
+    { month: "April", hike: "Karura Forest", date: "2026-04-17", prerequisites: "Family-friendly, easy trail" },
+    { month: "May", hike: "Hell's Gate National Park", date: "2026-05-15", prerequisites: "Bike rental available" },
+    { month: "June", hike: "Elephant Hill, Aberdares", date: "2026-06-19", prerequisites: "Cold weather gear needed" },
+    { month: "July", hike: "Lukenya Hills", date: "2026-07-24", prerequisites: "Rock climbing option available" },
+    { month: "August", hike: "Mt. Kenya", date: "2026-08-14", prerequisites: "Multi-day trek - register by July 1st" },
+    { month: "September", hike: "Oldonyo Sabuk", date: "2026-09-20", prerequisites: "Wildlife present - stay in groups" },
+    { month: "October", hike: "Cape Town: Table Mountain", date: "2026-10-10", prerequisites: "INTERNATIONAL - Register by Aug 15th" },
+    { month: "November", hike: "Chyulu Hills", date: "2026-11-21", prerequisites: "Remote location - full day trip" },
+    { month: "December", hike: "Year-End Hike TBD", date: "2026-12-12", prerequisites: "Location to be announced" }
+  ];
+
+  const defaultNotes = [
+    "Dates may change due to weather conditions",
+    "Register early for international trips and multi-day hikes",
+    "WhatsApp group link will be shared upon registration",
+    "Contact us for group discounts (5+ people)"
   ];
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const loadData = () => {
-  try {
-    const hikeData = localStorage.getItem('upcoming-hike');
-    const calendarData = localStorage.getItem('hike-calendar');
-    const itemsData = localStorage.getItem('custom-items');
-    const notesData = localStorage.getItem('important-notes');
-    
-    setUpcomingHike(hikeData ? JSON.parse(hikeData) : defaultUpcomingHike);
-    setHikeCalendar(calendarData ? JSON.parse(calendarData) : defaultCalendar);
-    if (itemsData) setCustomItems(JSON.parse(itemsData));
-    if (notesData) setImportantNotes(JSON.parse(notesData));
-  } catch (error) {
-    setUpcomingHike(defaultUpcomingHike);
-    setHikeCalendar(defaultCalendar);
-  }
-  setIsLoading(false);
-};
+  const loadData = async () => {
+    try {
+      // Load upcoming hike
+      const { data: hikeData, error: hikeError } = await supabase
+        .from('upcoming_hike')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (hikeError && hikeError.code !== 'PGRST116') {
+        console.error('Error loading hike:', hikeError);
+      }
+
+      if (hikeData) {
+        setUpcomingHike({
+          ...hikeData,
+          whatToExpect: hikeData.what_to_expect,
+          meetingPoint: hikeData.meeting_point,
+          postHikeManenos: hikeData.post_hike_manenos,
+          lastWords: hikeData.last_words,
+          whatToBring: hikeData.what_to_bring || {}
+        });
+      } else {
+        // Insert default if nothing exists
+        await supabase.from('upcoming_hike').insert([defaultUpcomingHike]);
+        setUpcomingHike(defaultUpcomingHike);
+      }
+
+      // Load calendar
+      const { data: calendarData, error: calendarError } = await supabase
+        .from('hike_calendar')
+        .select('*')
+        .order('date', { ascending: true });
+
+      if (calendarError) {
+        console.error('Error loading calendar:', calendarError);
+      }
+
+      if (calendarData && calendarData.length > 0) {
+        setHikeCalendar(calendarData);
+      } else {
+        // Insert default calendar
+        await supabase.from('hike_calendar').insert(defaultCalendar);
+        setHikeCalendar(defaultCalendar);
+      }
+
+      // Load custom items
+      const { data: itemsData, error: itemsError } = await supabase
+        .from('custom_items')
+        .select('*');
+
+      if (itemsError) {
+        console.error('Error loading items:', itemsError);
+      }
+
+      if (itemsData) {
+        const itemsObj = {};
+        itemsData.forEach(item => {
+          itemsObj[item.item_key] = item.item_label;
+        });
+        setCustomItems(itemsObj);
+      }
+
+      // Load important notes
+      const { data: notesData, error: notesError } = await supabase
+        .from('important_notes')
+        .select('*')
+        .order('order_index', { ascending: true });
+
+      if (notesError) {
+        console.error('Error loading notes:', notesError);
+      }
+
+      if (notesData && notesData.length > 0) {
+        setImportantNotes(notesData.map(n => n.note));
+      } else {
+        // Insert default notes
+        const notesToInsert = defaultNotes.map((note, index) => ({
+          note,
+          order_index: index
+        }));
+        await supabase.from('important_notes').insert(notesToInsert);
+        setImportantNotes(defaultNotes);
+      }
+
+    } catch (error) {
+      console.error('Error loading data:', error);
+      setUpcomingHike(defaultUpcomingHike);
+      setHikeCalendar(defaultCalendar);
+      setImportantNotes(defaultNotes);
+    }
+    setIsLoading(false);
+  };
 
   const handleAdminLogin = () => {
     if (adminPassword === ADMIN_PASSWORD) {
@@ -114,49 +193,117 @@ export default function App() {
     }
   };
 
-  const saveUpcomingHike = (data) => {
-  try {
-    localStorage.setItem('upcoming-hike', JSON.stringify(data));
-    setUpcomingHike(data);
-    alert('Saved!');
-    setIsEditing(false);
-  } catch (e) {
-    alert('Error saving');
-  }
-};
+  const saveUpcomingHike = async (data) => {
+    try {
+      // First delete all existing hikes
+      await supabase.from('upcoming_hike').delete().neq('id', 0);
+      
+      // Insert new hike
+      const hikeToSave = {
+        name: data.name,
+        date: data.date,
+        time: data.time,
+        location: data.location,
+        intro: data.intro,
+        what_to_expect: data.whatToExpect,
+        difficulty: data.difficulty,
+        duration: data.duration,
+        distance: data.distance,
+        weather: data.weather,
+        meeting_point: data.meetingPoint,
+        cost: data.cost,
+        post_hike_manenos: data.postHikeManenos,
+        last_words: data.lastWords,
+        what_to_bring: data.whatToBring
+      };
 
-  const saveCalendar = (data) => {
-  try {
-    localStorage.setItem('hike-calendar', JSON.stringify(data));
-    setHikeCalendar(data);
-    alert('Calendar saved!');
-    setIsEditingCalendar(false);
-  } catch (e) {
-    alert('Error');
-  }
-};
+      const { error } = await supabase.from('upcoming_hike').insert([hikeToSave]);
+      
+      if (error) throw error;
+      
+      setUpcomingHike(data);
+      alert('Saved!');
+      setIsEditing(false);
+    } catch (e) {
+      console.error('Error saving:', e);
+      alert('Error saving');
+    }
+  };
 
-  const saveCustomItems = (items) => {
-  try {
-    localStorage.setItem('custom-items', JSON.stringify(items));
-    setCustomItems(items);
-    alert('Items saved!');
-    setIsEditingItems(false);
-  } catch (e) {
-    alert('Error');
-  }
-};
+  const saveCalendar = async (data) => {
+    try {
+      // Delete all existing calendar items
+      await supabase.from('hike_calendar').delete().neq('id', 0);
+      
+      // Insert new calendar items
+      const calendarToSave = data.map(item => ({
+        month: item.month,
+        hike: item.hike,
+        date: item.date,
+        prerequisites: item.prerequisites
+      }));
 
-  const saveImportantNotes = (notes) => {
-  try {
-    localStorage.setItem('important-notes', JSON.stringify(notes));
-    setImportantNotes(notes);
-    alert('Notes saved!');
-    setIsEditingNotes(false);
-  } catch (e) {
-    alert('Error');
-  }
-};
+      const { error } = await supabase.from('hike_calendar').insert(calendarToSave);
+      
+      if (error) throw error;
+      
+      setHikeCalendar(data);
+      alert('Calendar saved!');
+      setIsEditingCalendar(false);
+    } catch (e) {
+      console.error('Error saving calendar:', e);
+      alert('Error');
+    }
+  };
+
+  const saveCustomItems = async (items) => {
+    try {
+      // Delete all existing custom items
+      await supabase.from('custom_items').delete().neq('id', 0);
+      
+      // Insert new items
+      const itemsToSave = Object.entries(items).map(([key, label]) => ({
+        item_key: key,
+        item_label: label
+      }));
+
+      if (itemsToSave.length > 0) {
+        const { error } = await supabase.from('custom_items').insert(itemsToSave);
+        if (error) throw error;
+      }
+      
+      setCustomItems(items);
+      alert('Items saved!');
+      setIsEditingItems(false);
+    } catch (e) {
+      console.error('Error saving items:', e);
+      alert('Error');
+    }
+  };
+
+  const saveImportantNotes = async (notes) => {
+    try {
+      // Delete all existing notes
+      await supabase.from('important_notes').delete().neq('id', 0);
+      
+      // Insert new notes
+      const notesToSave = notes.map((note, index) => ({
+        note,
+        order_index: index
+      }));
+
+      const { error } = await supabase.from('important_notes').insert(notesToSave);
+      
+      if (error) throw error;
+      
+      setImportantNotes(notes);
+      alert('Notes saved!');
+      setIsEditingNotes(false);
+    } catch (e) {
+      console.error('Error saving notes:', e);
+      alert('Error');
+    }
+  };
 
   const saveAsPDF = () => {
     const allItems = { ...itemLabels, ...customItems };
@@ -235,118 +382,115 @@ export default function App() {
   };
 
   const generateICS = (hike) => {
-  // Parse the date and time properly
-  const dateStr = hike.date; // e.g., "2026-02-15"
-  const timeStr = hike.time || '07:00'; // e.g., "7:00 AM" or "07:00"
-  
-  // Convert "7:00 AM" format to "07:00" 24-hour format
-  let hours = 7;
-  let minutes = 0;
-  
-  if (timeStr.includes(':')) {
-    const timeParts = timeStr.toLowerCase().replace(/\s/g, '').match(/(\d+):(\d+)(am|pm)?/);
-    if (timeParts) {
-      hours = parseInt(timeParts[1]);
-      minutes = parseInt(timeParts[2]);
-      const ampm = timeParts[3];
-      
-      if (ampm === 'pm' && hours !== 12) hours += 12;
-      if (ampm === 'am' && hours === 12) hours = 0;
+    const dateStr = hike.date;
+    const timeStr = hike.time || '07:00';
+    
+    let hours = 7;
+    let minutes = 0;
+    
+    if (timeStr.includes(':')) {
+      const timeParts = timeStr.toLowerCase().replace(/\s/g, '').match(/(\d+):(\d+)(am|pm)?/);
+      if (timeParts) {
+        hours = parseInt(timeParts[1]);
+        minutes = parseInt(timeParts[2]);
+        const ampm = timeParts[3];
+        
+        if (ampm === 'pm' && hours !== 12) hours += 12;
+        if (ampm === 'am' && hours === 12) hours = 0;
+      }
     }
-  }
-  
-  // Create proper ISO date string
-  const startDate = new Date(dateStr);
-  startDate.setHours(hours, minutes, 0, 0);
-  
-  const endDate = new Date(startDate);
-  endDate.setHours(startDate.getHours() + 6); // 6 hours later
-  
-  const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hour = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
-    const sec = String(date.getSeconds()).padStart(2, '0');
-    return `${year}${month}${day}T${hour}${min}${sec}Z`;
-  };
+    
+    const startDate = new Date(dateStr);
+    startDate.setHours(hours, minutes, 0, 0);
+    
+    const endDate = new Date(startDate);
+    endDate.setHours(startDate.getHours() + 6);
+    
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hour = String(date.getHours()).padStart(2, '0');
+      const min = String(date.getMinutes()).padStart(2, '0');
+      const sec = String(date.getSeconds()).padStart(2, '0');
+      return `${year}${month}${day}T${hour}${min}${sec}Z`;
+    };
 
-  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\nBEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike || hike.name}\r\nDESCRIPTION:${hike.prerequisites || hike.whatToExpect || ''}\r\nLOCATION:${hike.location || ''}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
-};
+    return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\nBEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike || hike.name}\r\nDESCRIPTION:${hike.prerequisites || hike.whatToExpect || ''}\r\nLOCATION:${hike.location || ''}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+  };
 
   const downloadSingleEvent = (hike) => {
-  const icsContent = generateICS(hike);
-  const blob = new Blob([icsContent], { type: 'text/calendar' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${(hike.hike || hike.name).replace(/[^a-z0-9]/gi, '_')}.ics`;
-  a.click();
-  URL.revokeObjectURL(url);
-};
+    const icsContent = generateICS(hike);
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${(hike.hike || hike.name).replace(/[^a-z0-9]/gi, '_')}.ics`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const downloadAllEvents = () => {
-  const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hour = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
-    const sec = String(date.getSeconds()).padStart(2, '0');
-    return `${year}${month}${day}T${hour}${min}${sec}Z`;
-  };
-  
-  const events = hikeCalendar.map(hike => {
-    const startDate = new Date(hike.date);
-    startDate.setHours(7, 0, 0, 0);
-    const endDate = new Date(startDate);
-    endDate.setHours(13, 0, 0, 0);
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hour = String(date.getHours()).padStart(2, '0');
+      const min = String(date.getMinutes()).padStart(2, '0');
+      const sec = String(date.getSeconds()).padStart(2, '0');
+      return `${year}${month}${day}T${hour}${min}${sec}Z`;
+    };
     
-    return `BEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike}\r\nDESCRIPTION:${hike.prerequisites}\r\nEND:VEVENT`;
-  }).join('\r\n');
+    const events = hikeCalendar.map(hike => {
+      const startDate = new Date(hike.date);
+      startDate.setHours(7, 0, 0, 0);
+      const endDate = new Date(startDate);
+      endDate.setHours(13, 0, 0, 0);
+      
+      return `BEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike}\r\nDESCRIPTION:${hike.prerequisites}\r\nEND:VEVENT`;
+    }).join('\r\n');
 
-  const icsContent = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\n${events}\r\nEND:VCALENDAR`;
-  const blob = new Blob([icsContent], { type: 'text/calendar' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'hiking_calendar_2026.ics';
-  a.click();
-  URL.revokeObjectURL(url);
-};
+    const icsContent = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\n${events}\r\nEND:VCALENDAR`;
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hiking_calendar_2026.ics';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleRegister = async (name, phone) => {
-  if (name && phone) {
-    console.log('Registering:', { name, phone, hike: upcomingHike.name });
-    
-    try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycby8AieCDSF_tbrP3j_4qsSRc675XqTIhrFXOqGgYgZ5qtGOXTEZnRTBAASREvjZeMtb/exec', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name,
-          phone: phone,
-          hike: upcomingHike.name,
-          date: upcomingHike.date,
-          timestamp: new Date().toISOString()
-        })
-      });
+    if (name && phone) {
+      console.log('Registering:', { name, phone, hike: upcomingHike.name });
       
-      const result = await response.json();
-      console.log('Registration result:', result);
-      
-      if (result.result === 'success') {
-        alert(`✅ Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
-      } else {
+      try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycby8AieCDSF_tbrP3j_4qsSRc675XqTIhrFXOqGgYgZ5qtGOXTEZnRTBAASREvjZeMtb/exec', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            phone: phone,
+            hike: upcomingHike.name,
+            date: upcomingHike.date,
+            timestamp: new Date().toISOString()
+          })
+        });
+        
+        const result = await response.json();
+        console.log('Registration result:', result);
+        
+        if (result.result === 'success') {
+          alert(`✅ Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
+        } else {
+          alert(`Registration received! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
         alert(`Registration received! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
       }
-    } catch (error) {
-      console.error('Registration error:', error);
-      alert(`Registration received! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
     }
-  }
-};
+  };
 
   const AdminLoginModal = () => {
     if (!showAdminLogin) return null;
@@ -1080,7 +1224,7 @@ style={{ backgroundColor: '#6B8E23' }}
         <div className="text-gray-600">Loading...</div>
       </div>
     );
-  }
+  };
 
   return (
   <div className="min-h-screen py-8 px-4">
@@ -1093,7 +1237,7 @@ style={{ backgroundColor: '#6B8E23' }}
     </div>
     {currentPage === 'home' ? <HomePage /> : <CalendarPage />}
     <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
-      <p>Questions? Contact Kui. You know how!</p>
+      <p>Questions? Contact your Sirimon Host. You know how!</p>
     </footer>
   </div>
 );
