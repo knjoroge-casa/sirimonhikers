@@ -235,12 +235,45 @@ export default function App() {
   };
 
   const generateICS = (hike) => {
-    const startDate = new Date(hike.date + 'T' + (hike.time || '07:00'));
-    const endDate = new Date(startDate.getTime() + 6 * 60 * 60 * 1000);
-    const formatDate = (date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-
-    return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\nBEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike || hike.name}\r\nDESCRIPTION:${hike.prerequisites || hike.whatToExpect || ''}\r\nLOCATION:${hike.location || ''}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+  // Parse the date and time properly
+  const dateStr = hike.date; // e.g., "2026-02-15"
+  const timeStr = hike.time || '07:00'; // e.g., "7:00 AM" or "07:00"
+  
+  // Convert "7:00 AM" format to "07:00" 24-hour format
+  let hours = 7;
+  let minutes = 0;
+  
+  if (timeStr.includes(':')) {
+    const timeParts = timeStr.toLowerCase().replace(/\s/g, '').match(/(\d+):(\d+)(am|pm)?/);
+    if (timeParts) {
+      hours = parseInt(timeParts[1]);
+      minutes = parseInt(timeParts[2]);
+      const ampm = timeParts[3];
+      
+      if (ampm === 'pm' && hours !== 12) hours += 12;
+      if (ampm === 'am' && hours === 12) hours = 0;
+    }
+  }
+  
+  // Create proper ISO date string
+  const startDate = new Date(dateStr);
+  startDate.setHours(hours, minutes, 0, 0);
+  
+  const endDate = new Date(startDate);
+  endDate.setHours(startDate.getHours() + 6); // 6 hours later
+  
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const sec = String(date.getSeconds()).padStart(2, '0');
+    return `${year}${month}${day}T${hour}${min}${sec}Z`;
   };
+
+  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\nBEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike || hike.name}\r\nDESCRIPTION:${hike.prerequisites || hike.whatToExpect || ''}\r\nLOCATION:${hike.location || ''}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+};
 
   const downloadSingleEvent = (hike) => {
   const icsContent = generateICS(hike);
