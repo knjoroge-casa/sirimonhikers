@@ -1219,12 +1219,16 @@ style={{ backgroundColor: '#6B8E23' }}
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+  return (
+    <div className="min-h-screen py-8 px-4 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-white mb-4 drop-shadow-2xl">Sirimon Hikers</h1>
+        <div className="text-white/90 text-lg">Loading your adventure...</div>
+        <div className="mt-4 animate-pulse text-white/70">🏔️</div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   return (
   <div className="min-h-screen py-8 px-4">
