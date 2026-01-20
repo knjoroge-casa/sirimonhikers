@@ -474,7 +474,7 @@ export default function App() {
         timestamp: new Date().toISOString()
       });
       
-      const url = `https://script.google.com/macros/s/AKfycby8AieCDSF_tbrP3j_4qsSRc675XqTIhrFXOqGgYgZ5qtGOXTEZnRTBAASREvjZeMtb/exec?${params.toString()}`;
+      const url = `https://script.google.com/macros/s/AKfycbwRfnt-uXbPJH7InEiWOHs9VQ3ZCzhvOMrFCC8P3RkCqDg69ru1pmrdlGkosJBlvWHB/exec?${params.toString()}`;
       
       const response = await fetch(url, { 
         method: 'GET',
