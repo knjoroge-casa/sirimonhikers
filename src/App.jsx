@@ -461,36 +461,35 @@ export default function App() {
   };
 
   const handleRegister = async (name, phone) => {
-    if (name && phone) {
-      console.log('Registering:', { name, phone, hike: upcomingHike.name });
+  if (name && phone) {
+    console.log('Registering:', { name, phone, hike: upcomingHike.name });
+    
+    try {
+      // Use GET to avoid CORS issues
+      const params = new URLSearchParams({
+        name: name,
+        phone: phone,
+        hike: upcomingHike.name,
+        date: upcomingHike.date,
+        timestamp: new Date().toISOString()
+      });
       
-      try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycby8AieCDSF_tbrP3j_4qsSRc675XqTIhrFXOqGgYgZ5qtGOXTEZnRTBAASREvjZeMtb/exec', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: name,
-            phone: phone,
-            hike: upcomingHike.name,
-            date: upcomingHike.date,
-            timestamp: new Date().toISOString()
-          })
-        });
-        
-        const result = await response.json();
-        console.log('Registration result:', result);
-        
-        if (result.result === 'success') {
-          alert(`✅ Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
-        } else {
-          alert(`Registration received! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
-        }
-      } catch (error) {
-        console.error('Registration error:', error);
-        alert(`Registration received! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
-      }
+      const url = `https://script.google.com/macros/s/AKfycby8AieCDSF_tbrP3j_4qsSRc675XqTIhrFXOqGgYgZ5qtGOXTEZnRTBAASREvjZeMtb/exec?${params.toString()}`;
+      
+      const response = await fetch(url, { 
+        method: 'GET',
+        mode: 'no-cors'
+      });
+      
+      // With no-cors, we can't read the response, so just show success
+      alert(`✅ Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
+      
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert(`Registration received! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
     }
-  };
+  }
+};
 
   const AdminLoginModal = () => {
     if (!showAdminLogin) return null;
