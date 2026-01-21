@@ -417,42 +417,34 @@ petho: true
   };
 
   const generateICS = (hike) => {
-    const dateStr = hike.date;
-    const timeStr = hike.time || '07:00';
-    
-    let hours = 7;
-    let minutes = 0;
-    
-    if (timeStr.includes(':')) {
-      const timeParts = timeStr.toLowerCase().replace(/\s/g, '').match(/(\d+):(\d+)(am|pm)?/);
-      if (timeParts) {
-        hours = parseInt(timeParts[1]);
-        minutes = parseInt(timeParts[2]);
-        const ampm = timeParts[3];
-        
-        if (ampm === 'pm' && hours !== 12) hours += 12;
-        if (ampm === 'am' && hours === 12) hours = 0;
-      }
+  const dateStr = hike.date;
+  const timeStr = hike.time || '05:00'; // Default to 5am
+  
+  let hours = 5;
+  let minutes = 0;
+  
+  if (timeStr.includes(':')) {
+    const timeParts = timeStr.toLowerCase().replace(/\s/g, '').match(/(\d+):(\d+)(am|pm)?/);
+    if (timeParts) {
+      hours = parseInt(timeParts[1]);
+      minutes = parseInt(timeParts[2]);
+      const ampm = timeParts[3];
+      
+      if (ampm === 'pm' && hours !== 12) hours += 12;
+      if (ampm === 'am' && hours === 12) hours = 0;
     }
-    
-    const startDate = new Date(dateStr);
-    startDate.setHours(hours, minutes, 0, 0);
-    
-    const endDate = new Date(startDate);
-    endDate.setHours(17, 0, 0, 0); // End at 5pm
-    
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const hour = String(date.getHours()).padStart(2, '0');
-      const min = String(date.getMinutes()).padStart(2, '0');
-      const sec = String(date.getSeconds()).padStart(2, '0');
-      return `${year}${month}${day}T${hour}${min}${sec}Z`;
-    };
-
-    return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\nBEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike || hike.name}\r\nDESCRIPTION:${hike.prerequisites || hike.whatToExpect || ''}\r\nLOCATION:${hike.location || ''}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+  }
+  
+  // Create date in Kenya timezone (UTC+3)
+  const startDate = new Date(dateStr + 'T' + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':00+03:00');
+  const endDate = new Date(dateStr + 'T17:00:00+03:00'); // 5pm Kenya time
+  
+  const formatDate = (date) => {
+    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   };
+
+  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\nBEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike || hike.name}\r\nDESCRIPTION:${hike.prerequisites || hike.whatToExpect || ''}\r\nLOCATION:${hike.location || ''}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+};
 
   const downloadSingleEvent = (hike) => {
     const icsContent = generateICS(hike);
@@ -477,13 +469,12 @@ petho: true
     };
     
     const events = hikeCalendar.map(hike => {
-      const startDate = new Date(hike.date);
-      startDate.setHours(5, 0, 0, 0);  // Changed from 7 to 5 (5am)
-const endDate = new Date(startDate);
-endDate.setHours(17, 0, 0, 0);   // Changed from 13 to 17 (5pm)
-      
-      return `BEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike}\r\nDESCRIPTION:${hike.prerequisites}\r\nEND:VEVENT`;
-    }).join('\r\n');
+  // Create dates in Kenya timezone (UTC+3)
+  const startDate = new Date(hike.date + 'T05:00:00+03:00'); // 5am Kenya time
+  const endDate = new Date(hike.date + 'T17:00:00+03:00');   // 5pm Kenya time
+  
+  return `BEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike}\r\nDESCRIPTION:${hike.prerequisites}\r\nEND:VEVENT`;
+}).join('\r\n');
 
     const icsContent = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Sirimon Hikers//EN\r\n${events}\r\nEND:VCALENDAR`;
     const blob = new Blob([icsContent], { type: 'text/calendar' });
