@@ -1219,7 +1219,7 @@ style={{ backgroundColor: '#6B8E23' }}
                     </div>
                     <div className="mt-3 glass-dark p-3 rounded-2xl border-l-4 border-forest-olive">
                       <p className="text-sm text-gray-700">
-                        <span className="font-semibold">Prerequisites:</span> {hike.prerequisites}
+                        <span className="font-semibold">Details:</span> {hike.prerequisites}
                       </p>
                     </div>
                   </div>
