@@ -439,7 +439,7 @@ petho: true
     startDate.setHours(hours, minutes, 0, 0);
     
     const endDate = new Date(startDate);
-    endDate.setHours(startDate.getHours() + 6);
+    endDate.setHours(17, 0, 0, 0); // End at 5pm
     
     const formatDate = (date) => {
       const year = date.getFullYear();
@@ -478,9 +478,9 @@ petho: true
     
     const events = hikeCalendar.map(hike => {
       const startDate = new Date(hike.date);
-      startDate.setHours(7, 0, 0, 0);
-      const endDate = new Date(startDate);
-      endDate.setHours(13, 0, 0, 0);
+      startDate.setHours(5, 0, 0, 0);  // Changed from 7 to 5 (5am)
+const endDate = new Date(startDate);
+endDate.setHours(17, 0, 0, 0);   // Changed from 13 to 17 (5pm)
       
       return `BEGIN:VEVENT\r\nUID:${hike.id}@sirimonhikers.com\r\nDTSTAMP:${formatDate(new Date())}\r\nDTSTART:${formatDate(startDate)}\r\nDTEND:${formatDate(endDate)}\r\nSUMMARY:${hike.hike}\r\nDESCRIPTION:${hike.prerequisites}\r\nEND:VEVENT`;
     }).join('\r\n');
