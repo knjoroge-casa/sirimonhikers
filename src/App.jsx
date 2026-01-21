@@ -809,9 +809,9 @@ style={{ backgroundColor: '#6B8E23' }}>
                 onChange={(e) => setEditData({ ...editData, difficulty: e.target.value })}
                 className="w-full px-4 py-2 glass rounded-2xl border-0"
               >
-                <option>Easy</option>
+                <option>Friendly</option>
                 <option>Moderate</option>
-                <option>Kinda Challenging But We Will Overcome</option>
+                <option>Let's Challenge Ourselves</option>
               </select>
             </div>
             <div>
