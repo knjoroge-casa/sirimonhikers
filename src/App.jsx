@@ -65,7 +65,7 @@ export default function App() {
     cost: "KES 500 (transport)",
     post_hike_manenos: "Lunch at a local nyama choma spot. Optional group photos at the summit.",
     last_words: "This is a moderately challenging hike suitable for beginners with basic fitness. Stay hydrated!",
-    what_to_bring: [“hikeBag”, “hikeBoots”, “pants”, “top”, “thermals”, “layers”, “water”, “hikePoles”, “snacks”, “salts”, “sunscreen”, “hat”, “mittens”, “buff”, “gaiters”, “clothesChange”, “socksShoes”, “camera”, “rainJacket”, “firstAid”, “powerBank”, “identification”, “medIns”, “trashBag”, “personalStuff”, “attitude”, “petho”]
+    what_to_bring: ["hikeBag", "hikeBoots", "pants", "top", "thermals", "layers", "water", "hikePoles", "snacks", "salts", "sunscreen", "hat", "mittens", "buff", "gaiters", "clothesChange", "socksShoes", "camera", "rainJacket", "firstAid", "powerBank", "identification", "medIns", "trashBag", "personalStuff", "attitude", "petho"]
   };
 
   const defaultCalendar = [
