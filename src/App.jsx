@@ -320,9 +320,12 @@ export default function App() {
       month: 'long',
       day: 'numeric'
     });
-    const selectedItems = Object.entries(upcomingHike.whatToBring)
-      .filter(([_, checked]) => checked)
-      .map(([key, _]) => allItems[key] || key);
+    const allItems = { ...itemLabels, ...customItems };
+
+// Get selected items in the order defined by itemLabels + customItems
+const selectedItems = Object.keys(allItems)
+  .filter(key => upcomingHike.whatToBring[key])
+  .map(key => allItems[key]);
 
     const htmlContent = `<!DOCTYPE html>
 <html>
