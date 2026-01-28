@@ -320,8 +320,6 @@ export default function App() {
       month: 'long',
       day: 'numeric'
     });
-    const allItems = { ...itemLabels, ...customItems };
-
 // Get selected items in the order defined by itemLabels + customItems
 const selectedItems = Object.keys(allItems)
   .filter(key => upcomingHike.whatToBring[key])
