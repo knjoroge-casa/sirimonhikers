@@ -994,19 +994,23 @@ style={{ backgroundColor: '#6B8E23' }}
                 </div>
               </div>
               <div className="space-y-3 mb-6">
-                <div className="flex items-center text-gray-700">
-                  <Calendar className="w-5 h-5 mr-3 text-blue-600" />
-                  <span>{formattedDate} at {upcomingHike.time}</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <MapPin className="w-5 h-5 mr-3 text-blue-600" />
-                  <span>{upcomingHike.location}</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Clock className="w-5 h-5 mr-3 text-blue-600" />
-                  <span>{upcomingHike.duration} • {upcomingHike.distance}</span>
-                </div>
-              </div>
+  <div className="flex items-center text-gray-700">
+    <Calendar className="w-5 h-5 mr-3 text-blue-600" />
+    <span>{formattedDate} at {upcomingHike.time}</span>
+  </div>
+  <div className="flex items-center text-gray-700">
+    <MapPin className="w-5 h-5 mr-3 text-blue-600" />
+    <span>{upcomingHike.meetingPoint}</span>
+  </div>
+  <div className="flex items-center text-gray-700">
+    <MapPin className="w-5 h-5 mr-3 text-blue-600" />
+    <span>{upcomingHike.location}</span>
+  </div>
+  <div className="flex items-center text-gray-700">
+    <Clock className="w-5 h-5 mr-3 text-blue-600" />
+    <span>{upcomingHike.duration} • {upcomingHike.distance}</span>
+  </div>
+</div>
               {upcomingHike.intro && (
   <div className="mb-6">
     <p className="text-gray-700 italic" style={{ whiteSpace: 'pre-wrap' }}>
@@ -1037,13 +1041,12 @@ style={{ backgroundColor: '#6B8E23' }}
                 </div>
               </div>
               <div className="glass-dark p-4 rounded-2xl mb-6">
-                <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
-                  <Info className="w-5 h-5 mr-2 text-blue-600" />
-                  Meeting Point
-                </h3>
-                <p className="text-gray-700">{upcomingHike.meetingPoint}</p>
-                <p className="text-gray-700 mt-2 font-semibold">Cost: {upcomingHike.cost}</p>
-              </div>
+  <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+    <Info className="w-5 h-5 mr-2 text-blue-600" />
+    Cost
+  </h3>
+  <p className="text-gray-700 font-semibold">{upcomingHike.cost}</p>
+</div>
               <div className="mb-6">
   <h3 className="font-semibold text-gray-800 mb-2">Weather</h3>
   <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
