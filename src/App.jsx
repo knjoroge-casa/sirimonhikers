@@ -948,7 +948,7 @@ style={{ backgroundColor: '#6B8E23' }}
 
   const HomePage = () => {
     const [formData, setFormData] = useState({ name: '', phone: '' });
-    
+    const allItems = { ...itemLabels, ...customItems };
 
     const handleSubmit = () => {
       if (formData.name && formData.phone) {
