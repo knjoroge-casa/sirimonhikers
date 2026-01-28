@@ -1008,10 +1008,12 @@ style={{ backgroundColor: '#6B8E23' }}
                 </div>
               </div>
               {upcomingHike.intro && (
-                <div className="mb-6">
-                  <p className="text-gray-700 italic">{upcomingHike.intro}</p>
-                </div>
-              )}
+  <div className="mb-6">
+    <p className="text-gray-700 italic" style={{ whiteSpace: 'pre-wrap' }}>
+      {upcomingHike.intro}
+    </p>
+  </div>
+)}
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-800 mb-2">What to Expect</h3>
                 <p className="text-gray-700">{upcomingHike.whatToExpect}</p>
