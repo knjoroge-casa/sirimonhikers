@@ -1015,9 +1015,11 @@ style={{ backgroundColor: '#6B8E23' }}
   </div>
 )}
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-800 mb-2">What to Expect</h3>
-                <p className="text-gray-700">{upcomingHike.whatToExpect}</p>
-              </div>
+  <h3 className="font-semibold text-gray-800 mb-2">What to Expect</h3>
+  <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
+    {upcomingHike.whatToExpect}
+  </p>
+</div>
               <div className="mb-6 glass-dark p-4 rounded-2xl">
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
@@ -1043,9 +1045,11 @@ style={{ backgroundColor: '#6B8E23' }}
                 <p className="text-gray-700 mt-2 font-semibold">Cost: {upcomingHike.cost}</p>
               </div>
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-800 mb-2">Weather</h3>
-                <p className="text-gray-700">{upcomingHike.weather}</p>
-              </div>
+  <h3 className="font-semibold text-gray-800 mb-2">Weather</h3>
+  <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
+    {upcomingHike.weather}
+  </p>
+</div>
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-800 mb-3">What to Bring:</h3>
                 <ul className="space-y-2">
@@ -1062,9 +1066,11 @@ style={{ backgroundColor: '#6B8E23' }}
                 <p className="text-gray-700">{upcomingHike.postHikeManenos}</p>
               </div>
               <div className="mb-6 glass-dark p-4 rounded-2xl border-l-4 border-forest-olive">
-                <h3 className="font-semibold text-gray-800 mb-2">Last Words</h3>
-                <p className="text-gray-700">{upcomingHike.lastWords}</p>
-              </div>
+  <h3 className="font-semibold text-gray-800 mb-2">Last Words</h3>
+  <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
+    {upcomingHike.lastWords}
+  </p>
+</div>
               {isAdminAuthenticated && (
                 <button
                   onClick={saveAsPDF}
