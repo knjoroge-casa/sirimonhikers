@@ -965,9 +965,9 @@ style={{ backgroundColor: '#6B8E23' }}
       day: 'numeric'
     });
 
-    const selectedItems = Object.entries(upcomingHike.whatToBring)
-      .filter(([_, checked]) => checked)
-      .map(([key, _]) => allItems[key] || key);
+    const selectedItems = Object.keys(allItems)
+  .filter(key => upcomingHike.whatToBring[key])
+  .map(key => allItems[key]);
 
     return (
       <div className="max-w-2xl mx-auto">
