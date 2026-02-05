@@ -59,7 +59,7 @@ export default function App() {
 
   const loadData = async () => {
   try {
-    // Load upcoming hike
+    // Upcoming hike
     const { data: hikeData, error: hikeError } = await supabase
       .from('upcoming_hike')
       .select('*')
@@ -84,68 +84,42 @@ export default function App() {
       setUpcomingHike(null);
     }
 
-    // Load calendar
+    // Calendar
     const { data: calendarData, error: calendarError } = await supabase
       .from('hike_calendar')
       .select('*')
       .order('date', { ascending: true });
 
-    if (calendarError) {
-      console.error('Error loading calendar:', calendarError);
-    }
+    if (calendarError) console.error(calendarError);
+    setHikeCalendar(calendarData || []);
 
-    if (calendarData && calendarData.length > 0) {
-      setHikeCalendar(calendarData);
-    } else {
-      setHikeCalendar([]);
-    }
-
-    // Load custom items
-    const { data: itemsData, error: itemsError } = await supabase
+    // Custom items
+    const { data: itemsData } = await supabase
       .from('custom_items')
       .select('*');
 
-    if (itemsError) {
-      console.error('Error loading items:', itemsError);
-    }
-
     if (itemsData) {
       const itemsObj = {};
-      itemsData.forEach(item => {
-        itemsObj[item.item_key] = item.item_label;
-      });
+      itemsData.forEach(i => itemsObj[i.item_key] = i.item_label);
       setCustomItems(itemsObj);
     }
 
-    // Load important notes
-    const { data: notesData, error: notesError } = await supabase
+    // Notes
+    const { data: notesData } = await supabase
       .from('important_notes')
       .select('*')
       .order('order_index', { ascending: true });
 
-    if (notesError) {
-      console.error('Error loading notes:', notesError);
-    }
+    setImportantNotes(notesData ? notesData.map(n => n.note) : []);
 
-    if (notesData && notesData.length > 0) {
-      setImportantNotes(notesData.map(n => n.note));
-    } else {
-      setImportantNotes([]);
-    }
-
-    // Load completed hikes - ADD IT HERE, INSIDE the try block
+    // ✅ Completed hikes (ONLY ONCE — inside try)
     const { data: completedData, error: completedError } = await supabase
       .from('completed_hikes')
       .select('*')
       .order('date', { ascending: false });
 
-    if (completedError) {
-      console.error('Error loading completed hikes:', completedError);
-    }
-
-    if (completedData) {
-      setCompletedHikes(completedData);
-    }
+    if (completedError) console.error(completedError);
+    setCompletedHikes(completedData || []);
 
   } catch (error) {
     console.error('Error loading data:', error);
@@ -153,9 +127,10 @@ export default function App() {
     setHikeCalendar([]);
     setImportantNotes([]);
     setCompletedHikes([]);
+  } finally {
+    setIsLoading(false);
   }
-  setIsLoading(false);
-
+};
 
     const { data: completedData, error: completedError } = await supabase
       .from('completed_hikes')
