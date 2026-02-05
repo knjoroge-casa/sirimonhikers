@@ -155,7 +155,7 @@ export default function App() {
     setCompletedHikes([]);
   }
   setIsLoading(false);
-};
+
 
     const { data: completedData, error: completedError } = await supabase
       .from('completed_hikes')
@@ -179,7 +179,7 @@ export default function App() {
   }
   setIsLoading(false);
 };
-};
+
 
   const handleAdminLogin = () => {
     if (adminPassword === ADMIN_PASSWORD) {
