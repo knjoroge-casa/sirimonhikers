@@ -170,7 +170,7 @@ export default function App() {
       setCompletedHikes(completedData);
     }
 
-  } catch (error) {
+   catch (error) {
     console.error('Error loading data:', error);
     setUpcomingHike(null);
     setHikeCalendar([]);
@@ -179,6 +179,7 @@ export default function App() {
   }
   setIsLoading(false);
 };
+
 
 
   const handleAdminLogin = () => {
