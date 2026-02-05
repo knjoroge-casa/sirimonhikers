@@ -50,143 +50,95 @@ export default function App() {
   const [importantNotes, setImportantNotes] = useState([]);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
 
-  const defaultUpcomingHike = {
-    name: "Ngong Hills Trail",
-    date: "2026-02-15",
-    time: "7:00 AM",
-    location: "Ngong Hills, Kajiado County",
-    intro: "Join us for an incredible adventure through one of Kenya's most iconic hiking destinations!",
-    what_to_expect: "A beautiful trail through the Ngong Hills with stunning views of the Great Rift Valley.",
-    difficulty: "Moderate",
-    duration: "4-5 hours",
-    distance: "12 km",
-    weather: "Cool morning temperatures (15-20C), warming up to 25C by midday. Bring layers.",
-    meeting_point: "Java House, Karen",
-    cost: "KES 500 (transport)",
-    post_hike_manenos: "Lunch at a local nyama choma spot. Optional group photos at the summit.",
-    last_words: "This is a moderately challenging hike suitable for beginners with basic fitness. Stay hydrated!",
-    what_to_bring: ["hikeBag", "hikeBoots", "pants", "top", "thermals", "layers", "water", "hikePoles", "snacks", "salts", "sunscreen", "hat", "mittens", "buff", "gaiters", "clothesChange", "socksShoes", "camera", "rainJacket", "firstAid", "powerBank", "identification", "medIns", "trashBag", "personalStuff", "attitude", "petho"]
-  };
-
-  const defaultCalendar = [
-    { month: "February", hike: "Ngong Hills Trail", date: "2026-02-15", prerequisites: "None - suitable for beginners" },
-    { month: "March", hike: "Mt. Longonot", date: "2026-03-20", prerequisites: "Good fitness level required" },
-    { month: "April", hike: "Karura Forest", date: "2026-04-17", prerequisites: "Family-friendly, easy trail" },
-    { month: "May", hike: "Hell's Gate National Park", date: "2026-05-15", prerequisites: "Bike rental available" },
-    { month: "June", hike: "Elephant Hill, Aberdares", date: "2026-06-19", prerequisites: "Cold weather gear needed" },
-    { month: "July", hike: "Lukenya Hills", date: "2026-07-24", prerequisites: "Rock climbing option available" },
-    { month: "August", hike: "Mt. Kenya", date: "2026-08-14", prerequisites: "Multi-day trek - register by July 1st" },
-    { month: "September", hike: "Oldonyo Sabuk", date: "2026-09-20", prerequisites: "Wildlife present - stay in groups" },
-    { month: "October", hike: "Cape Town: Table Mountain", date: "2026-10-10", prerequisites: "INTERNATIONAL - Register by Aug 15th" },
-    { month: "November", hike: "Chyulu Hills", date: "2026-11-21", prerequisites: "Remote location - full day trip" },
-    { month: "December", hike: "Year-End Hike TBD", date: "2026-12-12", prerequisites: "Location to be announced" }
-  ];
-
-  const defaultNotes = [
-    "Dates may change due to weather conditions",
-    "Register early for international trips and multi-day hikes",
-    "WhatsApp group link will be shared upon registration",
-    "Contact us for group discounts (5+ people)"
-  ];
-
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    try {
-      // Load upcoming hike
-      const { data: hikeData, error: hikeError } = await supabase
-        .from('upcoming_hike')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+  try {
+    // Load upcoming hike
+    const { data: hikeData, error: hikeError } = await supabase
+      .from('upcoming_hike')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
 
-      if (hikeError && hikeError.code !== 'PGRST116') {
-        console.error('Error loading hike:', hikeError);
-      }
-
-      if (hikeData) {
-        setUpcomingHike({
-          ...hikeData,
-          whatToExpect: hikeData.what_to_expect,
-          meetingPoint: hikeData.meeting_point,
-          postHikeManenos: hikeData.post_hike_manenos,
-          lastWords: hikeData.last_words,
-          whatToBring: hikeData.what_to_bring || {}
-        });
-      } else {
-        // Insert default if nothing exists
-        await supabase.from('upcoming_hike').insert([defaultUpcomingHike]);
-        setUpcomingHike(defaultUpcomingHike);
-      }
-
-      // Load calendar
-      const { data: calendarData, error: calendarError } = await supabase
-        .from('hike_calendar')
-        .select('*')
-        .order('date', { ascending: true });
-
-      if (calendarError) {
-        console.error('Error loading calendar:', calendarError);
-      }
-
-      if (calendarData && calendarData.length > 0) {
-        setHikeCalendar(calendarData);
-      } else {
-        // Insert default calendar
-        await supabase.from('hike_calendar').insert(defaultCalendar);
-        setHikeCalendar(defaultCalendar);
-      }
-
-      // Load custom items
-      const { data: itemsData, error: itemsError } = await supabase
-        .from('custom_items')
-        .select('*');
-
-      if (itemsError) {
-        console.error('Error loading items:', itemsError);
-      }
-
-      if (itemsData) {
-        const itemsObj = {};
-        itemsData.forEach(item => {
-          itemsObj[item.item_key] = item.item_label;
-        });
-        setCustomItems(itemsObj);
-      }
-
-      // Load important notes
-      const { data: notesData, error: notesError } = await supabase
-        .from('important_notes')
-        .select('*')
-        .order('order_index', { ascending: true });
-
-      if (notesError) {
-        console.error('Error loading notes:', notesError);
-      }
-
-      if (notesData && notesData.length > 0) {
-        setImportantNotes(notesData.map(n => n.note));
-      } else {
-        // Insert default notes
-        const notesToInsert = defaultNotes.map((note, index) => ({
-          note,
-          order_index: index
-        }));
-        await supabase.from('important_notes').insert(notesToInsert);
-        setImportantNotes(defaultNotes);
-      }
-
-    } catch (error) {
-      console.error('Error loading data:', error);
-      setUpcomingHike(defaultUpcomingHike);
-      setHikeCalendar(defaultCalendar);
-      setImportantNotes(defaultNotes);
+    if (hikeError && hikeError.code !== 'PGRST116') {
+      console.error('Error loading hike:', hikeError);
     }
-    setIsLoading(false);
-  };
+
+    if (hikeData) {
+      setUpcomingHike({
+        ...hikeData,
+        whatToExpect: hikeData.what_to_expect,
+        meetingPoint: hikeData.meeting_point,
+        postHikeManenos: hikeData.post_hike_manenos,
+        lastWords: hikeData.last_words,
+        whatToBring: hikeData.what_to_bring || {}
+      });
+    } else {
+      setUpcomingHike(null);
+    }
+
+    // Load calendar
+    const { data: calendarData, error: calendarError } = await supabase
+      .from('hike_calendar')
+      .select('*')
+      .order('date', { ascending: true });
+
+    if (calendarError) {
+      console.error('Error loading calendar:', calendarError);
+    }
+
+    if (calendarData && calendarData.length > 0) {
+      setHikeCalendar(calendarData);
+    } else {
+      setHikeCalendar([]);
+    }
+
+    // Load custom items
+    const { data: itemsData, error: itemsError } = await supabase
+      .from('custom_items')
+      .select('*');
+
+    if (itemsError) {
+      console.error('Error loading items:', itemsError);
+    }
+
+    if (itemsData) {
+      const itemsObj = {};
+      itemsData.forEach(item => {
+        itemsObj[item.item_key] = item.item_label;
+      });
+      setCustomItems(itemsObj);
+    }
+
+    // Load important notes
+    const { data: notesData, error: notesError } = await supabase
+      .from('important_notes')
+      .select('*')
+      .order('order_index', { ascending: true });
+
+    if (notesError) {
+      console.error('Error loading notes:', notesError);
+    }
+
+    if (notesData && notesData.length > 0) {
+      setImportantNotes(notesData.map(n => n.note));
+    } else {
+      setImportantNotes([]);
+    }
+
+  } catch (error) {
+    console.error('Error loading data:', error);
+    // Don't set any defaults - just leave empty
+    setUpcomingHike(null);
+    setHikeCalendar([]);
+    setImportantNotes([]);
+  }
+  setIsLoading(false);
+};
 
   const handleAdminLogin = () => {
     if (adminPassword === ADMIN_PASSWORD) {
@@ -947,6 +899,35 @@ style={{ backgroundColor: '#6B8E23' }}
   const HomePage = () => {
     const [formData, setFormData] = useState({ name: '', phone: '' });
     const allItems = { ...itemLabels, ...customItems };
+
+    // Handle no upcoming hike
+  if (!upcomingHike) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <AdminLoginModal />
+        <div className="glass rounded-3xl p-6 mb-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">No Upcoming Hike</h2>
+          <p className="text-gray-700 mb-4">Check back soon for our next adventure!</p>
+          {isAdminAuthenticated ? (
+            <button 
+              onClick={() => setIsEditing(true)} 
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
+            >
+              Create New Hike
+            </button>
+          ) : (
+            <button 
+              onClick={() => setShowAdminLogin(true)} 
+              className="text-gray-600 hover:text-gray-700 flex items-center justify-center mx-auto"
+            >
+              <Lock className="w-5 h-5 mr-2" />
+              Admin Login
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
     const handleSubmit = () => {
       if (formData.name && formData.phone) {
