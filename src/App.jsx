@@ -157,7 +157,6 @@ export default function App() {
   setIsLoading(false);
 };
 
-    // ADD THIS: Load completed hikes
     const { data: completedData, error: completedError } = await supabase
       .from('completed_hikes')
       .select('*')
