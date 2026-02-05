@@ -156,7 +156,7 @@ export default function App() {
   }
   setIsLoading(false);
 };
-const loadCompletedHikes = async () => {
+
     const { data: completedData, error: completedError } = await supabase
       .from('completed_hikes')
       .select('*')
