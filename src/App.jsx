@@ -49,6 +49,9 @@ export default function App() {
   const [customItems, setCustomItems] = useState({});
   const [importantNotes, setImportantNotes] = useState([]);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [completedHikes, setCompletedHikes] = useState([]);
+  const [currentCompletedHike, setCurrentCompletedHike] = useState(null);
+  const [isEditingCompletedHike, setIsEditingCompletedHike] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -138,6 +141,30 @@ export default function App() {
     setImportantNotes([]);
   }
   setIsLoading(false);
+
+    // ADD THIS: Load completed hikes
+    const { data: completedData, error: completedError } = await supabase
+      .from('completed_hikes')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (completedError) {
+      console.error('Error loading completed hikes:', completedError);
+    }
+
+    if (completedData) {
+      setCompletedHikes(completedData);
+    }
+
+  } catch (error) {
+    console.error('Error loading data:', error);
+    setUpcomingHike(null);
+    setHikeCalendar([]);
+    setImportantNotes([]);
+    setCompletedHikes([]);
+  }
+  setIsLoading(false);
+};
 };
 
   const handleAdminLogin = () => {
@@ -263,6 +290,102 @@ export default function App() {
       alert('Error');
     }
   };
+
+const markHikeAsCompleted = async () => {
+  if (!window.confirm('Mark this hike as completed? It will be moved to the archive.')) {
+    return;
+  }
+
+  try {
+    // Copy hike to completed_hikes table
+    const completedHike = {
+      name: upcomingHike.name,
+      date: upcomingHike.date,
+      time: upcomingHike.time,
+      location: upcomingHike.location,
+      intro: upcomingHike.intro,
+      what_to_expect: upcomingHike.whatToExpect,
+      difficulty: upcomingHike.difficulty,
+      duration: upcomingHike.duration,
+      distance: upcomingHike.distance,
+      weather: upcomingHike.weather,
+      meeting_point: upcomingHike.meetingPoint,
+      cost: upcomingHike.cost,
+      post_hike_manenos: upcomingHike.postHikeManenos,
+      last_words: upcomingHike.lastWords,
+      what_to_bring: upcomingHike.whatToBring,
+      participants: 0, // Admin will update this
+      write_up: '',
+      actual_cost: upcomingHike.cost
+    };
+
+    const { error: insertError } = await supabase
+      .from('completed_hikes')
+      .insert([completedHike]);
+
+    if (insertError) throw insertError;
+
+    // Delete from upcoming_hike
+    await supabase.from('upcoming_hike').delete().neq('id', 0);
+
+    // Reload data
+    await loadData();
+    
+    alert('Hike marked as completed!');
+    setIsEditing(false);
+  } catch (error) {
+    console.error('Error marking hike as completed:', error);
+    alert('Error marking hike as completed');
+  }
+};
+
+// 4. ADD FUNCTION TO SAVE COMPLETED HIKE EDITS
+const saveCompletedHike = async (hikeData, photoFile) => {
+  try {
+    let photoUrl = hikeData.group_photo_url;
+
+    // Upload photo if provided
+    if (photoFile) {
+      const fileExt = photoFile.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('hike-photos')
+        .upload(filePath, photoFile);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('hike-photos')
+        .getPublicUrl(filePath);
+
+      photoUrl = urlData.publicUrl;
+    }
+
+    // Update the completed hike
+    const { error } = await supabase
+      .from('completed_hikes')
+      .update({
+        participants: hikeData.participants,
+        write_up: hikeData.write_up,
+        actual_cost: hikeData.actual_cost,
+        group_photo_url: photoUrl
+      })
+      .eq('id', hikeData.id);
+
+    if (error) throw error;
+
+    await loadData();
+    alert('Completed hike updated!');
+    setIsEditingCompletedHike(false);
+    setCurrentCompletedHike(null);
+  } catch (error) {
+    console.error('Error saving completed hike:', error);
+    alert('Error saving changes');
+  }
+};
 
   const saveAsPDF = () => {
     const allItems = { ...itemLabels, ...customItems };
@@ -832,6 +955,25 @@ style={{ backgroundColor: '#6B8E23' }}
             <Save className="w-5 h-5 mr-2" />
             Save Changes
           </button>
+          {(() => {
+  const hikeDate = new Date(editData.date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayAfterHike = new Date(hikeDate);
+  dayAfterHike.setDate(dayAfterHike.getDate() + 1);
+  
+  if (today >= dayAfterHike) {
+    return (
+      <button
+        onClick={markHikeAsCompleted}
+        className="w-full mt-4 py-3 rounded-2xl font-semibold text-white bg-green-600 hover:bg-green-700 flex items-center justify-center"
+      >
+        ✓ Mark as Completed
+      </button>
+    );
+  }
+  return null;
+})()}
         </div>
       </div>
     );
@@ -895,6 +1037,253 @@ style={{ backgroundColor: '#6B8E23' }}
       </div>
     );
   };
+
+const EditCompletedHikeModal = () => {
+  const [editData, setEditData] = useState({ ...currentCompletedHike });
+  const [photoFile, setPhotoFile] = useState(null);
+
+  const handlePhotoChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setPhotoFile(e.target.files[0]);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white rounded-lg p-6 max-w-2xl w-full my-8">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold text-gray-800">Edit Completed Hike</h3>
+          <button onClick={() => { setIsEditingCompletedHike(false); setCurrentCompletedHike(null); }} className="text-gray-600 hover:text-gray-800">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Number of Participants</label>
+            <input
+              type="number"
+              value={editData.participants || ''}
+              onChange={(e) => setEditData({ ...editData, participants: parseInt(e.target.value) || 0 })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Actual Cost</label>
+            <input
+              type="text"
+              value={editData.actual_cost || ''}
+              onChange={(e) => setEditData({ ...editData, actual_cost: e.target.value })}
+              placeholder="KES 600"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Write-up</label>
+            <textarea
+              value={editData.write_up || ''}
+              onChange={(e) => setEditData({ ...editData, write_up: e.target.value })}
+              rows="6"
+              placeholder="Share your experience from this hike..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Group Photo</label>
+            {editData.group_photo_url && (
+              <div className="mb-2">
+                <img src={editData.group_photo_url} alt="Current group photo" className="w-full h-48 object-cover rounded-lg" />
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+            />
+            {photoFile && <p className="text-sm text-gray-600 mt-1">New photo selected: {photoFile.name}</p>}
+          </div>
+        </div>
+
+        <button
+          onClick={() => saveCompletedHike(editData, photoFile)}
+          className="w-full mt-4 py-3 rounded-2xl font-semibold text-white hover:opacity-90 flex items-center justify-center"
+          style={{ backgroundColor: '#6B8E23' }}
+        >
+          <Save className="w-5 h-5 mr-2" />
+          Save Changes
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// 6. ADD COMPLETED HIKES PAGE COMPONENT
+const CompletedHikesPage = () => {
+  const [expandedHike, setExpandedHike] = useState(null);
+
+  const toggleExpand = (hikeId) => {
+    setExpandedHike(expandedHike === hikeId ? null : hikeId);
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <button
+          onClick={() => setCurrentPage('home')}
+          className="text-white/90 hover:text-white font-semibold flex items-center"
+        >
+          ← Back to Home
+        </button>
+      </div>
+
+      <h1 className="text-2xl font-bold text-gray-800 mb-2">Completed Hikes</h1>
+      <p className="text-gray-600 mb-6">
+        {completedHikes.length} hike{completedHikes.length !== 1 ? 's' : ''} completed
+        {completedHikes.length > 0 && ` • ${completedHikes.reduce((sum, h) => sum + (h.participants || 0), 0)} total participants`}
+      </p>
+
+      {completedHikes.length === 0 ? (
+        <div className="glass rounded-3xl p-6 text-center">
+          <p className="text-gray-600">No completed hikes yet. Check back after your first adventure!</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {completedHikes.map(hike => {
+            const isExpanded = expandedHike === hike.id;
+            const formattedDate = new Date(hike.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+
+            return (
+              <div key={hike.id} className="glass rounded-3xl overflow-hidden">
+                <div 
+                  className="p-5 cursor-pointer hover:bg-gray-50 transition"
+                  onClick={() => toggleExpand(hike.id)}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-lg text-gray-800">{hike.name}</h3>
+                      <p className="text-blue-600 font-semibold">{formattedDate}</p>
+                      <p className="text-sm text-gray-600 mt-1">{hike.location}</p>
+                      {hike.participants > 0 && (
+                        <p className="text-sm text-gray-600 mt-1">{hike.participants} participants</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                        Completed
+                      </span>
+                      {isAdminAuthenticated && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentCompletedHike(hike);
+                            setIsEditingCompletedHike(true);
+                          }}
+                          className="text-blue-600 hover:text-blue-700"
+                          title="Edit"
+                        >
+                          <Edit className="w-5 h-5" />
+                        </button>
+                      )}
+                      <ChevronRight className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                    </div>
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <div className="px-5 pb-5 border-t border-gray-200">
+                    {hike.group_photo_url && (
+                      <div className="mt-4 mb-4">
+                        <img src={hike.group_photo_url} alt="Group photo" className="w-full h-64 object-cover rounded-lg" />
+                      </div>
+                    )}
+
+                    {hike.intro && (
+                      <div className="mt-4">
+                        <p className="text-gray-700 italic" style={{ whiteSpace: 'pre-wrap' }}>{hike.intro}</p>
+                      </div>
+                    )}
+
+                    <div className="mt-4">
+                      <h4 className="font-semibold text-gray-800 mb-2">What to Expect</h4>
+                      <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.what_to_expect}</p>
+                    </div>
+
+                    <div className="mt-4 glass-dark p-4 rounded-2xl">
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <span className="font-semibold text-gray-700">Difficulty:</span>
+                          <p className="text-gray-600">{hike.difficulty}</p>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-700">Duration:</span>
+                          <p className="text-gray-600">{hike.duration}</p>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-700">Distance:</span>
+                          <p className="text-gray-600">{hike.distance}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {hike.weather && (
+                      <div className="mt-4">
+                        <h4 className="font-semibold text-gray-800 mb-2">Weather</h4>
+                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.weather}</p>
+                      </div>
+                    )}
+
+                    <div className="mt-4 glass-dark p-4 rounded-2xl">
+                      <h4 className="font-semibold text-gray-800 mb-2">Details</h4>
+                      <p className="text-gray-700"><span className="font-semibold">Meeting Point:</span> {hike.meeting_point}</p>
+                      <p className="text-gray-700 mt-1">
+                        <span className="font-semibold">Cost:</span> {hike.actual_cost || hike.cost}
+                        {hike.actual_cost && hike.actual_cost !== hike.cost && (
+                          <span className="text-sm text-gray-500"> (original: {hike.cost})</span>
+                        )}
+                      </p>
+                      {hike.participants > 0 && (
+                        <p className="text-gray-700 mt-1"><span className="font-semibold">Participants:</span> {hike.participants}</p>
+                      )}
+                    </div>
+
+                    {hike.post_hike_manenos && (
+                      <div className="mt-4">
+                        <h4 className="font-semibold text-gray-800 mb-2">Post Hike Manenos</h4>
+                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.post_hike_manenos}</p>
+                      </div>
+                    )}
+
+                    {hike.write_up && (
+                      <div className="mt-4 bg-blue-50 p-4 rounded-2xl">
+                        <h4 className="font-semibold text-gray-800 mb-2">Our Experience</h4>
+                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.write_up}</p>
+                      </div>
+                    )}
+
+                    {hike.last_words && (
+                      <div className="mt-4 glass-dark p-4 rounded-2xl border-l-4 border-forest-olive">
+                        <h4 className="font-semibold text-gray-800 mb-2">Last Words</h4>
+                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.last_words}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
   const HomePage = () => {
     const [formData, setFormData] = useState({ name: '', phone: '' });
@@ -1107,6 +1496,16 @@ style={{ backgroundColor: '#6B8E23' }}
               View Full Year Calendar
               <ChevronRight className="w-5 h-5 ml-2" />
             </button>
+            <button
+  onClick={() => {
+    setCurrentPage('completed');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }}
+  className="w-full mt-4 glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
+>
+  View Completed Hikes
+  <ChevronRight className="w-5 h-5 ml-2" />
+</button>
           </>
         )}
       </div>
@@ -1229,10 +1628,10 @@ style={{ backgroundColor: '#6B8E23' }}
         </h1>
       </div>
     </div>
-    {currentPage === 'home' ? <HomePage /> : <CalendarPage />}
-    <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
+{currentPage === 'home' ? <HomePage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}    <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
       <p>Questions? Contact your Sirimon Host. You know how!</p>
     </footer>
+    {isEditingCompletedHike && <EditCompletedHikeModal />}
   </div>
 );
 }
