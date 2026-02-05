@@ -133,7 +133,7 @@ export default function App() {
       setImportantNotes([]);
     }
 
-    // Load completed hikes
+    // Load completed hikes - ADD IT HERE, INSIDE the try block
     const { data: completedData, error: completedError } = await supabase
       .from('completed_hikes')
       .select('*')
