@@ -1586,7 +1586,7 @@ style={{ backgroundColor: '#6B8E23' }}
       </div>
     </div>
   );
-};
+  }
 
   return (
   <div className="min-h-screen py-8 px-4">
