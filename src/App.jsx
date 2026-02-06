@@ -132,27 +132,7 @@ export default function App() {
   }
 };
 
-    const { data: completedData, error: completedError } = await supabase
-      .from('completed_hikes')
-      .select('*')
-      .order('date', { ascending: false });
-
-    if (completedError) {
-      console.error('Error loading completed hikes:', completedError);
-    }
-
-    if (completedData) {
-      setCompletedHikes(completedData);
-    }
-
-   catch (error) {
-    console.error('Error loading data:', error);
-    setUpcomingHike(null);
-    setHikeCalendar([]);
-    setImportantNotes([]);
-    setCompletedHikes([]);
-  }
-  setIsLoading(false);
+    
 };
 
 
