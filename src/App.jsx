@@ -1575,7 +1575,7 @@ style={{ backgroundColor: '#6B8E23' }}
         {isEditingNotes && <EditNotesModal />}
       </div>
     );
-  };
+  
 
   if (isLoading) {
   return (
@@ -1604,3 +1604,4 @@ style={{ backgroundColor: '#6B8E23' }}
     {isEditingCompletedHike && <EditCompletedHikeModal />}
   </div>
 );
+}
