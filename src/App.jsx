@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';:
 import { Calendar, MapPin, Clock, Info, ChevronRight, Download, Edit, Save, X, Lock, FileText } from 'lucide-react';
 import { supabase } from './lib/supabase';
 
@@ -1575,8 +1575,7 @@ style={{ backgroundColor: '#6B8E23' }}
         {isEditingNotes && <EditNotesModal />}
       </div>
     );
-  
-
+    
   if (isLoading) {
   return (
     <div className="min-h-screen py-8 px-4 flex items-center justify-center">
