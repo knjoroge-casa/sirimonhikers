@@ -1604,3 +1604,4 @@ style={{ backgroundColor: '#6B8E23' }}
     {isEditingCompletedHike && <EditCompletedHikeModal />}
   </div>
 );
+}
