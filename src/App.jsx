@@ -49,6 +49,9 @@ export default function App() {
   const [customItems, setCustomItems] = useState({});
   const [importantNotes, setImportantNotes] = useState([]);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [completedHikes, setCompletedHikes] = useState([]);
+const [currentCompletedHike, setCurrentCompletedHike] = useState(null);
+const [isEditingCompletedHike, setIsEditingCompletedHike] = useState(false);
 
   const defaultUpcomingHike = {
     name: "Ngong Hills Trail",
@@ -178,12 +181,25 @@ export default function App() {
         await supabase.from('important_notes').insert(notesToInsert);
         setImportantNotes(defaultNotes);
       }
+// Load completed hikes
+const { data: completedData, error: completedError } = await supabase
+  .from('completed_hikes')
+  .select('*')
+  .order('date', { ascending: false }); // Most recent first
 
+if (completedError) {
+  console.error('Error loading completed hikes:', completedError);
+}
+
+if (completedData) {
+  setCompletedHikes(completedData);
+}
     } catch (error) {
       console.error('Error loading data:', error);
       setUpcomingHike(defaultUpcomingHike);
       setHikeCalendar(defaultCalendar);
       setImportantNotes(defaultNotes);
+      setCompletedHikes(completedData);
     }
     setIsLoading(false);
   };
