@@ -49,93 +49,144 @@ export default function App() {
   const [customItems, setCustomItems] = useState({});
   const [importantNotes, setImportantNotes] = useState([]);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
-  const [completedHikes, setCompletedHikes] = useState([]);
-  const [currentCompletedHike, setCurrentCompletedHike] = useState(null);
-  const [isEditingCompletedHike, setIsEditingCompletedHike] = useState(false);
+
+  const defaultUpcomingHike = {
+    name: "Ngong Hills Trail",
+    date: "2026-02-15",
+    time: "7:00 AM",
+    location: "Ngong Hills, Kajiado County",
+    intro: "Join us for an incredible adventure through one of Kenya's most iconic hiking destinations!",
+    what_to_expect: "A beautiful trail through the Ngong Hills with stunning views of the Great Rift Valley.",
+    difficulty: "Moderate",
+    duration: "4-5 hours",
+    distance: "12 km",
+    weather: "Cool morning temperatures (15-20C), warming up to 25C by midday. Bring layers.",
+    meeting_point: "Java House, Karen",
+    cost: "KES 500 (transport)",
+    post_hike_manenos: "Lunch at a local nyama choma spot. Optional group photos at the summit.",
+    last_words: "This is a moderately challenging hike suitable for beginners with basic fitness. Stay hydrated!",
+    what_to_bring: ["hikeBag", "hikeBoots", "pants", "top", "thermals", "layers", "water", "hikePoles", "snacks", "salts", "sunscreen", "hat", "mittens", "buff", "gaiters", "clothesChange", "socksShoes", "camera", "rainJacket", "firstAid", "powerBank", "identification", "medIns", "trashBag", "personalStuff", "attitude", "petho"]
+  };
+
+  const defaultCalendar = [
+    { month: "February", hike: "Ngong Hills Trail", date: "2026-02-15", prerequisites: "None - suitable for beginners" },
+    { month: "March", hike: "Mt. Longonot", date: "2026-03-20", prerequisites: "Good fitness level required" },
+    { month: "April", hike: "Karura Forest", date: "2026-04-17", prerequisites: "Family-friendly, easy trail" },
+    { month: "May", hike: "Hell's Gate National Park", date: "2026-05-15", prerequisites: "Bike rental available" },
+    { month: "June", hike: "Elephant Hill, Aberdares", date: "2026-06-19", prerequisites: "Cold weather gear needed" },
+    { month: "July", hike: "Lukenya Hills", date: "2026-07-24", prerequisites: "Rock climbing option available" },
+    { month: "August", hike: "Mt. Kenya", date: "2026-08-14", prerequisites: "Multi-day trek - register by July 1st" },
+    { month: "September", hike: "Oldonyo Sabuk", date: "2026-09-20", prerequisites: "Wildlife present - stay in groups" },
+    { month: "October", hike: "Cape Town: Table Mountain", date: "2026-10-10", prerequisites: "INTERNATIONAL - Register by Aug 15th" },
+    { month: "November", hike: "Chyulu Hills", date: "2026-11-21", prerequisites: "Remote location - full day trip" },
+    { month: "December", hike: "Year-End Hike TBD", date: "2026-12-12", prerequisites: "Location to be announced" }
+  ];
+
+  const defaultNotes = [
+    "Dates may change due to weather conditions",
+    "Register early for international trips and multi-day hikes",
+    "WhatsApp group link will be shared upon registration",
+    "Contact us for group discounts (5+ people)"
+  ];
 
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-  try {
-    // Upcoming hike
-    const { data: hikeData, error: hikeError } = await supabase
-      .from('upcoming_hike')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+    try {
+      // Load upcoming hike
+      const { data: hikeData, error: hikeError } = await supabase
+        .from('upcoming_hike')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
 
-    if (hikeError && hikeError.code !== 'PGRST116') {
-      console.error('Error loading hike:', hikeError);
+      if (hikeError && hikeError.code !== 'PGRST116') {
+        console.error('Error loading hike:', hikeError);
+      }
+
+      if (hikeData) {
+        setUpcomingHike({
+          ...hikeData,
+          whatToExpect: hikeData.what_to_expect,
+          meetingPoint: hikeData.meeting_point,
+          postHikeManenos: hikeData.post_hike_manenos,
+          lastWords: hikeData.last_words,
+          whatToBring: hikeData.what_to_bring || {}
+        });
+      } else {
+        // Insert default if nothing exists
+        await supabase.from('upcoming_hike').insert([defaultUpcomingHike]);
+        setUpcomingHike(defaultUpcomingHike);
+      }
+
+      // Load calendar
+      const { data: calendarData, error: calendarError } = await supabase
+        .from('hike_calendar')
+        .select('*')
+        .order('date', { ascending: true });
+
+      if (calendarError) {
+        console.error('Error loading calendar:', calendarError);
+      }
+
+      if (calendarData && calendarData.length > 0) {
+        setHikeCalendar(calendarData);
+      } else {
+        // Insert default calendar
+        await supabase.from('hike_calendar').insert(defaultCalendar);
+        setHikeCalendar(defaultCalendar);
+      }
+
+      // Load custom items
+      const { data: itemsData, error: itemsError } = await supabase
+        .from('custom_items')
+        .select('*');
+
+      if (itemsError) {
+        console.error('Error loading items:', itemsError);
+      }
+
+      if (itemsData) {
+        const itemsObj = {};
+        itemsData.forEach(item => {
+          itemsObj[item.item_key] = item.item_label;
+        });
+        setCustomItems(itemsObj);
+      }
+
+      // Load important notes
+      const { data: notesData, error: notesError } = await supabase
+        .from('important_notes')
+        .select('*')
+        .order('order_index', { ascending: true });
+
+      if (notesError) {
+        console.error('Error loading notes:', notesError);
+      }
+
+      if (notesData && notesData.length > 0) {
+        setImportantNotes(notesData.map(n => n.note));
+      } else {
+        // Insert default notes
+        const notesToInsert = defaultNotes.map((note, index) => ({
+          note,
+          order_index: index
+        }));
+        await supabase.from('important_notes').insert(notesToInsert);
+        setImportantNotes(defaultNotes);
+      }
+
+    } catch (error) {
+      console.error('Error loading data:', error);
+      setUpcomingHike(defaultUpcomingHike);
+      setHikeCalendar(defaultCalendar);
+      setImportantNotes(defaultNotes);
     }
-
-    if (hikeData) {
-      setUpcomingHike({
-        ...hikeData,
-        whatToExpect: hikeData.what_to_expect,
-        meetingPoint: hikeData.meeting_point,
-        postHikeManenos: hikeData.post_hike_manenos,
-        lastWords: hikeData.last_words,
-        whatToBring: hikeData.what_to_bring || {}
-      });
-    } else {
-      setUpcomingHike(null);
-    }
-
-    // Calendar
-    const { data: calendarData, error: calendarError } = await supabase
-      .from('hike_calendar')
-      .select('*')
-      .order('date', { ascending: true });
-
-    if (calendarError) console.error(calendarError);
-    setHikeCalendar(calendarData || []);
-
-    // Custom items
-    const { data: itemsData } = await supabase
-      .from('custom_items')
-      .select('*');
-
-    if (itemsData) {
-      const itemsObj = {};
-      itemsData.forEach(i => itemsObj[i.item_key] = i.item_label);
-      setCustomItems(itemsObj);
-    }
-
-    // Notes
-    const { data: notesData } = await supabase
-      .from('important_notes')
-      .select('*')
-      .order('order_index', { ascending: true });
-
-    setImportantNotes(notesData ? notesData.map(n => n.note) : []);
-
-    // ✅ Completed hikes (ONLY ONCE — inside try)
-    const { data: completedData, error: completedError } = await supabase
-      .from('completed_hikes')
-      .select('*')
-      .order('date', { ascending: false });
-
-    if (completedError) console.error(completedError);
-    setCompletedHikes(completedData || []);
-
-  } catch (error) {
-    console.error('Error loading data:', error);
-    setUpcomingHike(null);
-    setHikeCalendar([]);
-    setImportantNotes([]);
-    setCompletedHikes([]);
-  } finally {
     setIsLoading(false);
-  }
-};
-
-    
-};
-
-
+  };
 
   const handleAdminLogin = () => {
     if (adminPassword === ADMIN_PASSWORD) {
@@ -260,102 +311,6 @@ export default function App() {
       alert('Error');
     }
   };
-
-const markHikeAsCompleted = async () => {
-  if (!window.confirm('Mark this hike as completed? It will be moved to the archive.')) {
-    return;
-  }
-
-  try {
-    // Copy hike to completed_hikes table
-    const completedHike = {
-      name: upcomingHike.name,
-      date: upcomingHike.date,
-      time: upcomingHike.time,
-      location: upcomingHike.location,
-      intro: upcomingHike.intro,
-      what_to_expect: upcomingHike.whatToExpect,
-      difficulty: upcomingHike.difficulty,
-      duration: upcomingHike.duration,
-      distance: upcomingHike.distance,
-      weather: upcomingHike.weather,
-      meeting_point: upcomingHike.meetingPoint,
-      cost: upcomingHike.cost,
-      post_hike_manenos: upcomingHike.postHikeManenos,
-      last_words: upcomingHike.lastWords,
-      what_to_bring: upcomingHike.whatToBring,
-      participants: 0, // Admin will update this
-      write_up: '',
-      actual_cost: upcomingHike.cost
-    };
-
-    const { error: insertError } = await supabase
-      .from('completed_hikes')
-      .insert([completedHike]);
-
-    if (insertError) throw insertError;
-
-    // Delete from upcoming_hike
-    await supabase.from('upcoming_hike').delete().neq('id', 0);
-
-    // Reload data
-    await loadData();
-    
-    alert('Hike marked as completed!');
-    setIsEditing(false);
-  } catch (error) {
-    console.error('Error marking hike as completed:', error);
-    alert('Error marking hike as completed');
-  }
-};
-
-// 4. ADD FUNCTION TO SAVE COMPLETED HIKE EDITS
-const saveCompletedHike = async (hikeData, photoFile) => {
-  try {
-    let photoUrl = hikeData.group_photo_url;
-
-    // Upload photo if provided
-    if (photoFile) {
-      const fileExt = photoFile.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('hike-photos')
-        .upload(filePath, photoFile);
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('hike-photos')
-        .getPublicUrl(filePath);
-
-      photoUrl = urlData.publicUrl;
-    }
-
-    // Update the completed hike
-    const { error } = await supabase
-      .from('completed_hikes')
-      .update({
-        participants: hikeData.participants,
-        write_up: hikeData.write_up,
-        actual_cost: hikeData.actual_cost,
-        group_photo_url: photoUrl
-      })
-      .eq('id', hikeData.id);
-
-    if (error) throw error;
-
-    await loadData();
-    alert('Completed hike updated!');
-    setIsEditingCompletedHike(false);
-    setCurrentCompletedHike(null);
-  } catch (error) {
-    console.error('Error saving completed hike:', error);
-    alert('Error saving changes');
-  }
-};
 
   const saveAsPDF = () => {
     const allItems = { ...itemLabels, ...customItems };
@@ -925,25 +880,6 @@ style={{ backgroundColor: '#6B8E23' }}
             <Save className="w-5 h-5 mr-2" />
             Save Changes
           </button>
-          {(() => {
-  const hikeDate = new Date(editData.date);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dayAfterHike = new Date(hikeDate);
-  dayAfterHike.setDate(dayAfterHike.getDate() + 1);
-  
-  if (today >= dayAfterHike) {
-    return (
-      <button
-        onClick={markHikeAsCompleted}
-        className="w-full mt-4 py-3 rounded-2xl font-semibold text-white bg-green-600 hover:bg-green-700 flex items-center justify-center"
-      >
-        ✓ Mark as Completed
-      </button>
-    );
-  }
-  return null;
-})()}
         </div>
       </div>
     );
@@ -1008,285 +944,9 @@ style={{ backgroundColor: '#6B8E23' }}
     );
   };
 
-const EditCompletedHikeModal = () => {
-  const [editData, setEditData] = useState({ ...currentCompletedHike });
-  const [photoFile, setPhotoFile] = useState(null);
-
-  const handlePhotoChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setPhotoFile(e.target.files[0]);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg p-6 max-w-2xl w-full my-8">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold text-gray-800">Edit Completed Hike</h3>
-          <button onClick={() => { setIsEditingCompletedHike(false); setCurrentCompletedHike(null); }} className="text-gray-600 hover:text-gray-800">
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-        
-        <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Number of Participants</label>
-            <input
-              type="number"
-              value={editData.participants || ''}
-              onChange={(e) => setEditData({ ...editData, participants: parseInt(e.target.value) || 0 })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Actual Cost</label>
-            <input
-              type="text"
-              value={editData.actual_cost || ''}
-              onChange={(e) => setEditData({ ...editData, actual_cost: e.target.value })}
-              placeholder="KES 600"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Write-up</label>
-            <textarea
-              value={editData.write_up || ''}
-              onChange={(e) => setEditData({ ...editData, write_up: e.target.value })}
-              rows="6"
-              placeholder="Share your experience from this hike..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Group Photo</label>
-            {editData.group_photo_url && (
-              <div className="mb-2">
-                <img src={editData.group_photo_url} alt="Current group photo" className="w-full h-48 object-cover rounded-lg" />
-              </div>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handlePhotoChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
-            {photoFile && <p className="text-sm text-gray-600 mt-1">New photo selected: {photoFile.name}</p>}
-          </div>
-        </div>
-
-        <button
-          onClick={() => saveCompletedHike(editData, photoFile)}
-          className="w-full mt-4 py-3 rounded-2xl font-semibold text-white hover:opacity-90 flex items-center justify-center"
-          style={{ backgroundColor: '#6B8E23' }}
-        >
-          <Save className="w-5 h-5 mr-2" />
-          Save Changes
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// 6. ADD COMPLETED HIKES PAGE COMPONENT
-const CompletedHikesPage = () => {
-  const [expandedHike, setExpandedHike] = useState(null);
-
-  const toggleExpand = (hikeId) => {
-    setExpandedHike(expandedHike === hikeId ? null : hikeId);
-  };
-
-  return (
-    <div className="max-w-2xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <button
-          onClick={() => setCurrentPage('home')}
-          className="text-white/90 hover:text-white font-semibold flex items-center"
-        >
-          ← Back to Home
-        </button>
-      </div>
-
-      <h1 className="text-2xl font-bold text-gray-800 mb-2">Completed Hikes</h1>
-      <p className="text-gray-600 mb-6">
-        {completedHikes.length} hike{completedHikes.length !== 1 ? 's' : ''} completed
-        {completedHikes.length > 0 && ` • ${completedHikes.reduce((sum, h) => sum + (h.participants || 0), 0)} total participants`}
-      </p>
-
-      {completedHikes.length === 0 ? (
-        <div className="glass rounded-3xl p-6 text-center">
-          <p className="text-gray-600">No completed hikes yet. Check back after your first adventure!</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {completedHikes.map(hike => {
-            const isExpanded = expandedHike === hike.id;
-            const formattedDate = new Date(hike.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            });
-
-            return (
-              <div key={hike.id} className="glass rounded-3xl overflow-hidden">
-                <div 
-                  className="p-5 cursor-pointer hover:bg-gray-50 transition"
-                  onClick={() => toggleExpand(hike.id)}
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg text-gray-800">{hike.name}</h3>
-                      <p className="text-blue-600 font-semibold">{formattedDate}</p>
-                      <p className="text-sm text-gray-600 mt-1">{hike.location}</p>
-                      {hike.participants > 0 && (
-                        <p className="text-sm text-gray-600 mt-1">{hike.participants} participants</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-                        Completed
-                      </span>
-                      {isAdminAuthenticated && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCurrentCompletedHike(hike);
-                            setIsEditingCompletedHike(true);
-                          }}
-                          className="text-blue-600 hover:text-blue-700"
-                          title="Edit"
-                        >
-                          <Edit className="w-5 h-5" />
-                        </button>
-                      )}
-                      <ChevronRight className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                    </div>
-                  </div>
-                </div>
-
-                {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-gray-200">
-                    {hike.group_photo_url && (
-                      <div className="mt-4 mb-4">
-                        <img src={hike.group_photo_url} alt="Group photo" className="w-full h-64 object-cover rounded-lg" />
-                      </div>
-                    )}
-
-                    {hike.intro && (
-                      <div className="mt-4">
-                        <p className="text-gray-700 italic" style={{ whiteSpace: 'pre-wrap' }}>{hike.intro}</p>
-                      </div>
-                    )}
-
-                    <div className="mt-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">What to Expect</h4>
-                      <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.what_to_expect}</p>
-                    </div>
-
-                    <div className="mt-4 glass-dark p-4 rounded-2xl">
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="font-semibold text-gray-700">Difficulty:</span>
-                          <p className="text-gray-600">{hike.difficulty}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-gray-700">Duration:</span>
-                          <p className="text-gray-600">{hike.duration}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-gray-700">Distance:</span>
-                          <p className="text-gray-600">{hike.distance}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {hike.weather && (
-                      <div className="mt-4">
-                        <h4 className="font-semibold text-gray-800 mb-2">Weather</h4>
-                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.weather}</p>
-                      </div>
-                    )}
-
-                    <div className="mt-4 glass-dark p-4 rounded-2xl">
-                      <h4 className="font-semibold text-gray-800 mb-2">Details</h4>
-                      <p className="text-gray-700"><span className="font-semibold">Meeting Point:</span> {hike.meeting_point}</p>
-                      <p className="text-gray-700 mt-1">
-                        <span className="font-semibold">Cost:</span> {hike.actual_cost || hike.cost}
-                        {hike.actual_cost && hike.actual_cost !== hike.cost && (
-                          <span className="text-sm text-gray-500"> (original: {hike.cost})</span>
-                        )}
-                      </p>
-                      {hike.participants > 0 && (
-                        <p className="text-gray-700 mt-1"><span className="font-semibold">Participants:</span> {hike.participants}</p>
-                      )}
-                    </div>
-
-                    {hike.post_hike_manenos && (
-                      <div className="mt-4">
-                        <h4 className="font-semibold text-gray-800 mb-2">Post Hike Manenos</h4>
-                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.post_hike_manenos}</p>
-                      </div>
-                    )}
-
-                    {hike.write_up && (
-                      <div className="mt-4 bg-blue-50 p-4 rounded-2xl">
-                        <h4 className="font-semibold text-gray-800 mb-2">Our Experience</h4>
-                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.write_up}</p>
-                      </div>
-                    )}
-
-                    {hike.last_words && (
-                      <div className="mt-4 glass-dark p-4 rounded-2xl border-l-4 border-forest-olive">
-                        <h4 className="font-semibold text-gray-800 mb-2">Last Words</h4>
-                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.last_words}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
-
   const HomePage = () => {
     const [formData, setFormData] = useState({ name: '', phone: '' });
     const allItems = { ...itemLabels, ...customItems };
-
-    // Handle no upcoming hike
-  if (!upcomingHike) {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <AdminLoginModal />
-        <div className="glass rounded-3xl p-6 mb-6 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">No Upcoming Hike</h2>
-          <p className="text-gray-700 mb-4">Check back soon for our next adventure!</p>
-          {isAdminAuthenticated ? (
-            <button 
-              onClick={() => setIsEditing(true)} 
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
-            >
-              Create New Hike
-            </button>
-          ) : (
-            <button 
-              onClick={() => setShowAdminLogin(true)} 
-              className="text-gray-600 hover:text-gray-700 flex items-center justify-center mx-auto"
-            >
-              <Lock className="w-5 h-5 mr-2" />
-              Admin Login
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
 
     const handleSubmit = () => {
       if (formData.name && formData.phone) {
@@ -1466,16 +1126,6 @@ style={{ backgroundColor: '#6B8E23' }}
               View Full Year Calendar
               <ChevronRight className="w-5 h-5 ml-2" />
             </button>
-            <button
-  onClick={() => {
-    setCurrentPage('completed');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }}
-  className="w-full mt-4 glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
->
-  View Completed Hikes
-  <ChevronRight className="w-5 h-5 ml-2" />
-</button>
           </>
         )}
       </div>
@@ -1483,101 +1133,101 @@ style={{ backgroundColor: '#6B8E23' }}
   };
 
   const CalendarPage = () => {
-  return (
-    <div className="max-w-2xl mx-auto">
-      {isEditingCalendar ? (
-        <EditCalendarForm />
-      ) : (
-        <>
-          <div className="flex justify-between items-center mb-6">
-            <button
-              onClick={() => setCurrentPage('home')}
-              className="text-white/90 hover:text-white font-semibold flex items-center"
-            >
-              ← Back to Home
-            </button>
-            <div className="flex gap-2">
-              {isAdminAuthenticated && (
-                <button
-                  onClick={() => setIsEditingCalendar(true)}
-                  className="text-blue-600 hover:text-blue-700"
-                  title="Edit calendar"
-                >
-                  <Edit className="w-5 h-5" />
-                </button>
-              )}
+    return (
+      <div className="max-w-2xl mx-auto">
+        {isEditingCalendar ? (
+          <EditCalendarForm />
+        ) : (
+          <>
+            <div className="flex justify-between items-center mb-6">
               <button
-                onClick={downloadAllEvents}
-                className="bg-forest-olive text-white px-4 py-2 rounded-2xl font-semibold hover:brightness-90"
+                onClick={() => setCurrentPage('home')}
+                className="text-white/90 hover:text-white font-semibold flex items-center"
               >
-                <Download className="w-5 h-5 mr-2" />
-                Download All
+                ← Back to Home
               </button>
-            </div>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">2026 Hiking Calendar</h1>
-          <div className="space-y-4">
-            {hikeCalendar.map(hike => {
-              const formattedDate = new Date(hike.date).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric'
-              });
-              return (
-                <div key={hike.id} className="glass rounded-3xl p-5 hover:shadow-2xl transition-all">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-bold text-lg text-gray-800">{hike.hike}</h3>
-                      <p className="text-blue-600 font-semibold">{formattedDate}</p>
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                        {hike.month}
-                      </span>
-                      <button
-                        onClick={() => downloadSingleEvent(hike)}
-                        className="text-forest-olive hover:text-forest-moss"
-                        title="Add to calendar"
-                      >
-                        <Download className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="mt-3 glass-dark p-3 rounded-2xl border-l-4 border-forest-olive">
-                    <p className="text-sm text-gray-700">
-                      <span className="font-semibold">Details:</span> {hike.prerequisites}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-8 bg-blue-50 p-5 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-gray-800">Important Notes</h3>
-              {isAdminAuthenticated && (
+              <div className="flex gap-2">
+                {isAdminAuthenticated && (
+                  <button
+                    onClick={() => setIsEditingCalendar(true)}
+                    className="text-blue-600 hover:text-blue-700"
+                    title="Edit calendar"
+                  >
+                    <Edit className="w-5 h-5" />
+                  </button>
+                )}
                 <button
-                  onClick={() => setIsEditingNotes(true)}
-                  className="text-blue-600 hover:text-blue-700 text-sm"
-                  title="Edit notes"
+                  onClick={downloadAllEvents}
+                  className="bg-forest-olive text-white px-4 py-2 rounded-2xl font-semibold hover:brightness-90"
                 >
-                  <Edit className="w-4 h-4" />
+                  <Download className="w-5 h-5 mr-2" />
+                  Download All
                 </button>
-              )}
+              </div>
             </div>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {importantNotes.map((note, index) => (
-                <li key={index}>• {note}</li>
-              ))}
-            </ul>
-          </div>
-        </>
-      )}
-      {isEditingNotes && <EditNotesModal />}
-    </div>
-  );
-};
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">2026 Hiking Calendar</h1>
+            <div className="space-y-4">
+              {hikeCalendar.map(hike => {
+                const formattedDate = new Date(hike.date).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric'
+                });
+                return (
+                  <div key={hike.id} className="glass rounded-3xl p-5 hover:shadow-2xl transition-all">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-800">{hike.hike}</h3>
+                        <p className="text-blue-600 font-semibold">{formattedDate}</p>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                          {hike.month}
+                        </span>
+                        <button
+                          onClick={() => downloadSingleEvent(hike)}
+                          className="text-forest-olive hover:text-forest-moss"
+                          title="Add to calendar"
+                        >
+                          <Download className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-3 glass-dark p-3 rounded-2xl border-l-4 border-forest-olive">
+                      <p className="text-sm text-gray-700">
+                        <span className="font-semibold">Details:</span> {hike.prerequisites}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-8 bg-blue-50 p-5 rounded-lg">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold text-gray-800">Important Notes</h3>
+                {isAdminAuthenticated && (
+                  <button
+                    onClick={() => setIsEditingNotes(true)}
+                    className="text-blue-600 hover:text-blue-700 text-sm"
+                    title="Edit notes"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              <ul className="space-y-2 text-sm text-gray-700">
+                {importantNotes.map((note, index) => (
+                  <li key={index}>• {note}</li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
+        {isEditingNotes && <EditNotesModal />}
+      </div>
+    );
+  };
 
-if (isLoading) {
+  if (isLoading) {
   return (
     <div className="min-h-screen py-8 px-4 flex items-center justify-center">
       <div className="text-center">
@@ -1587,9 +1237,9 @@ if (isLoading) {
       </div>
     </div>
   );
-}
+};
 
-return (
+  return (
   <div className="min-h-screen py-8 px-4">
     <div className="max-w-4xl mx-auto mb-8">
       <div className="text-center mb-8">
@@ -1598,10 +1248,10 @@ return (
         </h1>
       </div>
     </div>
-    {currentPage === 'home' ? <HomePage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}
+    {currentPage === 'home' ? <HomePage /> : <CalendarPage />}
     <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
       <p>Questions? Contact your Sirimon Host. You know how!</p>
     </footer>
-    {isEditingCompletedHike && <EditCompletedHikeModal />}
   </div>
 );
+}
