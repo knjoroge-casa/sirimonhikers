@@ -1483,100 +1483,101 @@ style={{ backgroundColor: '#6B8E23' }}
   };
 
   const CalendarPage = () => {
-    return (
-      <div className="max-w-2xl mx-auto">
-        {isEditingCalendar ? (
-          <EditCalendarForm />
-        ) : (
-          <>
-            <div className="flex justify-between items-center mb-6">
-              <button
-                onClick={() => setCurrentPage('home')}
-                className="text-white/90 hover:text-white font-semibold flex items-center"
-              >
-                ← Back to Home
-              </button>
-              <div className="flex gap-2">
-                {isAdminAuthenticated && (
-                  <button
-                    onClick={() => setIsEditingCalendar(true)}
-                    className="text-blue-600 hover:text-blue-700"
-                    title="Edit calendar"
-                  >
-                    <Edit className="w-5 h-5" />
-                  </button>
-                )}
+  return (
+    <div className="max-w-2xl mx-auto">
+      {isEditingCalendar ? (
+        <EditCalendarForm />
+      ) : (
+        <>
+          <div className="flex justify-between items-center mb-6">
+            <button
+              onClick={() => setCurrentPage('home')}
+              className="text-white/90 hover:text-white font-semibold flex items-center"
+            >
+              ← Back to Home
+            </button>
+            <div className="flex gap-2">
+              {isAdminAuthenticated && (
                 <button
-                  onClick={downloadAllEvents}
-                  className="bg-forest-olive text-white px-4 py-2 rounded-2xl font-semibold hover:brightness-90"
+                  onClick={() => setIsEditingCalendar(true)}
+                  className="text-blue-600 hover:text-blue-700"
+                  title="Edit calendar"
                 >
-                  <Download className="w-5 h-5 mr-2" />
-                  Download All
+                  <Edit className="w-5 h-5" />
                 </button>
-              </div>
+              )}
+              <button
+                onClick={downloadAllEvents}
+                className="bg-forest-olive text-white px-4 py-2 rounded-2xl font-semibold hover:brightness-90"
+              >
+                <Download className="w-5 h-5 mr-2" />
+                Download All
+              </button>
             </div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">2026 Hiking Calendar</h1>
-            <div className="space-y-4">
-              {hikeCalendar.map(hike => {
-                const formattedDate = new Date(hike.date).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric'
-                });
-                return (
-                  <div key={hike.id} className="glass rounded-3xl p-5 hover:shadow-2xl transition-all">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-bold text-lg text-gray-800">{hike.hike}</h3>
-                        <p className="text-blue-600 font-semibold">{formattedDate}</p>
-                      </div>
-                      <div className="flex gap-2 items-center">
-                        <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                          {hike.month}
-                        </span>
-                        <button
-                          onClick={() => downloadSingleEvent(hike)}
-                          className="text-forest-olive hover:text-forest-moss"
-                          title="Add to calendar"
-                        >
-                          <Download className="w-5 h-5" />
-                        </button>
-                      </div>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">2026 Hiking Calendar</h1>
+          <div className="space-y-4">
+            {hikeCalendar.map(hike => {
+              const formattedDate = new Date(hike.date).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+              });
+              return (
+                <div key={hike.id} className="glass rounded-3xl p-5 hover:shadow-2xl transition-all">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="font-bold text-lg text-gray-800">{hike.hike}</h3>
+                      <p className="text-blue-600 font-semibold">{formattedDate}</p>
                     </div>
-                    <div className="mt-3 glass-dark p-3 rounded-2xl border-l-4 border-forest-olive">
-                      <p className="text-sm text-gray-700">
-                        <span className="font-semibold">Details:</span> {hike.prerequisites}
-                      </p>
+                    <div className="flex gap-2 items-center">
+                      <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                        {hike.month}
+                      </span>
+                      <button
+                        onClick={() => downloadSingleEvent(hike)}
+                        className="text-forest-olive hover:text-forest-moss"
+                        title="Add to calendar"
+                      >
+                        <Download className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
-                );
-              })}
+                  <div className="mt-3 glass-dark p-3 rounded-2xl border-l-4 border-forest-olive">
+                    <p className="text-sm text-gray-700">
+                      <span className="font-semibold">Details:</span> {hike.prerequisites}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-8 bg-blue-50 p-5 rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold text-gray-800">Important Notes</h3>
+              {isAdminAuthenticated && (
+                <button
+                  onClick={() => setIsEditingNotes(true)}
+                  className="text-blue-600 hover:text-blue-700 text-sm"
+                  title="Edit notes"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+              )}
             </div>
-            <div className="mt-8 bg-blue-50 p-5 rounded-lg">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-semibold text-gray-800">Important Notes</h3>
-                {isAdminAuthenticated && (
-                  <button
-                    onClick={() => setIsEditingNotes(true)}
-                    className="text-blue-600 hover:text-blue-700 text-sm"
-                    title="Edit notes"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-              <ul className="space-y-2 text-sm text-gray-700">
-                {importantNotes.map((note, index) => (
-                  <li key={index}>• {note}</li>
-                ))}
-              </ul>
-            </div>
-          </>
-        )}
-        {isEditingNotes && <EditNotesModal />}
-      </div>
-    );
-    
-  if (isLoading) {
+            <ul className="space-y-2 text-sm text-gray-700">
+              {importantNotes.map((note, index) => (
+                <li key={index}>• {note}</li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
+      {isEditingNotes && <EditNotesModal />}
+    </div>
+  );
+};
+
+if (isLoading) {
   return (
     <div className="min-h-screen py-8 px-4 flex items-center justify-center">
       <div className="text-center">
@@ -1586,9 +1587,9 @@ style={{ backgroundColor: '#6B8E23' }}
       </div>
     </div>
   );
-  }
+}
 
-  return (
+return (
   <div className="min-h-screen py-8 px-4">
     <div className="max-w-4xl mx-auto mb-8">
       <div className="text-center mb-8">
@@ -1597,10 +1598,10 @@ style={{ backgroundColor: '#6B8E23' }}
         </h1>
       </div>
     </div>
-{currentPage === 'home' ? <HomePage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}    <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
+    {currentPage === 'home' ? <HomePage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}
+    <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
       <p>Questions? Contact your Sirimon Host. You know how!</p>
     </footer>
     {isEditingCompletedHike && <EditCompletedHikeModal />}
   </div>
 );
-}
