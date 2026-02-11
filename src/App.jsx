@@ -1251,13 +1251,34 @@ const CompletedHikesPage = () => {
             <p className="text-gray-700 mb-4">Check back soon for our next adventure!</p>
           )}
           {isAdminAuthenticated ? (
-            <button 
-              onClick={() => setIsEditing(true)} 
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
-            >
-              Add Hike Details
-            </button>
-          ) : (
+  <button 
+    onClick={() => {
+      // Pre-fill with calendar info
+      const newHike = {
+        name: nextHike.hike,
+        date: nextHike.date,
+        time: '',
+        location: '',
+        intro: '',
+        whatToExpect: nextHike.prerequisites,
+        difficulty: '',
+        duration: '',
+        distance: '',
+        weather: '',
+        meetingPoint: '',
+        cost: '',
+        postHikeManenos: '',
+        lastWords: '',
+        whatToBring: {}
+      };
+      setUpcomingHike(newHike);
+      setIsEditing(true);
+    }} 
+    className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
+  >
+    Add Hike Details
+  </button>
+) : (
             <button 
               onClick={() => setShowAdminLogin(true)} 
               className="text-gray-600 hover:text-gray-700 flex items-center justify-center mx-auto"
