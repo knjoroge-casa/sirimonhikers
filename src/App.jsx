@@ -972,18 +972,38 @@ style={{ backgroundColor: '#6B8E23' }}
 
     // Handle no upcoming hike
   if (!upcomingHike) {
+    // Find next hike from calendar
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const nextHike = hikeCalendar.find(hike => new Date(hike.date) >= today);
+
     return (
       <div className="max-w-2xl mx-auto">
         <AdminLoginModal />
         <div className="glass rounded-3xl p-6 mb-6 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">No Upcoming Hike</h2>
-          <p className="text-gray-700 mb-4">Check back soon for our next adventure!</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">No Upcoming Hike Details Yet</h2>
+          {nextHike ? (
+            <>
+              <p className="text-gray-700 mb-2">Next hike on the calendar:</p>
+              <p className="text-xl font-semibold text-blue-600 mb-2">{nextHike.hike}</p>
+              <p className="text-lg text-gray-700 mb-4">
+                {new Date(nextHike.date).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </p>
+              <p className="text-sm text-gray-600 mb-4">{nextHike.prerequisites}</p>
+            </>
+          ) : (
+            <p className="text-gray-700 mb-4">Check back soon for our next adventure!</p>
+          )}
           {isAdminAuthenticated ? (
             <button 
               onClick={() => setIsEditing(true)} 
               className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
             >
-              Create New Hike
+              Add Hike Details
             </button>
           ) : (
             <button 
