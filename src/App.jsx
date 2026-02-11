@@ -315,6 +315,49 @@ const markHikeAsCompleted = async () => {
     alert('Error marking hike as completed');
   }
 };
+  const saveCompletedHike = async (hikeData, photoFile) => {
+  try {
+    let photoUrl = hikeData.group_photo_url;
+
+    if (photoFile) {
+      const fileExt = photoFile.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('hike-photos')
+        .upload(filePath, photoFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('hike-photos')
+        .getPublicUrl(filePath);
+
+      photoUrl = urlData.publicUrl;
+    }
+
+    const { error } = await supabase
+      .from('completed_hikes')
+      .update({
+        participants: hikeData.participants,
+        write_up: hikeData.write_up,
+        actual_cost: hikeData.actual_cost,
+        group_photo_url: photoUrl
+      })
+      .eq('id', hikeData.id);
+
+    if (error) throw error;
+
+    await loadData();
+    alert('Completed hike updated!');
+    setIsEditingCompletedHike(false);
+    setCurrentCompletedHike(null);
+  } catch (error) {
+    console.error('Error saving completed hike:', error);
+    alert('Error saving changes');
+  }
+};
   const saveAsPDF = () => {
     const allItems = { ...itemLabels, ...customItems };
     const printWindow = window.open('', '_blank');
@@ -1298,6 +1341,16 @@ const CompletedHikesPage = () => {
           View Full Year Calendar
           <ChevronRight className="w-5 h-5 ml-2" />
         </button>
+        <button
+  onClick={() => {
+    setCurrentPage('completed');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }}
+  className="w-full mt-4 glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
+>
+  View Completed Hikes
+  <ChevronRight className="w-5 h-5 ml-2" />
+</button>
       </div>
     );
   }
@@ -1602,10 +1655,11 @@ style={{ backgroundColor: '#6B8E23' }}
         </h1>
       </div>
     </div>
-    {currentPage === 'home' ? <HomePage /> : <CalendarPage />}
+    {currentPage === 'home' ? <HomePage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}
     <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
       <p>Questions? Contact your Sirimon Host. You know how!</p>
     </footer>
+    {isEditingCompletedHike && <EditCompletedHikeModal />}
   </div>
 );
 }
