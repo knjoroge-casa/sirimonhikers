@@ -327,7 +327,53 @@ if (completedData) {
       alert('Error');
     }
   };
+const markHikeAsCompleted = async () => {
+  if (!window.confirm('Mark this hike as completed? It will be moved to the archive.')) {
+    return;
+  }
 
+  try {
+    // Copy hike to completed_hikes table
+    const completedHike = {
+      name: upcomingHike.name,
+      date: upcomingHike.date,
+      time: upcomingHike.time,
+      location: upcomingHike.location,
+      intro: upcomingHike.intro,
+      what_to_expect: upcomingHike.whatToExpect,
+      difficulty: upcomingHike.difficulty,
+      duration: upcomingHike.duration,
+      distance: upcomingHike.distance,
+      weather: upcomingHike.weather,
+      meeting_point: upcomingHike.meetingPoint,
+      cost: upcomingHike.cost,
+      post_hike_manenos: upcomingHike.postHikeManenos,
+      last_words: upcomingHike.lastWords,
+      what_to_bring: upcomingHike.whatToBring,
+      participants: 0,
+      write_up: '',
+      actual_cost: upcomingHike.cost
+    };
+
+    const { error: insertError } = await supabase
+      .from('completed_hikes')
+      .insert([completedHike]);
+
+    if (insertError) throw insertError;
+
+    // Delete from upcoming_hike
+    await supabase.from('upcoming_hike').delete().neq('id', 0);
+
+    // Reload data
+    await loadData();
+    
+    alert('Hike marked as completed!');
+    setIsEditing(false);
+  } catch (error) {
+    console.error('Error marking hike as completed:', error);
+    alert('Error marking hike as completed');
+  }
+};
   const saveAsPDF = () => {
     const allItems = { ...itemLabels, ...customItems };
     const printWindow = window.open('', '_blank');
@@ -896,6 +942,25 @@ style={{ backgroundColor: '#6B8E23' }}
             <Save className="w-5 h-5 mr-2" />
             Save Changes
           </button>
+          {(() => {
+  const hikeDate = new Date(editData.date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayAfterHike = new Date(hikeDate);
+  dayAfterHike.setDate(dayAfterHike.getDate() + 1);
+  
+  if (today >= dayAfterHike) {
+    return (
+      <button
+        onClick={markHikeAsCompleted}
+        className="w-full mt-4 py-3 rounded-2xl font-semibold text-white bg-green-600 hover:bg-green-700 flex items-center justify-center"
+      >
+        ✓ Mark as Completed
+      </button>
+    );
+  }
+  return null;
+})()}
         </div>
       </div>
     );
