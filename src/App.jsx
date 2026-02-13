@@ -357,6 +357,7 @@ const markHikeAsCompleted = async () => {
   .update({
     name: hikeData.name,
     date: hikeData.date,
+    elevation: hikeData.elevation,
     participants: hikeData.participants,
     write_up: hikeData.write_up,
     actual_cost: hikeData.actual_cost,
@@ -1076,6 +1077,16 @@ const EditCompletedHikeModal = () => {
     type="date"
     value={editData.date || ''}
     onChange={(e) => setEditData({ ...editData, date: e.target.value })}
+    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+  />
+</div>
+          <div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Elevation</label>
+  <input
+    type="text"
+    value={editData.elevation || ''}
+    onChange={(e) => setEditData({ ...editData, elevation: e.target.value })}
+    placeholder="800m"
     className="w-full px-4 py-2 border border-gray-300 rounded-lg"
   />
 </div>
