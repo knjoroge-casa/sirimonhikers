@@ -351,14 +351,15 @@ const markHikeAsCompleted = async () => {
     }
 
     const { error } = await supabase
-      .from('completed_hikes')
-      .update({
-        participants: hikeData.participants,
-        write_up: hikeData.write_up,
-        actual_cost: hikeData.actual_cost,
-        group_photo_url: photoUrl
-      })
-      .eq('id', hikeData.id);
+  .from('completed_hikes')
+  .update({
+    name: hikeData.name,  // ← Add this line
+    participants: hikeData.participants,
+    write_up: hikeData.write_up,
+    actual_cost: hikeData.actual_cost,
+    group_photo_url: photoUrl
+  })
+  .eq('id', hikeData.id);
 
     if (error) throw error;
 
@@ -1047,6 +1048,15 @@ const EditCompletedHikeModal = () => {
         </div>
         
         <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+          <div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Hike Name</label>
+  <input
+    type="text"
+    value={editData.name || ''}
+    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+  />
+</div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Number of Participants</label>
             <input
