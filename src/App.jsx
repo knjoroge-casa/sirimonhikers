@@ -134,13 +134,26 @@ const [isEditingCompletedHike, setIsEditingCompletedHike] = useState(false);
     } else {
       setImportantNotes([]);
     }
+// Load completed hikes
+const { data: completedData, error: completedError } = await supabase
+  .from('completed_hikes')
+  .select('*')
+  .order('date', { ascending: false }); // Most recent first
 
+if (completedError) {
+  console.error('Error loading completed hikes:', completedError);
+}
+
+if (completedData) {
+  setCompletedHikes(completedData);
+}
   } catch (error) {
     console.error('Error loading data:', error);
     // Don't set any defaults - just leave empty
     setUpcomingHike(null);
     setHikeCalendar([]);
     setImportantNotes([]);
+    setCompletedHikes([]);
   }
   setIsLoading(false);
 };
