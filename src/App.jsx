@@ -1150,7 +1150,7 @@ const CompletedHikesPage = () => {
       <h1 className="text-2xl font-bold text-gray-800 mb-2">Completed Hikes</h1>
       <p className="text-gray-600 mb-6">
         {completedHikes.length} hike{completedHikes.length !== 1 ? 's' : ''} completed
-        //{completedHikes.length > 0 && ` • ${completedHikes.reduce((sum, h) => sum + (h.participants || 0), 0)} total participants`}
+        {/*{completedHikes.length > 0 && ` • ${completedHikes.reduce((sum, h) => sum + (h.participants || 0), 0)} total participants`}*/}
       </p>
 
       {completedHikes.length === 0 ? (
