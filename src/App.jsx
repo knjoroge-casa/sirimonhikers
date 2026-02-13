@@ -1187,85 +1187,88 @@ const CompletedHikesPage = () => {
                 </div>
 
                 {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-gray-200">
-                    {hike.group_photo_url && (
-                      <div className="mt-4 mb-4">
-                        <img src={hike.group_photo_url} alt="Group photo" className="w-full h-64 object-cover rounded-lg" />
-                      </div>
-                    )}
+  <div className="px-5 pb-5 border-t border-gray-200">
+    {/* 1. GROUP PHOTO */}
+    {hike.group_photo_url && (
+      <div className="mt-4 mb-4">
+        <img src={hike.group_photo_url} alt="Group photo" className="w-full h-64 object-cover rounded-lg" />
+      </div>
+    )}
 
-                    {hike.intro && (
-                      <div className="mt-4">
-                        <p className="text-gray-700 italic" style={{ whiteSpace: 'pre-wrap' }}>{hike.intro}</p>
-                      </div>
-                    )}
+    {/* 2. WRITE-UP */}
+    {hike.write_up && (
+      <div className="mt-4 bg-blue-50 p-4 rounded-2xl">
+        <h4 className="font-semibold text-gray-800 mb-2">Our Experience</h4>
+        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.write_up}</p>
+      </div>
+    )}
 
-                    <div className="mt-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">What to Expect</h4>
-                      <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.what_to_expect}</p>
-                    </div>
+    {/* 3. HIKE DETAILS */}
+    {hike.intro && (
+      <div className="mt-4">
+        <p className="text-gray-700 italic" style={{ whiteSpace: 'pre-wrap' }}>{hike.intro}</p>
+      </div>
+    )}
 
-                    <div className="mt-4 glass-dark p-4 rounded-2xl">
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className="font-semibold text-gray-700">Difficulty:</span>
-                          <p className="text-gray-600">{hike.difficulty}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-gray-700">Duration:</span>
-                          <p className="text-gray-600">{hike.duration}</p>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-gray-700">Distance:</span>
-                          <p className="text-gray-600">{hike.distance}</p>
-                        </div>
-                      </div>
-                    </div>
+    <div className="mt-4">
+      <h4 className="font-semibold text-gray-800 mb-2">What to Expect</h4>
+      <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.what_to_expect}</p>
+    </div>
 
-                    {hike.weather && (
-                      <div className="mt-4">
-                        <h4 className="font-semibold text-gray-800 mb-2">Weather</h4>
-                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.weather}</p>
-                      </div>
-                    )}
+    <div className="mt-4 glass-dark p-4 rounded-2xl">
+      <div className="grid grid-cols-3 gap-4 text-sm">
+        <div>
+          <span className="font-semibold text-gray-700">Difficulty:</span>
+          <p className="text-gray-600">{hike.difficulty}</p>
+        </div>
+        <div>
+          <span className="font-semibold text-gray-700">Duration:</span>
+          <p className="text-gray-600">{hike.duration}</p>
+        </div>
+        <div>
+          <span className="font-semibold text-gray-700">Distance:</span>
+          <p className="text-gray-600">{hike.distance}</p>
+        </div>
+      </div>
+    </div>
 
-                    <div className="mt-4 glass-dark p-4 rounded-2xl">
-                      <h4 className="font-semibold text-gray-800 mb-2">Details</h4>
-                      <p className="text-gray-700"><span className="font-semibold">Location:</span> {hike.location}</p>
-                      <p className="text-gray-700 mt-1"><span className="font-semibold">Meeting Point:</span> {hike.meeting_point}</p>
-                      <p className="text-gray-700 mt-1">
-                        <span className="font-semibold">Cost:</span> {hike.actual_cost || hike.cost}
-                        {hike.actual_cost && hike.actual_cost !== hike.cost && (
-                          <span className="text-sm text-gray-500"> (original: {hike.cost})</span>
-                        )}
-                      </p>
-                      {hike.participants > 0 && (
-                        <p className="text-gray-700 mt-1"><span className="font-semibold">Participants:</span> {hike.participants}</p>
-                      )}
-                    </div>
+    {hike.weather && (
+      <div className="mt-4">
+        <h4 className="font-semibold text-gray-800 mb-2">Weather</h4>
+        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.weather}</p>
+      </div>
+    )}
 
-                    {hike.post_hike_manenos && (
-                      <div className="mt-4">
-                        <h4 className="font-semibold text-gray-800 mb-2">Post Hike Manenos</h4>
-                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.post_hike_manenos}</p>
-                      </div>
-                    )}
+    <div className="mt-4 glass-dark p-4 rounded-2xl">
+      <h4 className="font-semibold text-gray-800 mb-2">Details</h4>
+      <p className="text-gray-700"><span className="font-semibold">Location:</span> {hike.location}</p>
+      <p className="text-gray-700 mt-1"><span className="font-semibold">Meeting Point:</span> {hike.meeting_point}</p>
+      <p className="text-gray-700 mt-1">
+        <span className="font-semibold">Cost:</span> {hike.actual_cost || hike.cost}
+        {hike.actual_cost && hike.actual_cost !== hike.cost && (
+          <span className="text-sm text-gray-500"> (original: {hike.cost})</span>
+        )}
+      </p>
+      {hike.participants > 0 && (
+        <p className="text-gray-700 mt-1"><span className="font-semibold">Participants:</span> {hike.participants}</p>
+      )}
+    </div>
 
-                    {hike.write_up && (
-                      <div className="mt-4 bg-blue-50 p-4 rounded-2xl">
-                        <h4 className="font-semibold text-gray-800 mb-2">Our Experience</h4>
-                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.write_up}</p>
-                      </div>
-                    )}
+    {hike.post_hike_manenos && (
+      <div className="mt-4">
+        <h4 className="font-semibold text-gray-800 mb-2">Post Hike Manenos</h4>
+        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.post_hike_manenos}</p>
+      </div>
+    )}
 
-                    {hike.last_words && (
-                      <div className="mt-4 glass-dark p-4 rounded-2xl border-l-4 border-forest-olive">
-                        <h4 className="font-semibold text-gray-800 mb-2">Last Words</h4>
-                        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.last_words}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
+    {hike.last_words && (
+      <div className="mt-4 glass-dark p-4 rounded-2xl border-l-4 border-forest-olive">
+        <h4 className="font-semibold text-gray-800 mb-2">Last Words</h4>
+        <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{hike.last_words}</p>
+      </div>
+    )}
+  </div>
+)}
               </div>
             );
           })}
