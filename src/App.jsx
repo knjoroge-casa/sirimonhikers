@@ -1857,99 +1857,9 @@ const CarouselStats = () => {
     </div>
   );
 };
-  const HomePage = () => {
+  const HikeDetailsPage = () => {
     const [formData, setFormData] = useState({ name: '', phone: '' });
     const allItems = { ...itemLabels, ...customItems };
-
-    // Handle no upcoming hike
-  if (!upcomingHike) {
-    // Find next hike from calendar
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const nextHike = hikeCalendar.find(hike => new Date(hike.date) >= today);
-    
-    return (
-      <div className="max-w-2xl mx-auto">
-        <AdminLoginModal />
-        <div className="glass rounded-3xl p-6 mb-6 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">No Upcoming Hike Details Yet</h2>
-          {nextHike ? (
-            <>
-              <p className="text-gray-700 mb-2">Next hike on the calendar:</p>
-              <p className="text-xl font-semibold text-blue-600 mb-2">{nextHike.hike}</p>
-              <p className="text-lg text-gray-700 mb-4">
-                {new Date(nextHike.date).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </p>
-              <p className="text-sm text-gray-600 mb-4">{nextHike.prerequisites}</p>
-            </>
-          ) : (
-            <p className="text-gray-700 mb-4">Check back soon for our next adventure!</p>
-          )}
-          {isAdminAuthenticated ? (
-  <button 
-    onClick={() => {
-      // Pre-fill with calendar info
-      const newHike = {
-        name: nextHike.hike,
-        date: nextHike.date,
-        time: '',
-        location: '',
-        intro: '',
-        whatToExpect: nextHike.prerequisites,
-        difficulty: '',
-        duration: '',
-        distance: '',
-        weather: '',
-        meetingPoint: '',
-        cost: '',
-        postHikeManenos: '',
-        lastWords: '',
-        whatToBring: {}
-      };
-      setUpcomingHike(newHike);
-      setIsEditing(true);
-    }} 
-    className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
-  >
-    Add Hike Details
-  </button>
-) : (
-            <button 
-              onClick={() => setShowAdminLogin(true)} 
-              className="text-gray-600 hover:text-gray-700 flex items-center justify-center mx-auto"
-            >
-              <Lock className="w-5 h-5 mr-2" />
-              Admin Login
-            </button>
-          )}
-        </div>
-        <button
-          onClick={() => {
-            setCurrentPage('calendar');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
-        >
-          View Full Year Calendar
-          <ChevronRight className="w-5 h-5 ml-2" />
-        </button>
-        <button
-  onClick={() => {
-    setCurrentPage('completed');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }}
-  className="w-full mt-4 glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
->
-  View Completed Hikes
-  <ChevronRight className="w-5 h-5 ml-2" />
-</button>
-      </div>
-    );
-  }
     
     const handleSubmit = () => {
       if (formData.name && formData.phone) {
@@ -1972,8 +1882,16 @@ const CarouselStats = () => {
 
     return (
       <div className="max-w-2xl mx-auto">
-        <AdminLoginModal />
-        {isEditingItems && <EditItemsForm />}
+  <AdminLoginModal />
+  {isEditingItems && <EditItemsForm />}
+  <div className="mb-4">
+    <button
+      onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+      className="text-white/90 hover:text-white font-semibold flex items-center"
+    >
+      ← Back to Dashboard
+    </button>
+  </div>
         {isEditing ? (
           <EditHikeForm />
         ) : (
@@ -2255,8 +2173,7 @@ style={{ backgroundColor: '#6B8E23' }}
         </h1>
       </div>
     </div>
-    {currentPage === 'home' ? <DashboardPage /> : currentPage === 'calendar' ? <CalendarPage /> : currentPage === 'completed' ? <CompletedHikesPage /> : <HomePage />}
-   <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
+{currentPage === 'home' ? <DashboardPage /> : currentPage === 'hike-details' ? <HikeDetailsPage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}   <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
   <p>Questions? Contact your Sirimon Host. You know how!</p>
   <div className="mt-4 pb-4">
     {isAdminAuthenticated ? (
