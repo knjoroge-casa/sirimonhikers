@@ -1533,7 +1533,7 @@ const CarouselStats = () => {
     >
       {/* Slide container */}
       <div
-        className="flex items-center gap-4 transition-all duration-300"
+        className="flex flex-col items-center gap-2 transition-all duration-300"
         style={{
           opacity: sliding ? 0 : 1,
           transform: sliding
@@ -1542,7 +1542,7 @@ const CarouselStats = () => {
         }}
       >
         <span className="text-3xl flex-shrink-0">{stat.icon}</span>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 text-center">
           <p className="text-xs font-bold uppercase tracking-widest text-gray-500">{stat.label}</p>
           <p className="text-lg font-bold text-gray-800">{stat.value}</p>
           <p className="text-xs text-gray-500">{stat.suffix}</p>
