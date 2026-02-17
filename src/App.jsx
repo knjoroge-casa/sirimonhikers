@@ -361,6 +361,8 @@ const markHikeAsCompleted = async () => {
     participants: hikeData.participants,
     write_up: hikeData.write_up,
     actual_cost: hikeData.actual_cost,
+    actual_distance: hikeData.actual_distance,
+    actual_elevation: hikeData.actual_elevation,
     group_photo_url: photoUrl
   })
   .eq('id', hikeData.id);
@@ -1100,16 +1102,48 @@ const EditCompletedHikeModal = () => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Actual Cost</label>
-            <input
-              type="text"
-              value={editData.actual_cost || ''}
-              onChange={(e) => setEditData({ ...editData, actual_cost: e.target.value })}
-              placeholder="KES 600"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
+         <div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Actual Cost (KES)</label>
+  <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+    <span className="px-3 py-2 bg-gray-100 text-gray-600 font-semibold text-sm border-r border-gray-300">KES</span>
+    <input
+      type="number"
+      value={editData.actual_cost || ''}
+      onChange={(e) => setEditData({ ...editData, actual_cost: e.target.value ? parseFloat(e.target.value) : null })}
+      placeholder="0"
+      className="w-full px-4 py-2 border-0 focus:outline-none"
+    />
+  </div>
+</div>
+
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Actual Distance (km)</label>
+  <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+    <span className="px-3 py-2 bg-gray-100 text-gray-600 font-semibold text-sm border-r border-gray-300">km</span>
+    <input
+      type="number"
+      step="0.1"
+      value={editData.actual_distance || ''}
+      onChange={(e) => setEditData({ ...editData, actual_distance: e.target.value ? parseFloat(e.target.value) : null })}
+      placeholder="0"
+      className="w-full px-4 py-2 border-0 focus:outline-none"
+    />
+  </div>
+</div>
+
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Actual Elevation (m)</label>
+  <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+    <span className="px-3 py-2 bg-gray-100 text-gray-600 font-semibold text-sm border-r border-gray-300">m</span>
+    <input
+      type="number"
+      value={editData.actual_elevation || ''}
+      onChange={(e) => setEditData({ ...editData, actual_elevation: e.target.value ? parseFloat(e.target.value) : null })}
+      placeholder="0"
+      className="w-full px-4 py-2 border-0 focus:outline-none"
+    />
+  </div>
+</div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Write-up</label>
@@ -1291,11 +1325,12 @@ const CompletedHikesPage = () => {
       <p className="text-gray-700"><span className="font-semibold">Location:</span> {hike.location}</p>
       <p className="text-gray-700 mt-1"><span className="font-semibold">Meeting Point:</span> {hike.meeting_point}</p>
       <p className="text-gray-700 mt-1">
-        <span className="font-semibold">Cost:</span> {hike.actual_cost || hike.cost}
-        {hike.actual_cost && hike.actual_cost !== hike.cost && (
-          <span className="text-sm text-gray-500"> (original: {hike.cost})</span>
-        )}
-      </p>
+  <span className="font-semibold">Cost:</span>{' '}
+  {hike.actual_cost ? `KES ${Number(hike.actual_cost).toLocaleString()}` : hike.cost}
+  {hike.actual_cost && (
+    <span className="text-sm text-gray-500"> (planned: {hike.cost})</span>
+  )}
+</p>
       {hike.participants > 0 && (
         <p className="text-gray-700 mt-1"><span className="font-semibold">Participants:</span> {hike.participants}</p>
       )}
