@@ -1295,20 +1295,34 @@ const CompletedHikesPage = () => {
     <div className="mt-4 glass-dark p-4 rounded-2xl">
   <div className="grid grid-cols-4 gap-4 text-sm">
     <div>
-      <span className="font-semibold text-gray-700">Difficulty:</span>
+      <span className="font-semibold text-gray-700">Difficulty</span>
       <p className="text-gray-600">{hike.difficulty}</p>
     </div>
     <div>
-      <span className="font-semibold text-gray-700">Distance:</span>
+      <span className="font-semibold text-gray-700">Distance</span>
+      <p className="text-gray-600 text-xs text-gray-400">Planned</p>
       <p className="text-gray-600">{hike.distance}</p>
+      {hike.actual_distance && (
+        <>
+          <p className="text-xs text-green-600 mt-1">Actual</p>
+          <p className="text-green-700 font-semibold">{Number(hike.actual_distance).toLocaleString()} km</p>
+        </>
+      )}
     </div>
     <div>
-      <span className="font-semibold text-gray-700">Duration:</span>
+      <span className="font-semibold text-gray-700">Duration</span>
       <p className="text-gray-600">{hike.duration}</p>
     </div>
     <div>
-      <span className="font-semibold text-gray-700">Elevation:</span>
+      <span className="font-semibold text-gray-700">Elevation</span>
+      <p className="text-xs text-gray-400">Planned</p>
       <p className="text-gray-600">{hike.elevation}</p>
+      {hike.actual_elevation && (
+        <>
+          <p className="text-xs text-green-600 mt-1">Actual</p>
+          <p className="text-green-700 font-semibold">{Number(hike.actual_elevation).toLocaleString()} m</p>
+        </>
+      )}
     </div>
   </div>
 </div>
@@ -1324,13 +1338,17 @@ const CompletedHikesPage = () => {
       <h4 className="font-semibold text-gray-800 mb-2">Details</h4>
       <p className="text-gray-700"><span className="font-semibold">Location:</span> {hike.location}</p>
       <p className="text-gray-700 mt-1"><span className="font-semibold">Meeting Point:</span> {hike.meeting_point}</p>
-      <p className="text-gray-700 mt-1">
-  <span className="font-semibold">Cost:</span>{' '}
-  {hike.actual_cost ? `KES ${Number(hike.actual_cost).toLocaleString()}` : hike.cost}
+      <div className="mt-1">
+  <span className="font-semibold text-gray-700">Cost</span>
+  <p className="text-xs text-gray-400">Planned</p>
+  <p className="text-gray-700">{hike.cost}</p>
   {hike.actual_cost && (
-    <span className="text-sm text-gray-500"> (planned: {hike.cost})</span>
+    <>
+      <p className="text-xs text-green-600 mt-1">Actual</p>
+      <p className="text-green-700 font-semibold">KES {Number(hike.actual_cost).toLocaleString()}</p>
+    </>
   )}
-</p>
+</div>
       {hike.participants > 0 && (
         <p className="text-gray-700 mt-1"><span className="font-semibold">Participants:</span> {hike.participants}</p>
       )}
