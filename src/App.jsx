@@ -52,7 +52,20 @@ export default function App() {
   const [completedHikes, setCompletedHikes] = useState([]);
 const [currentCompletedHike, setCurrentCompletedHike] = useState(null);
 const [isEditingCompletedHike, setIsEditingCompletedHike] = useState(false);
-
+const [dashboardIntro, setDashboardIntro] = useState('');
+const [isEditingIntro, setIsEditingIntro] = useState(false);
+const [noticeBoard, setNoticeBoard] = useState([]);
+const [isEditingNotices, setIsEditingNotices] = useState(false);
+const [rotatingStat] = useState(() => {
+  const stats = [
+    { label: "Photos Taken", value: "4,300+", suffix: "Proof we were actually there.", icon: "📸" },
+    { label: "Laughs Had", value: "Uncountable", suffix: "Premium banter and hilarity ensues.", icon: "😂" },
+    { label: "Tears Cried", value: "A few", suffix: "Mostly on steep inclines and bamboo forests. We don't name names.", icon: "😭" },
+    { label: "Fucks Given", value: "Selective", suffix: "Reserved for safety, summits, and snacks.", icon: "🎯" },
+    { label: "Early Mornings", value: "Every single one", suffix: "Worth it. Every time. Mostly.", icon: "🌅" },
+  ];
+  return stats[Math.floor(Math.random() * stats.length)];
+});
 
 
   useEffect(() => {
@@ -146,6 +159,28 @@ if (completedError) {
 
 if (completedData) {
   setCompletedHikes(completedData);
+}
+    // Load dashboard intro
+try {
+  const { data: introData } = await supabase
+    .from('dashboard_intro')
+    .select('*')
+    .limit(1)
+    .single();
+  if (introData) setDashboardIntro(introData.content || '');
+} catch (e) {
+  setDashboardIntro('');
+}
+
+// Load notice board
+try {
+  const { data: noticeData } = await supabase
+    .from('notice_board')
+    .select('*')
+    .order('created_at', { ascending: false });
+  setNoticeBoard(noticeData || []);
+} catch (e) {
+  setNoticeBoard([]);
 }
   } catch (error) {
     console.error('Error loading data:', error);
@@ -282,6 +317,45 @@ if (completedData) {
       alert('Error');
     }
   };
+  const saveDashboardIntro = async (content) => {
+  try {
+    // Delete existing and insert fresh
+    await supabase.from('dashboard_intro').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    const { error } = await supabase.from('dashboard_intro').insert([{ content }]);
+    if (error) throw error;
+    setDashboardIntro(content);
+    setIsEditingIntro(false);
+  } catch (e) {
+    console.error('Error saving intro:', e);
+    alert('Error saving intro');
+  }
+};
+
+const saveNotice = async (title, body) => {
+  try {
+    if (noticeBoard.length >= 3) {
+      alert('Maximum 3 notices allowed. Please delete one first.');
+      return;
+    }
+    const { error } = await supabase.from('notice_board').insert([{ title, body }]);
+    if (error) throw error;
+    await loadData();
+  } catch (e) {
+    console.error('Error saving notice:', e);
+    alert('Error saving notice');
+  }
+};
+
+const deleteNotice = async (id) => {
+  try {
+    const { error } = await supabase.from('notice_board').delete().eq('id', id);
+    if (error) throw error;
+    await loadData();
+  } catch (e) {
+    console.error('Error deleting notice:', e);
+    alert('Error deleting notice');
+  }
+};
 const markHikeAsCompleted = async () => {
   if (!window.confirm('Mark this hike as completed? It will be moved to the archive.')) {
     return;
@@ -555,7 +629,40 @@ const selectedItems = Object.keys(allItems)
     }
   }
 };
+const useCountdown = (targetDate) => {
+  const [countdown, setCountdown] = useState('');
 
+  useEffect(() => {
+    if (!targetDate) return;
+
+    const calculate = () => {
+      const now = new Date();
+      const target = new Date(targetDate + 'T00:00:00');
+      const diff = target - now;
+
+      if (diff <= 0) {
+        setCountdown('Today!');
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) {
+        setCountdown(`${days}d ${hours}h ${minutes}m`);
+      } else {
+        setCountdown(`${hours}h ${minutes}m`);
+      }
+    };
+
+    calculate();
+    const interval = setInterval(calculate, 60000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
+  return countdown;
+};
   const AdminLoginModal = () => {
     if (!showAdminLogin) return null;
     return (
@@ -1377,6 +1484,290 @@ const CompletedHikesPage = () => {
     </div>
   );
 };
+  const DashboardPage = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Next hike from calendar
+  const nextCalendarHike = hikeCalendar.find(h => new Date(h.date) >= today);
+
+  // Determine countdown target
+  const countdownTarget = upcomingHike?.date || nextCalendarHike?.date || null;
+  const countdown = useCountdown(countdownTarget);
+
+  // Damage Report calculations
+  const totalHikes = completedHikes.length;
+  const totalKm = completedHikes.reduce((sum, h) => sum + (parseFloat(h.actual_distance) || 0), 0);
+  const totalElevation = completedHikes.reduce((sum, h) => sum + (parseFloat(h.actual_elevation) || 0), 0);
+
+  // Intro editing state
+  const [introText, setIntroText] = useState(dashboardIntro);
+  const [newNoticeTitle, setNewNoticeTitle] = useState('');
+  const [newNoticeBody, setNewNoticeBody] = useState('');
+  const [showAddNotice, setShowAddNotice] = useState(false);
+
+  const handleSaveIntro = () => saveDashboardIntro(introText);
+
+  const handleAddNotice = async () => {
+    if (!newNoticeTitle.trim() || !newNoticeBody.trim()) {
+      alert('Please fill in both title and body');
+      return;
+    }
+    await saveNotice(newNoticeTitle.trim(), newNoticeBody.trim());
+    setNewNoticeTitle('');
+    setNewNoticeBody('');
+    setShowAddNotice(false);
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      <AdminLoginModal />
+
+      {/* ── INTRO SECTION ── */}
+      <div className="glass rounded-3xl p-6 mb-6 relative">
+        <div className="flex justify-between items-start mb-2">
+          <h2 className="text-lg font-bold text-gray-700 uppercase tracking-widest text-sm">Welcome</h2>
+          {isAdminAuthenticated && !isEditingIntro && (
+            <button onClick={() => { setIsEditingIntro(true); }} className="text-gray-400 hover:text-blue-600">
+              <Edit className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {isEditingIntro ? (
+          <div>
+            <textarea
+              value={introText}
+              onChange={(e) => setIntroText(e.target.value)}
+              rows="4"
+              placeholder="Write a welcome message for the group..."
+              className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
+            />
+            <div className="flex gap-2">
+              <button onClick={handleSaveIntro} className="flex items-center px-4 py-2 rounded-xl text-white font-semibold text-sm" style={{ backgroundColor: '#6B8E23' }}>
+                <Save className="w-4 h-4 mr-1" /> Save
+              </button>
+              <button onClick={() => { setIsEditingIntro(false); setIntroText(dashboardIntro); }} className="flex items-center px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-semibold text-sm">
+                <X className="w-4 h-4 mr-1" /> Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-700 leading-relaxed" style={{ whiteSpace: 'pre-wrap' }}>
+            {dashboardIntro || (isAdminAuthenticated ? <span className="text-gray-400 italic">No intro yet. Click the pencil to add one.</span> : null)}
+          </p>
+        )}
+      </div>
+
+      {/* ── NEXT HIKE CARD ── */}
+      {upcomingHike ? (
+        <div className="glass rounded-3xl p-6 mb-6">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-1">Next Hike</p>
+              <h2 className="text-2xl font-bold text-gray-800">{upcomingHike.name}</h2>
+              <p className="text-gray-600 mt-1">
+                {new Date(upcomingHike.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {upcomingHike.time && ` · ${upcomingHike.time}`}
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="bg-blue-50 rounded-2xl px-4 py-3">
+                <p className="text-xs text-blue-500 font-semibold uppercase tracking-wide">Countdown</p>
+                <p className="text-2xl font-bold text-blue-700 font-mono">{countdown}</p>
+              </div>
+            </div>
+          </div>
+          {upcomingHike.location && (
+            <div className="flex items-center text-gray-600 text-sm mb-4">
+              <MapPin className="w-4 h-4 mr-2 text-blue-500" />
+              {upcomingHike.location}
+            </div>
+          )}
+          <div className="flex gap-3 text-sm mb-4">
+            {upcomingHike.difficulty && (
+              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold">{upcomingHike.difficulty}</span>
+            )}
+            {upcomingHike.distance && (
+              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">{upcomingHike.distance}</span>
+            )}
+            {upcomingHike.duration && (
+              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">{upcomingHike.duration}</span>
+            )}
+          </div>
+          <button
+            onClick={() => { setCurrentPage('hike-details'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className="w-full py-3 rounded-2xl font-semibold text-white flex items-center justify-center"
+            style={{ backgroundColor: '#6B8E23' }}
+          >
+            Hike Details <ChevronRight className="w-5 h-5 ml-1" />
+          </button>
+        </div>
+      ) : nextCalendarHike ? (
+        <div className="glass rounded-3xl p-6 mb-6">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-amber-600 mb-1">Save the Date</p>
+              <h2 className="text-2xl font-bold text-gray-800">{nextCalendarHike.hike}</h2>
+              <p className="text-gray-600 mt-1">
+                {new Date(nextCalendarHike.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="bg-amber-50 rounded-2xl px-4 py-3">
+                <p className="text-xs text-amber-500 font-semibold uppercase tracking-wide">Countdown</p>
+                <p className="text-2xl font-bold text-amber-700 font-mono">{countdown}</p>
+              </div>
+            </div>
+          </div>
+          {nextCalendarHike.prerequisites && (
+            <p className="text-gray-600 text-sm mb-4">{nextCalendarHike.prerequisites}</p>
+          )}
+          <div className="bg-amber-50 rounded-2xl px-4 py-3 text-center">
+            <p className="text-amber-700 text-sm font-semibold">Full hike details coming soon</p>
+          </div>
+        </div>
+      ) : (
+        <div className="glass rounded-3xl p-6 mb-6 text-center">
+          <p className="text-gray-500 italic">No upcoming hikes scheduled yet. Check back soon!</p>
+        </div>
+      )}
+
+      {/* ── DAMAGE REPORT ── */}
+      <div className="glass rounded-3xl p-6 mb-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-1">The Damage Report</h2>
+        <p className="text-xs text-gray-500 uppercase tracking-widest mb-5">Sirimon Hikers · 2026</p>
+
+        <div className="grid grid-cols-3 gap-4 mb-5">
+          <div className="glass-dark rounded-2xl p-4 text-center">
+            <p className="text-3xl font-bold text-gray-800">{totalHikes}</p>
+            <p className="text-xs text-gray-500 mt-1 font-semibold uppercase tracking-wide">Hikes</p>
+            <p className="text-xs text-gray-400 mt-1">
+              {totalHikes === 0 ? 'The adventure awaits.' : totalHikes === 1 ? 'And counting.' : 'mountains and counting.'}
+            </p>
+          </div>
+          <div className="glass-dark rounded-2xl p-4 text-center">
+            <p className="text-3xl font-bold text-gray-800">{totalKm > 0 ? totalKm.toLocaleString(undefined, { maximumFractionDigits: 1 }) : '—'}</p>
+            <p className="text-xs text-gray-500 mt-1 font-semibold uppercase tracking-wide">Kilometres</p>
+            <p className="text-xs text-gray-400 mt-1">
+              {totalKm === 0 ? 'Boots are ready.' : 'walked voluntarily. No one chased us.'}
+            </p>
+          </div>
+          <div className="glass-dark rounded-2xl p-4 text-center">
+            <p className="text-3xl font-bold text-gray-800">{totalElevation > 0 ? totalElevation.toLocaleString() : '—'}</p>
+            <p className="text-xs text-gray-500 mt-1 font-semibold uppercase tracking-wide">Metres Up</p>
+            <p className="text-xs text-gray-400 mt-1">
+              {totalElevation === 0 ? 'Sky is the limit.' : `That's Everest ${(totalElevation / 8849).toFixed(1)}x. Casual.`}
+            </p>
+          </div>
+        </div>
+
+        {/* Rotating stat */}
+        <div className="glass-dark rounded-2xl p-4 flex items-center gap-4">
+          <span className="text-3xl">{rotatingStat.icon}</span>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-500">{rotatingStat.label}</p>
+            <p className="text-lg font-bold text-gray-800">{rotatingStat.value}</p>
+            <p className="text-xs text-gray-500">{rotatingStat.suffix}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── NOTICE BOARD ── */}
+      {(noticeBoard.length > 0 || isAdminAuthenticated) && (
+        <div className="glass rounded-3xl p-6 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-xl font-bold text-gray-800">Notice Board</h2>
+              <p className="text-xs text-gray-500">Updates from the group</p>
+            </div>
+            {isAdminAuthenticated && (
+              <button
+                onClick={() => setShowAddNotice(!showAddNotice)}
+                className="text-sm text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-1"
+              >
+                <Edit className="w-4 h-4" />
+                {showAddNotice ? 'Cancel' : noticeBoard.length < 3 ? '+ Add' : 'Manage'}
+              </button>
+            )}
+          </div>
+
+          {/* Add notice form */}
+          {isAdminAuthenticated && showAddNotice && (
+            <div className="mb-4 border border-blue-200 rounded-2xl p-4 bg-blue-50">
+              <p className="text-xs text-blue-600 font-semibold mb-3">
+                {noticeBoard.length < 3 ? `Add Notice (${noticeBoard.length}/3 used)` : 'Delete a notice below to add a new one'}
+              </p>
+              {noticeBoard.length < 3 && (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Notice title"
+                    value={newNoticeTitle}
+                    onChange={(e) => setNewNoticeTitle(e.target.value)}
+                    className="w-full px-4 py-2 rounded-xl border border-gray-300 mb-2 text-sm"
+                  />
+                  <textarea
+                    placeholder="Notice body"
+                    value={newNoticeBody}
+                    onChange={(e) => setNewNoticeBody(e.target.value)}
+                    rows="3"
+                    className="w-full px-4 py-2 rounded-xl border border-gray-300 mb-2 text-sm"
+                  />
+                  <button
+                    onClick={handleAddNotice}
+                    className="w-full py-2 rounded-xl text-white font-semibold text-sm"
+                    style={{ backgroundColor: '#6B8E23' }}
+                  >
+                    Post Notice
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Notices list */}
+          {noticeBoard.length === 0 ? (
+            <p className="text-gray-400 italic text-sm">No notices yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {noticeBoard.map((notice) => (
+                <div key={notice.id} className="glass-dark rounded-2xl p-4">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-bold text-gray-800 text-sm">{notice.title}</h3>
+                    {isAdminAuthenticated && (
+                      <button onClick={() => deleteNotice(notice.id)} className="text-red-400 hover:text-red-600 ml-2 flex-shrink-0">
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-gray-600 text-sm mt-1" style={{ whiteSpace: 'pre-wrap' }}>{notice.body}</p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    {new Date(notice.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── NAV BUTTONS ── */}
+      <button
+        onClick={() => { setCurrentPage('calendar'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center mb-4"
+      >
+        View Full Year Calendar <ChevronRight className="w-5 h-5 ml-2" />
+      </button>
+      <button
+        onClick={() => { setCurrentPage('completed'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
+      >
+        View Completed Hikes <ChevronRight className="w-5 h-5 ml-2" />
+      </button>
+    </div>
+  );
+};
   const HomePage = () => {
     const [formData, setFormData] = useState({ name: '', phone: '' });
     const allItems = { ...itemLabels, ...customItems };
@@ -1775,7 +2166,7 @@ style={{ backgroundColor: '#6B8E23' }}
         </h1>
       </div>
     </div>
-    {currentPage === 'home' ? <HomePage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}
+    {currentPage === 'home' ? <DashboardPage /> : currentPage === 'calendar' ? <CalendarPage /> : currentPage === 'completed' ? <CompletedHikesPage /> : <HomePage />}
     <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
       <p>Questions? Contact your Sirimon Host. You know how!</p>
     </footer>
