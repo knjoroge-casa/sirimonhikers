@@ -1760,8 +1760,8 @@ const CarouselStats = () => {
         </div>
 
         {/* Rotating stat carousel */}
-<CarouselStats />
-
+        <CarouselStats />
+        </div>
       {/* ── NOTICE BOARD ── */}
       {(noticeBoard.length > 0 || isAdminAuthenticated) && (
         <div className="glass rounded-3xl p-6 mb-6">
@@ -1867,7 +1867,7 @@ const CarouselStats = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const nextHike = hikeCalendar.find(hike => new Date(hike.date) >= today);
-
+    
     return (
       <div className="max-w-2xl mx-auto">
         <AdminLoginModal />
