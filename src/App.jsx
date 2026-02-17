@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, MapPin, Clock, Info, ChevronRight, Download, Edit, Save, X, Lock, FileText } from 'lucide-react';
 import { supabase } from './lib/supabase';
 
@@ -1484,6 +1484,103 @@ const CompletedHikesPage = () => {
     </div>
   );
 };
+const CAROUSEL_STATS = [
+  { label: "Photos Taken", value: "4,300+", suffix: "Proof we were actually there.", icon: "📸" },
+  { label: "Laughs Had", value: "Uncountable", suffix: "Premium banter and hilarity ensues.", icon: "😂" },
+  { label: "Tears Cried", value: "A few", suffix: "Mostly on steep inclines and in bewitched bamboo forests.", icon: "😭" },
+  { label: "Fucks Given", value: "None", suffix: "Really didn't know we could pee anywhere.", icon: "🎯" },
+  { label: "Early Mornings", value: "Every single one", suffix: "Worth it. Every time. Mostly.", icon: "🌅" },
+];
+
+const CarouselStats = () => {
+  const [current, setCurrent] = useState(0);
+  const [sliding, setSliding] = useState(false);
+  const [direction, setDirection] = useState('left');
+  const [isPaused, setIsPaused] = useState(false);
+  const total = CAROUSEL_STATS.length;
+
+  const goTo = useCallback((index, dir = 'left') => {
+    if (sliding) return;
+    setDirection(dir);
+    setSliding(true);
+    setTimeout(() => {
+      setCurrent(index);
+      setSliding(false);
+    }, 300);
+  }, [sliding]);
+
+  const goNext = useCallback(() => {
+    goTo((current + 1) % total, 'left');
+  }, [current, total, goTo]);
+
+  const goPrev = useCallback(() => {
+    goTo((current - 1 + total) % total, 'right');
+  }, [current, total, goTo]);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(goNext, 4000);
+    return () => clearInterval(timer);
+  }, [isPaused, goNext]);
+
+  const stat = CAROUSEL_STATS[current];
+
+  return (
+    <div
+      className="glass-dark rounded-2xl p-4 relative overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Slide container */}
+      <div
+        className="flex items-center gap-4 transition-all duration-300"
+        style={{
+          opacity: sliding ? 0 : 1,
+          transform: sliding
+            ? `translateX(${direction === 'left' ? '-20px' : '20px'})`
+            : 'translateX(0)',
+        }}
+      >
+        <span className="text-3xl flex-shrink-0">{stat.icon}</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-500">{stat.label}</p>
+          <p className="text-lg font-bold text-gray-800">{stat.value}</p>
+          <p className="text-xs text-gray-500">{stat.suffix}</p>
+        </div>
+      </div>
+
+      {/* Left / right controls */}
+      <div className="flex items-center justify-between mt-4">
+        <button
+          onClick={goPrev}
+          className="text-gray-400 hover:text-gray-700 transition p-1"
+        >
+          ‹
+        </button>
+
+        {/* Dot indicators */}
+        <div className="flex gap-1.5">
+          {CAROUSEL_STATS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i, i > current ? 'left' : 'right')}
+              className="w-1.5 h-1.5 rounded-full transition-all duration-300"
+              style={{ backgroundColor: i === current ? '#6B8E23' : '#d1d5db' }}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={goNext}
+          className="text-gray-400 hover:text-gray-700 transition p-1"
+        >
+          ›
+        </button>
+      </div>
+    </div>
+  );
+};
+  
   const DashboardPage = () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -1522,26 +1619,6 @@ const CompletedHikesPage = () => {
   return (
     <div className="max-w-2xl mx-auto">
   <AdminLoginModal />
-
-  {/* Admin lock icon — top right */}
-  <div className="flex justify-end mb-4">
-    {isAdminAuthenticated ? (
-      <button
-        onClick={() => setIsAdminAuthenticated(false)}
-        className="text-sm text-green-700 font-semibold flex items-center gap-1 bg-green-100 px-3 py-1 rounded-full"
-      >
-        <Lock className="w-4 h-4" /> Admin · Tap to log out
-      </button>
-    ) : (
-      <button
-        onClick={() => setShowAdminLogin(true)}
-        className="text-gray-400 hover:text-gray-600"
-        title="Admin login"
-      >
-        <Lock className="w-5 h-5" />
-      </button>
-    )}
-  </div>
 
       {/* ── INTRO SECTION ── */}
       <div className="glass rounded-3xl p-6 mb-6 relative">
@@ -1627,24 +1704,24 @@ const CompletedHikesPage = () => {
         <div className="glass rounded-3xl p-6 mb-6">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-amber-600 mb-1">Save the Date</p>
+              <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#6B8E23' }} >Save the Date</p>
               <h2 className="text-2xl font-bold text-gray-800">{nextCalendarHike.hike}</h2>
               <p className="text-gray-600 mt-1">
                 {new Date(nextCalendarHike.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
             <div className="text-right">
-              <div className="bg-amber-50 rounded-2xl px-4 py-3">
-                <p className="text-xs text-amber-500 font-semibold uppercase tracking-wide">Countdown</p>
-                <p className="text-2xl font-bold text-amber-700 font-mono">{countdown}</p>
+              <div className="rounded-2xl px-4 py-3" style={{ backgroundColor: '#f5f7ee' }}>
+                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#6B8E23' }}>Countdown</p>
+                <p className="text-2xl font-bold font-mono" style={{ color: '#4a6015' }}>{countdown}</p>
               </div>
             </div>
           </div>
           {nextCalendarHike.prerequisites && (
             <p className="text-gray-600 text-sm mb-4">{nextCalendarHike.prerequisites}</p>
           )}
-          <div className="bg-amber-50 rounded-2xl px-4 py-3 text-center">
-            <p className="text-amber-700 text-sm font-semibold">Full hike details coming soon</p>
+          <div className="rounded-2xl px-4 py-3 text-center" style={{ backgroundColor: '#f5f7ee' }}>
+            <p className="text-sm font-semibold" style={{ color: '#4a6015' }}>Full hike details coming soon</p>
           </div>
         </div>
       ) : (
@@ -1682,16 +1759,8 @@ const CompletedHikesPage = () => {
           </div>
         </div>
 
-        {/* Rotating stat */}
-        <div className="glass-dark rounded-2xl p-4 flex items-center gap-4">
-          <span className="text-3xl">{rotatingStat.icon}</span>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-500">{rotatingStat.label}</p>
-            <p className="text-lg font-bold text-gray-800">{rotatingStat.value}</p>
-            <p className="text-xs text-gray-500">{rotatingStat.suffix}</p>
-          </div>
-        </div>
-      </div>
+        {/* Rotating stat carousel */}
+<CarouselStats />
 
       {/* ── NOTICE BOARD ── */}
       {(noticeBoard.length > 0 || isAdminAuthenticated) && (
@@ -2187,9 +2256,28 @@ style={{ backgroundColor: '#6B8E23' }}
       </div>
     </div>
     {currentPage === 'home' ? <DashboardPage /> : currentPage === 'calendar' ? <CalendarPage /> : currentPage === 'completed' ? <CompletedHikesPage /> : <HomePage />}
-    <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
-      <p>Questions? Contact your Sirimon Host. You know how!</p>
-    </footer>
+   <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
+  <p>Questions? Contact your Sirimon Host. You know how!</p>
+  <div className="mt-4 pb-4">
+    {isAdminAuthenticated ? (
+      <button
+        onClick={() => setIsAdminAuthenticated(false)}
+        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold text-white transition-all"
+        style={{ backgroundColor: '#6B8E23' }}
+      >
+        <Lock className="w-3 h-3" /> Admin · Logout
+      </button>
+    ) : (
+      <button
+        onClick={() => setShowAdminLogin(true)}
+        className="text-white/30 hover:text-white/80 transition-opacity duration-300 text-lg"
+        title="Admin login"
+      >
+        🔒
+      </button>
+    )}
+  </div>
+</footer>
     {isEditingCompletedHike && <EditCompletedHikeModal />}
   </div>
 );
