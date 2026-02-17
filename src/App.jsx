@@ -1643,7 +1643,7 @@ const CompletedHikesPage = () => {
             <p className="text-3xl font-bold text-gray-800">{totalHikes}</p>
             <p className="text-xs text-gray-500 mt-1 font-semibold uppercase tracking-wide">Hikes</p>
             <p className="text-xs text-gray-400 mt-1">
-              {totalHikes === 0 ? 'The adventure awaits.' : totalHikes === 1 ? 'And counting.' : 'mountains and counting.'}
+              {totalHikes === 0 ? 'The adventure awaits.' : totalHikes === 1 ? 'And counting.' : 'and counting.'}
             </p>
           </div>
           <div className="glass-dark rounded-2xl p-4 text-center">
