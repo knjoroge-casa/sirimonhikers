@@ -1521,7 +1521,27 @@ const CompletedHikesPage = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <AdminLoginModal />
+  <AdminLoginModal />
+
+  {/* Admin lock icon — top right */}
+  <div className="flex justify-end mb-4">
+    {isAdminAuthenticated ? (
+      <button
+        onClick={() => setIsAdminAuthenticated(false)}
+        className="text-sm text-green-700 font-semibold flex items-center gap-1 bg-green-100 px-3 py-1 rounded-full"
+      >
+        <Lock className="w-4 h-4" /> Admin · Tap to log out
+      </button>
+    ) : (
+      <button
+        onClick={() => setShowAdminLogin(true)}
+        className="text-gray-400 hover:text-gray-600"
+        title="Admin login"
+      >
+        <Lock className="w-5 h-5" />
+      </button>
+    )}
+  </div>
 
       {/* ── INTRO SECTION ── */}
       <div className="glass rounded-3xl p-6 mb-6 relative">
