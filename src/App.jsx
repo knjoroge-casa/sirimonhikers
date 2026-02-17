@@ -1657,7 +1657,7 @@ const CompletedHikesPage = () => {
             <p className="text-3xl font-bold text-gray-800">{totalElevation > 0 ? totalElevation.toLocaleString() : '—'}</p>
             <p className="text-xs text-gray-500 mt-1 font-semibold uppercase tracking-wide">Metres Up</p>
             <p className="text-xs text-gray-400 mt-1">
-              {totalElevation === 0 ? 'Sky is the limit.' : `That's Mt. Kenya ${(totalElevation / 5199).toFixed(1)}x. Casual.`}
+              {totalElevation === 0 ? 'Sky is the limit.' : `That's Mt. Kenya ${(totalElevation / 5199).toFixed(1)}x. Easy 🤪.`}
             </p>
           </div>
         </div>
