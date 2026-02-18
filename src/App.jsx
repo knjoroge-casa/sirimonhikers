@@ -1543,10 +1543,10 @@ const CarouselStats = () => {
       >
         <span className="text-3xl flex-shrink-0">{stat.icon}</span>
         <div className="flex-1 min-w-0 text-center">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-500">{stat.label}</p>
-          <p className="text-lg font-bold text-gray-800">{stat.value}</p>
-          <p className="text-xs text-gray-500">{stat.suffix}</p>
-        </div>
+  <p className="text-sm font-bold uppercase tracking-widest text-gray-500">{stat.label}</p>
+  <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
+  <p className="text-sm text-gray-500">{stat.suffix}</p>
+</div>
       </div>
 
       {/* Left / right controls */}
