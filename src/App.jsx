@@ -1721,14 +1721,77 @@ const CarouselStats = () => {
             <p className="text-gray-600 text-sm mb-4">{nextCalendarHike.prerequisites}</p>
           )}
           <div className="rounded-2xl px-4 py-3 text-center" style={{ backgroundColor: '#f5f7ee' }}>
-            <p className="text-sm font-semibold" style={{ color: '#4a6015' }}>Full hike details coming soon</p>
-          </div>
+  <p className="text-sm font-semibold mb-3" style={{ color: '#4a6015' }}>Full hike details coming soon</p>
+  {isAdminAuthenticated && (
+    <button
+      onClick={() => {
+        const newHike = {
+          name: nextCalendarHike.hike,
+          date: nextCalendarHike.date,
+          time: '',
+          location: '',
+          intro: '',
+          whatToExpect: nextCalendarHike.prerequisites,
+          difficulty: '',
+          duration: '',
+          distance: '',
+          elevation: '',
+          weather: '',
+          meetingPoint: '',
+          cost: '',
+          postHikeManenos: '',
+          lastWords: '',
+          whatToBring: {}
+        };
+        setUpcomingHike(newHike);
+        setCurrentPage('hike-details');
+        setIsEditing(true);
+      }}
+      className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 text-sm"
+    >
+      Add Full Details
+    </button>
+  )}
+</div>
         </div>
       ) : (
-        <div className="glass rounded-3xl p-6 mb-6 text-center">
-          <p className="text-gray-500 italic">No upcoming hikes scheduled yet. Check back soon!</p>
-        </div>
-      )}
+  <div className="glass rounded-3xl p-6 mb-6 text-center">
+    <p className="text-gray-500 italic mb-4">No upcoming hikes scheduled yet. Check back soon!</p>
+    {isAdminAuthenticated && (
+      <button
+        onClick={() => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const nextHike = hikeCalendar.find(h => new Date(h.date) >= today);
+          const newHike = {
+            name: nextHike?.hike || '',
+            date: nextHike?.date || '',
+            time: '',
+            location: '',
+            intro: '',
+            whatToExpect: nextHike?.prerequisites || '',
+            difficulty: '',
+            duration: '',
+            distance: '',
+            elevation: '',
+            weather: '',
+            meetingPoint: '',
+            cost: '',
+            postHikeManenos: '',
+            lastWords: '',
+            whatToBring: {}
+          };
+          setUpcomingHike(newHike);
+          setCurrentPage('hike-details');
+          setIsEditing(true);
+        }}
+        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
+      >
+        + Add Upcoming Hike
+      </button>
+    )}
+  </div>
+)}
 
       {/* ── DAMAGE REPORT ── */}
       <div className="glass rounded-3xl p-6 mb-6">
