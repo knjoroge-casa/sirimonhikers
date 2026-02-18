@@ -1810,7 +1810,7 @@ const CarouselStats = () => {
             <p className="text-3xl font-bold text-gray-800">{totalKm > 0 ? totalKm.toLocaleString(undefined, { maximumFractionDigits: 1 }) : '—'}</p>
             <p className="text-xs text-gray-500 mt-1 font-semibold uppercase tracking-wide">Kilometres</p>
             <p className="text-xs text-gray-400 mt-1">
-              {totalKm === 0 ? 'Boots are ready.' : 'walked voluntarily. No one chased us.'}
+              {totalKm === 0 ? 'Boots are ready.' : 'hiked voluntarily. No one forced us.'}
             </p>
           </div>
           <div className="glass-dark rounded-2xl p-4 text-center">
