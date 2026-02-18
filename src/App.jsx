@@ -2173,7 +2173,8 @@ style={{ backgroundColor: '#6B8E23' }}
         </h1>
       </div>
     </div>
-{currentPage === 'home' ? <DashboardPage /> : currentPage === 'hike-details' ? <HikeDetailsPage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}   <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
+{currentPage === 'home' ? <DashboardPage /> : currentPage === 'hike-details' ? <HikeDetailsPage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}   
+    <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
   <p>Questions? Contact your Sirimon Host. You know how!</p>
   <div className="mt-4 pb-4">
     {isAdminAuthenticated ? (
