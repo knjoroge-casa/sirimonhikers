@@ -246,11 +246,17 @@ if (hikeData?.id) {
         what_to_bring: data.whatToBring
       };
 
-      const { error } = await supabase.from('upcoming_hike').insert([hikeToSave]);
-      
-      if (error) throw error;
-      
-      setUpcomingHike(data);
+      const { data: insertedData, error } = await supabase.from('upcoming_hike').insert([hikeToSave]).select();
+
+if (error) throw error;
+
+// Use the returned data which includes the generated ID
+if (insertedData && insertedData.length > 0) {
+  setUpcomingHike({
+    ...data,
+    id: insertedData[0].id
+  });
+}
       alert('Saved!');
       setIsEditing(false);
     } catch (e) {
