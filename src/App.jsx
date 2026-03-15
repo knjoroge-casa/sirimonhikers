@@ -604,7 +604,23 @@ const selectedItems = Object.keys(allItems)
     console.log('Registering:', { name, phone, hike: upcomingHike.name });
     
     try {
-      // Use GET to avoid CORS issues
+      // Save to Supabase first
+      const { error: supabaseError } = await supabase
+        .from('registrations')
+        .insert([{
+          hike_id: upcomingHike.id || null,
+          hike_name: upcomingHike.name,
+          hike_date: upcomingHike.date,
+          name: name,
+          phone: phone
+        }]);
+
+      if (supabaseError) {
+        console.error('Supabase registration error:', supabaseError);
+        // Continue to Google Sheets even if Supabase fails
+      }
+
+      // Also save to Google Sheets (backup)
       const params = new URLSearchParams({
         name: name,
         phone: phone,
@@ -615,12 +631,11 @@ const selectedItems = Object.keys(allItems)
       
       const url = `https://script.google.com/macros/s/AKfycbwRfnt-uXbPJH7InEiWOHs9VQ3ZCzhvOMrFCC8P3RkCqDg69ru1pmrdlGkosJBlvWHB/exec?${params.toString()}`;
       
-      const response = await fetch(url, { 
+      await fetch(url, { 
         method: 'GET',
         mode: 'no-cors'
       });
       
-      // With no-cors, we can't read the response, so just show success
       alert(`✅ Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
       
     } catch (error) {
