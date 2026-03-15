@@ -56,6 +56,7 @@ const [dashboardIntro, setDashboardIntro] = useState('');
 const [isEditingIntro, setIsEditingIntro] = useState(false);
 const [noticeBoard, setNoticeBoard] = useState([]);
 const [isEditingNotices, setIsEditingNotices] = useState(false);
+  const [registrations, setRegistrations] = useState([]);
 const [rotatingStat] = useState(() => {
   const stats = [
     { label: "Photos Taken", value: "4,300+", suffix: "Proof we were actually there.", icon: "📸" },
@@ -181,6 +182,21 @@ try {
   setNoticeBoard(noticeData || []);
 } catch (e) {
   setNoticeBoard([]);
+}
+    // Load registrations for upcoming hike
+if (hikeData?.id) {
+  const { data: regData, error: regError } = await supabase
+    .from('registrations')
+    .select('*')
+    .eq('hike_id', hikeData.id)
+    .order('registered_at', { ascending: true });
+
+  if (regError) {
+    console.error('Error loading registrations:', regError);
+  }
+  setRegistrations(regData || []);
+} else {
+  setRegistrations([]);
 }
   } catch (error) {
     console.error('Error loading data:', error);
@@ -642,6 +658,30 @@ const selectedItems = Object.keys(allItems)
       console.error('Registration error:', error);
       alert(`Registration received! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
     }
+  }
+};
+
+  const toggleCheckIn = async (registrationId, currentStatus) => {
+  try {
+    const { error } = await supabase
+      .from('registrations')
+      .update({
+        checked_in: !currentStatus,
+        checked_in_at: !currentStatus ? new Date().toISOString() : null
+      })
+      .eq('id', registrationId);
+
+    if (error) throw error;
+
+    // Update local state
+    setRegistrations(registrations.map(reg =>
+      reg.id === registrationId
+        ? { ...reg, checked_in: !currentStatus, checked_in_at: !currentStatus ? new Date().toISOString() : null }
+        : reg
+    ));
+  } catch (error) {
+    console.error('Error updating check-in:', error);
+    alert('Error updating attendance');
   }
 };
 const useCountdown = (targetDate) => {
