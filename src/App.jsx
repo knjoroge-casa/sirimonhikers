@@ -488,7 +488,7 @@ const selectedItems = Object.keys(allItems)
     <h1>${upcomingHike.name}</h1>
     <div class="info-row"><span class="label">Date:</span> ${formattedDate}</div>
     <div class="info-row"><span class="label">Time:</span> ${upcomingHike.time}</div>
-    <div class="info-row"><span class="label">Location:</span> ${upcomingHike.location}</div>
+    <div class="info-row"><span class="label">Hike Location:</span> ${upcomingHike.location}</div>
     <div class="info-row"><span class="label">Meeting Point:</span> ${upcomingHike.meetingPoint}</div>
     <div class="info-row"><span class="label">Cost:</span> ${upcomingHike.cost}</div>
   </div>
@@ -921,7 +921,7 @@ style={{ backgroundColor: '#6B8E23' }}>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Hike Location</label>
             <input
               type="text"
               value={editData.location}
