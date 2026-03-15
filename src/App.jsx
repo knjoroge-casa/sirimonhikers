@@ -646,20 +646,20 @@ const calculate = () => {
     return;
   }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-      if (days > 0) {
-        setCountdown(`${days}d ${hours}h ${minutes}m`);
-      } else {
-        setCountdown(`${hours}h ${minutes}m`);
-      }
-    };
+  if (days > 0) {
+    setCountdown(`${days}d ${hours}h ${minutes}m`);
+  } else {
+    setCountdown(`${hours}h ${minutes}m`);
+  }
+};
 
-    calculate();
-    const interval = setInterval(calculate, 60000);
-    return () => clearInterval(interval);
+calculate();
+const interval = setInterval(calculate, 60000);
+return () => clearInterval(interval);
   }, [targetDate]);
 
   return countdown;
