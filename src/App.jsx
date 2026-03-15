@@ -2061,31 +2061,34 @@ if (!upcomingHike) {
   </div>
   <div className="flex items-center text-gray-700">
     <MapPin className="w-5 h-5 mr-3 text-blue-600" />
-    <span>{upcomingHike.meetingPoint}</span>
+    <span><strong>Meeting Point:</strong> {upcomingHike.meetingPoint}</span>
   </div>
   <div className="flex items-center text-gray-700">
     <MapPin className="w-5 h-5 mr-3 text-blue-600" />
-    <span>{upcomingHike.location}</span>
+    <span><strong>Location:</strong> {upcomingHike.location}</span>
   </div>
   <div className="flex items-center text-gray-700">
     <Clock className="w-5 h-5 mr-3 text-blue-600" />
     <span>{upcomingHike.duration} • {upcomingHike.distance}</span>
   </div>
 </div>
-              {upcomingHike.intro && (
+
+{upcomingHike.intro && (
   <div className="mb-6">
     <p className="text-gray-700 italic" style={{ whiteSpace: 'pre-wrap' }}>
       {upcomingHike.intro}
     </p>
   </div>
 )}
-              <div className="mb-6">
+
+<div className="mb-6">
   <h3 className="font-semibold text-gray-800 mb-2">What to Expect</h3>
   <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
     {upcomingHike.whatToExpect}
   </p>
 </div>
-              <div className="mb-6 glass-dark p-4 rounded-2xl">
+
+<div className="mb-6 glass-dark p-4 rounded-2xl">
   <div className="grid grid-cols-4 gap-4 text-sm">
     <div>
       <span className="font-semibold text-gray-700">Difficulty:</span>
@@ -2105,7 +2108,15 @@ if (!upcomingHike) {
     </div>
   </div>
 </div>
-              <div className="glass-dark p-4 rounded-2xl mb-6">
+
+<div className="mb-6">
+  <h3 className="font-semibold text-gray-800 mb-2">Weather</h3>
+  <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
+    {upcomingHike.weather}
+  </p>
+</div>
+
+<div className="glass-dark p-4 rounded-2xl mb-6">
   <h3 className="font-semibold text-gray-800 mb-1 flex items-center">
     <Info className="w-5 h-5 mr-2 text-blue-600" />
     Estimated Cost
@@ -2114,12 +2125,6 @@ if (!upcomingHike) {
     Final cost shared on the day. Covers access fees, guides, logistics, lunch, and all the invisible work that makes this feel effortless.
   </p>
   <p className="text-gray-700 font-semibold">{upcomingHike.cost}</p>
-</div>
-              <div className="mb-6">
-  <h3 className="font-semibold text-gray-800 mb-2">Weather</h3>
-  <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
-    {upcomingHike.weather}
-  </p>
 </div>
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-800 mb-3">What to Bring:</h3>
