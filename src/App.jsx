@@ -636,15 +636,24 @@ const useCountdown = (targetDate) => {
     if (!targetDate) return;
 
     const calculate = () => {
-      const now = new Date();
-      const target = new Date(targetDate + 'T00:00:00');
-      const diff = target - now;
+  const now = new Date();
+  const target = new Date(targetDate + 'T00:00:00');
+  const diff = target - now;
 
-      if (diff <= 0) {
-        setCountdown('Today!');
-        return;
-      }
+  // If date has passed
+  if (diff <= 0) {
+    const daysPast = Math.ceil(Math.abs(diff) / (1000 * 60 * 60 * 24));
+    if (daysPast === 0) {
+      setCountdown('Today!');
+    } else if (daysPast === 1) {
+      setCountdown('Yesterday');
+    } else {
+      setCountdown(`${daysPast} days ago`);
+    }
+    return;
+  }
 
+  // If date is in the future
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
