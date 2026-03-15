@@ -2097,10 +2097,13 @@ if (!upcomingHike) {
   </div>
 </div>
               <div className="glass-dark p-4 rounded-2xl mb-6">
-  <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+  <h3 className="font-semibold text-gray-800 mb-1 flex items-center">
     <Info className="w-5 h-5 mr-2 text-blue-600" />
-    Cost
+    Estimated Cost
   </h3>
+  <p className="text-xs text-gray-500 italic mb-2">
+    Final cost shared on the day. Covers access fees, guides, logistics, lunch, and all the invisible work that makes this feel effortless.
+  </p>
   <p className="text-gray-700 font-semibold">{upcomingHike.cost}</p>
 </div>
               <div className="mb-6">
