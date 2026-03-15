@@ -923,16 +923,6 @@ style={{ backgroundColor: '#6B8E23' }}>
 </div>
 
 <div>
-  <label className="block text-sm font-semibold text-gray-700 mb-1">Meeting Point</label>
-  <input
-    type="text"
-    value={editData.meetingPoint}
-    onChange={(e) => setEditData({ ...editData, meetingPoint: e.target.value })}
-    className="w-full px-4 py-2 glass rounded-2xl border-0"
-  />
-</div>
-
-<div>
   <label className="block text-sm font-semibold text-gray-700 mb-1">Hike Location</label>
   <input
     type="text"
@@ -941,7 +931,15 @@ style={{ backgroundColor: '#6B8E23' }}>
     className="w-full px-4 py-2 glass rounded-2xl border-0"
   />
 </div>
-
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Meeting Point</label>
+  <input
+    type="text"
+    value={editData.meetingPoint}
+    onChange={(e) => setEditData({ ...editData, meetingPoint: e.target.value })}
+    className="w-full px-4 py-2 glass rounded-2xl border-0"
+  />
+</div>
 <div>
   <label className="block text-sm font-semibold text-gray-700 mb-1">Introduction</label>
   <textarea
