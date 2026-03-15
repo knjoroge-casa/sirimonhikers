@@ -1064,7 +1064,7 @@ style={{ backgroundColor: '#6B8E23' }}
             Save Changes
           </button>
           {(() => {
-  const hikeDate = new Date(editData.date);
+  const hikeDate = new Date(editData.date + 'T00:00:00');
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const dayAfterHike = new Date(hikeDate);
