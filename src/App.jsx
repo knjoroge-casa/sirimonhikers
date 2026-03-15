@@ -891,63 +891,78 @@ style={{ backgroundColor: '#6B8E23' }}>
         </div>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Hike Name</label>
-            <input
-              type="text"
-              value={editData.name}
-              onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-              className="w-full px-4 py-2 glass rounded-2xl border-0"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Date</label>
-              <input
-                type="date"
-                value={editData.date}
-                onChange={(e) => setEditData({ ...editData, date: e.target.value })}
-                className="w-full px-4 py-2 glass rounded-2xl border-0"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Time</label>
-              <input
-                type="text"
-                value={editData.time}
-                onChange={(e) => setEditData({ ...editData, time: e.target.value })}
-                placeholder="7:00 AM"
-                className="w-full px-4 py-2 glass rounded-2xl border-0"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Hike Location</label>
-            <input
-              type="text"
-              value={editData.location}
-              onChange={(e) => setEditData({ ...editData, location: e.target.value })}
-              className="w-full px-4 py-2 glass rounded-2xl border-0"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Introduction</label>
-            <textarea
-              value={editData.intro}
-              onChange={(e) => setEditData({ ...editData, intro: e.target.value })}
-              rows="2"
-              className="w-full px-4 py-2 glass rounded-2xl border-0"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">What to Expect</label>
-            <textarea
-              value={editData.whatToExpect}
-              onChange={(e) => setEditData({ ...editData, whatToExpect: e.target.value })}
-              rows="3"
-              className="w-full px-4 py-2 glass rounded-2xl border-0"
-            />
-          </div>
-          <div className="grid grid-cols-4 gap-4">
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Hike Name</label>
+  <input
+    type="text"
+    value={editData.name}
+    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+    className="w-full px-4 py-2 glass rounded-2xl border-0"
+  />
+</div>
+
+<div className="grid grid-cols-2 gap-4">
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-1">Date</label>
+    <input
+      type="date"
+      value={editData.date}
+      onChange={(e) => setEditData({ ...editData, date: e.target.value })}
+      className="w-full px-4 py-2 glass rounded-2xl border-0"
+    />
+  </div>
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-1">Time</label>
+    <input
+      type="text"
+      value={editData.time}
+      onChange={(e) => setEditData({ ...editData, time: e.target.value })}
+      placeholder="7:00 AM"
+      className="w-full px-4 py-2 glass rounded-2xl border-0"
+    />
+  </div>
+</div>
+
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Meeting Point</label>
+  <input
+    type="text"
+    value={editData.meetingPoint}
+    onChange={(e) => setEditData({ ...editData, meetingPoint: e.target.value })}
+    className="w-full px-4 py-2 glass rounded-2xl border-0"
+  />
+</div>
+
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Hike Location</label>
+  <input
+    type="text"
+    value={editData.location}
+    onChange={(e) => setEditData({ ...editData, location: e.target.value })}
+    className="w-full px-4 py-2 glass rounded-2xl border-0"
+  />
+</div>
+
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Introduction</label>
+  <textarea
+    value={editData.intro}
+    onChange={(e) => setEditData({ ...editData, intro: e.target.value })}
+    rows="2"
+    className="w-full px-4 py-2 glass rounded-2xl border-0"
+  />
+</div>
+
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">What to Expect</label>
+  <textarea
+    value={editData.whatToExpect}
+    onChange={(e) => setEditData({ ...editData, whatToExpect: e.target.value })}
+    rows="3"
+    className="w-full px-4 py-2 glass rounded-2xl border-0"
+  />
+</div>
+
+<div className="grid grid-cols-4 gap-4">
   <div>
     <label className="block text-sm font-semibold text-gray-700 mb-1">Difficulty</label>
     <select
@@ -991,27 +1006,19 @@ style={{ backgroundColor: '#6B8E23' }}>
     />
   </div>
 </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Weather</label>
-            <textarea
-              value={editData.weather}
-              onChange={(e) => setEditData({ ...editData, weather: e.target.value })}
-              rows="2"
-              placeholder="Expected weather conditions"
-              className="w-full px-4 py-2 glass rounded-2xl border-0"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Meeting Point</label>
-              <input
-                type="text"
-                value={editData.meetingPoint}
-                onChange={(e) => setEditData({ ...editData, meetingPoint: e.target.value })}
-                className="w-full px-4 py-2 glass rounded-2xl border-0"
-              />
-            </div>
-            <div>
+
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Weather</label>
+  <textarea
+    value={editData.weather}
+    onChange={(e) => setEditData({ ...editData, weather: e.target.value })}
+    rows="2"
+    placeholder="Expected weather conditions"
+    className="w-full px-4 py-2 glass rounded-2xl border-0"
+  />
+</div>
+
+<div>
   <label className="block text-sm font-semibold text-gray-700 mb-1">Estimated Cost</label>
   <p className="text-xs text-gray-500 italic mb-2">
     Final cost shared on the day. Covers access fees, guides, logistics, lunch, and all the invisible work that makes this feel effortless.
@@ -1024,27 +1031,28 @@ style={{ backgroundColor: '#6B8E23' }}>
     className="w-full px-4 py-2 glass rounded-2xl border-0"
   />
 </div>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Post Hike Manenos</label>
-            <textarea
-              value={editData.postHikeManenos}
-              onChange={(e) => setEditData({ ...editData, postHikeManenos: e.target.value })}
-              rows="2"
-              placeholder="What happens after the hike?"
-              className="w-full px-4 py-2 glass rounded-2xl border-0"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Last Words</label>
-            <textarea
-              value={editData.lastWords}
-              onChange={(e) => setEditData({ ...editData, lastWords: e.target.value })}
-              rows="2"
-              placeholder="Final tips or encouragement"
-              className="w-full px-4 py-2 glass rounded-2xl border-0"
-            />
-          </div>
+
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Post Hike Manenos</label>
+  <textarea
+    value={editData.postHikeManenos}
+    onChange={(e) => setEditData({ ...editData, postHikeManenos: e.target.value })}
+    rows="2"
+    placeholder="What happens after the hike?"
+    className="w-full px-4 py-2 glass rounded-2xl border-0"
+  />
+</div>
+
+<div>
+  <label className="block text-sm font-semibold text-gray-700 mb-1">Last Words</label>
+  <textarea
+    value={editData.lastWords}
+    onChange={(e) => setEditData({ ...editData, lastWords: e.target.value })}
+    rows="2"
+    placeholder="Final tips or encouragement"
+    className="w-full px-4 py-2 glass rounded-2xl border-0"
+  />
+</div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">What to Bring</label>
             <div className="grid grid-cols-2 gap-3">
@@ -2049,37 +2057,41 @@ if (!upcomingHike) {
                 </div>
               </div>
               <div className="space-y-3 mb-6">
+  <div className="space-y-3 mb-6">
   <div className="flex items-center text-gray-700">
     <Calendar className="w-5 h-5 mr-3 text-blue-600" />
     <span>{formattedDate} at {upcomingHike.time}</span>
   </div>
   <div className="flex items-center text-gray-700">
     <MapPin className="w-5 h-5 mr-3 text-blue-600" />
-    <span>{upcomingHike.meetingPoint}</span>
+    <span><strong>Meeting Point:</strong> {upcomingHike.meetingPoint}</span>
   </div>
   <div className="flex items-center text-gray-700">
     <MapPin className="w-5 h-5 mr-3 text-blue-600" />
-    <span>{upcomingHike.location}</span>
+    <span><strong>Location:</strong> {upcomingHike.location}</span>
   </div>
   <div className="flex items-center text-gray-700">
     <Clock className="w-5 h-5 mr-3 text-blue-600" />
     <span>{upcomingHike.duration} • {upcomingHike.distance}</span>
   </div>
 </div>
-              {upcomingHike.intro && (
+
+{upcomingHike.intro && (
   <div className="mb-6">
     <p className="text-gray-700 italic" style={{ whiteSpace: 'pre-wrap' }}>
       {upcomingHike.intro}
     </p>
   </div>
 )}
-              <div className="mb-6">
+
+<div className="mb-6">
   <h3 className="font-semibold text-gray-800 mb-2">What to Expect</h3>
   <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
     {upcomingHike.whatToExpect}
   </p>
 </div>
-              <div className="mb-6 glass-dark p-4 rounded-2xl">
+
+<div className="mb-6 glass-dark p-4 rounded-2xl">
   <div className="grid grid-cols-4 gap-4 text-sm">
     <div>
       <span className="font-semibold text-gray-700">Difficulty:</span>
@@ -2099,7 +2111,15 @@ if (!upcomingHike) {
     </div>
   </div>
 </div>
-              <div className="glass-dark p-4 rounded-2xl mb-6">
+
+<div className="mb-6">
+  <h3 className="font-semibold text-gray-800 mb-2">Weather</h3>
+  <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
+    {upcomingHike.weather}
+  </p>
+</div>
+
+<div className="glass-dark p-4 rounded-2xl mb-6">
   <h3 className="font-semibold text-gray-800 mb-1 flex items-center">
     <Info className="w-5 h-5 mr-2 text-blue-600" />
     Estimated Cost
@@ -2108,12 +2128,6 @@ if (!upcomingHike) {
     Final cost shared on the day. Covers access fees, guides, logistics, lunch, and all the invisible work that makes this feel effortless.
   </p>
   <p className="text-gray-700 font-semibold">{upcomingHike.cost}</p>
-</div>
-              <div className="mb-6">
-  <h3 className="font-semibold text-gray-800 mb-2">Weather</h3>
-  <p className="text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>
-    {upcomingHike.weather}
-  </p>
 </div>
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-800 mb-3">What to Bring:</h3>
