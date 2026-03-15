@@ -629,21 +629,22 @@ const selectedItems = Object.keys(allItems)
     }
   }
 };
-const useCountdown = (targetDate) => {
-  const [countdown, setCountdown] = useState('');
+const calculate = () => {
+  const now = new Date();
+  const target = new Date(targetDate + 'T00:00:00');
+  const diff = target - now;
 
-  useEffect(() => {
-    if (!targetDate) return;
-
-    const calculate = () => {
-      const now = new Date();
-      const target = new Date(targetDate + 'T00:00:00');
-      const diff = target - now;
-
-      if (diff <= 0) {
-        setCountdown('Today!');
-        return;
-      }
+  if (diff <= 0) {
+    const daysSince = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24));
+    if (daysSince === 0) {
+      setCountdown('Today!');
+    } else if (daysSince === 1) {
+      setCountdown('Yesterday');
+    } else {
+      setCountdown(`${daysSince} days ago`);
+    }
+    return;
+  }
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
