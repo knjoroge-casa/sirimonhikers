@@ -653,6 +653,7 @@ const selectedItems = Object.keys(allItems)
       });
       
       alert(`✅ Registration successful! You're signed up for ${upcomingHike.name}. We'll contact you at ${phone}`);
+      await loadData(); // Reload to show new registration in admin list
       
     } catch (error) {
       console.error('Registration error:', error);
@@ -2244,6 +2245,48 @@ style={{ backgroundColor: '#6B8E23' }}
                 </button>
               </div>
             </div>
+
+            {/* ── REGISTERED HIKERS (ADMIN ONLY) ── */}
+{isAdminAuthenticated && (
+  <div className="glass rounded-3xl p-6 mb-6">
+    <div className="flex justify-between items-center mb-4">
+      <div>
+        <h3 className="font-semibold text-gray-800 text-lg">Registered Hikers</h3>
+        <p className="text-sm text-gray-500">
+          {registrations.length} registered • {registrations.filter(r => r.checked_in).length} checked in
+        </p>
+      </div>
+    </div>
+
+    {registrations.length === 0 ? (
+      <p className="text-gray-400 italic text-sm">No registrations yet</p>
+    ) : (
+      <div className="space-y-2">
+        {registrations.map((reg) => (
+          <div key={reg.id} className="flex items-center justify-between glass-dark p-3 rounded-2xl">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={reg.checked_in || false}
+                onChange={() => toggleCheckIn(reg.id, reg.checked_in)}
+                className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
+              />
+              <div>
+                <p className="font-semibold text-gray-800">{reg.name}</p>
+                <p className="text-xs text-gray-500">{reg.phone}</p>
+              </div>
+            </div>
+            {reg.checked_in && reg.checked_in_at && (
+              <span className="text-xs text-green-600 font-semibold">
+                ✓ {new Date(reg.checked_in_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
             <button
   onClick={() => {
     setCurrentPage('calendar');
