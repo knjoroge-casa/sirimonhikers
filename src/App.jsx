@@ -89,6 +89,7 @@ const [rotatingStat] = useState(() => {
 
     if (hikeData) {
       setUpcomingHike({
+         id: hikeData.id,  // ← Add this line
         ...hikeData,
         whatToExpect: hikeData.what_to_expect,
         meetingPoint: hikeData.meeting_point,
