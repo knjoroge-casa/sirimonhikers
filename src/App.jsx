@@ -1419,7 +1419,7 @@ const CompletedHikesPage = () => {
     </div>
     <div>
       <span className="font-semibold text-gray-700">Distance</span>
-      <p className="text-gray-600 text-xs text-gray-400">Planned</p>
+      <p className="text-gray-600 text-xs text-gray-400">Estimated</p>
       <p className="text-gray-600">{hike.distance}</p>
       {hike.actual_distance && (
         <>
@@ -1434,7 +1434,7 @@ const CompletedHikesPage = () => {
     </div>
     <div>
       <span className="font-semibold text-gray-700">Elevation</span>
-      <p className="text-xs text-gray-400">Planned</p>
+      <p className="text-xs text-gray-400">Estimated</p>
       <p className="text-gray-600">{hike.elevation}</p>
       {hike.actual_elevation && (
         <>
@@ -1459,7 +1459,7 @@ const CompletedHikesPage = () => {
       <p className="text-gray-700 mt-1"><span className="font-semibold">Meeting Point:</span> {hike.meeting_point}</p>
       <div className="mt-1">
   <span className="font-semibold text-gray-700">Cost</span>
-  <p className="text-xs text-gray-400">Planned</p>
+  <p className="text-xs text-gray-400">Estimated</p>
   <p className="text-gray-700">{hike.cost}</p>
   {hike.actual_cost && (
     <>
