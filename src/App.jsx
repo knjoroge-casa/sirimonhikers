@@ -628,15 +628,26 @@ const selectedItems = Object.keys(allItems)
     
     try {
       // Save to Supabase first
-      const { error: supabaseError } = await supabase
+      console.log('Attempting Supabase insert with:', {
+        hike_id: upcomingHike?.id || null,
+        hike_name: upcomingHike.name,
+        hike_date: upcomingHike.date,
+        name: name,
+        phone: phone
+      });
+
+      const { data: insertedData, error: supabaseError } = await supabase
         .from('registrations')
         .insert([{
-          hike_id: upcomingHike.id || null,
+          hike_id: upcomingHike?.id || null,
           hike_name: upcomingHike.name,
           hike_date: upcomingHike.date,
           name: name,
           phone: phone
-        }]);
+        }])
+        .select();
+
+      console.log('Supabase insert result:', { data: insertedData, error: supabaseError });
 
       if (supabaseError) {
         console.error('Supabase registration error:', supabaseError);
