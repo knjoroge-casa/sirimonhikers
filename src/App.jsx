@@ -1837,7 +1837,6 @@ const CarouselStats = () => {
         };
         setUpcomingHike(newHike);
         setCurrentPage('hike-details');
-        setIsEditing(true);
       }}
       className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 text-sm"
     >
