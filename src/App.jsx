@@ -96,7 +96,7 @@ const [rotatingStat] = useState(() => {
   postHikeManenos: hikeData.post_hike_manenos,
   lastWords: hikeData.last_words,
   whatToBring: hikeData.what_to_bring || {},
-  : hikeData.registration_closed || false
+  registrationClosed: hikeData.registration_closed || false
 });
     } else {
       setUpcomingHike(null);
@@ -246,7 +246,7 @@ if (hikeData?.id) {
   post_hike_manenos: data.postHikeManenos,
   last_words: data.lastWords,
   what_to_bring: data.whatToBring,
-  registration_closed: data.registrationClosed || false
+  registration_closed: data. || false
 };
 
       const { data: insertedData, error } = await supabase.from('upcoming_hike').insert([hikeToSave]).select();
@@ -1131,7 +1131,7 @@ style={{ backgroundColor: '#6B8E23' }}>
   <input
     type="checkbox"
     id="registration-closed"
-    checked={editData.registrationClosed || false}
+    checked={editData. || false}
     onChange={(e) => setEditData({ ...editData, registrationClosed: e.target.checked })}
     className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
   />
