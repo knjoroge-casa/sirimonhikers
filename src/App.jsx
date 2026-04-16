@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, MapPin, Clock, Info, ChevronRight, Download, Edit, Save, X, Lock, FileText } from 'lucide-react';
 import { supabase } from './lib/supabase';
+import { Analytics } from '@vercel/analytics/react';
 
 const ADMIN_PASSWORD = "hiking2026";
 
@@ -2461,6 +2462,7 @@ style={{ backgroundColor: '#6B8E23' }}
   </div>
 </footer>
     {isEditingCompletedHike && <EditCompletedHikeModal />}
+    <Analytics />
   </div>
 );
 }
