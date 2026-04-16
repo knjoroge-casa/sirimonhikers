@@ -88,15 +88,16 @@ const [rotatingStat] = useState(() => {
     }
 
     if (hikeData) {
-      setUpcomingHike({
-         id: hikeData.id,  // ← Add this line
-        ...hikeData,
-        whatToExpect: hikeData.what_to_expect,
-        meetingPoint: hikeData.meeting_point,
-        postHikeManenos: hikeData.post_hike_manenos,
-        lastWords: hikeData.last_words,
-        whatToBring: hikeData.what_to_bring || {}
-      });
+     setUpcomingHike({
+  id: hikeData.id,
+  ...hikeData,
+  whatToExpect: hikeData.what_to_expect,
+  meetingPoint: hikeData.meeting_point,
+  postHikeManenos: hikeData.post_hike_manenos,
+  lastWords: hikeData.last_words,
+  whatToBring: hikeData.what_to_bring || {},
+  registrationClosed: hikeData.registration_closed || false
+});
     } else {
       setUpcomingHike(null);
     }
