@@ -96,7 +96,7 @@ const [rotatingStat] = useState(() => {
   postHikeManenos: hikeData.post_hike_manenos,
   lastWords: hikeData.last_words,
   whatToBring: hikeData.what_to_bring || {},
-  registrationClosed: hikeData.registration_closed || false
+  : hikeData.registration_closed || false
 });
     } else {
       setUpcomingHike(null);
@@ -2282,7 +2282,7 @@ if (!upcomingHike) {
       Register Now
     </button>
   </div>
-  </div>
+ 
  
 
             {/* ── REGISTERED HIKERS (ADMIN ONLY) ── */}
