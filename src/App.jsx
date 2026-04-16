@@ -1127,6 +1127,18 @@ style={{ backgroundColor: '#6B8E23' }}>
     className="w-full px-4 py-2 glass rounded-2xl border-0"
   />
 </div>
+          <div className="flex items-center gap-3 p-4 glass-dark rounded-2xl">
+  <input
+    type="checkbox"
+    id="registration-closed"
+    checked={editData.registrationClosed || false}
+    onChange={(e) => setEditData({ ...editData, registrationClosed: e.target.checked })}
+    className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
+  />
+  <label htmlFor="registration-closed" className="font-semibold text-gray-800 cursor-pointer">
+    Close Registration (Max capacity reached)
+  </label>
+</div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">What to Bring</label>
             <div className="grid grid-cols-2 gap-3">
