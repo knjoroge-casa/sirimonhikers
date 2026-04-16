@@ -1136,7 +1136,7 @@ style={{ backgroundColor: '#6B8E23' }}>
     className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
   />
   <label htmlFor="registration-closed" className="font-semibold text-gray-800 cursor-pointer">
-    Close Registration (Max capacity reached)
+    Close Registration (The bus is full!)
   </label>
 </div>
           <div>
@@ -2255,7 +2255,7 @@ if (!upcomingHike) {
               {upcomingHike.registrationClosed ? (
   <div className="glass rounded-3xl p-6 mb-6 text-center">
     <h3 className="font-semibold text-gray-800 text-lg mb-2">Registration Closed</h3>
-    <p className="text-gray-600">This hike has reached maximum capacity. Registration is no longer available.</p>
+    <p className="text-gray-600">Tyranny of numbers!</p>
   </div>
 ) : (
   <div className="space-y-4">
