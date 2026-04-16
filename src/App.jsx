@@ -1136,7 +1136,7 @@ style={{ backgroundColor: '#6B8E23' }}>
     className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
   />
   <label htmlFor="registration-closed" className="font-semibold text-gray-800 cursor-pointer">
-    Close Registration (Max capacity reached)
+    Close Registration (The bus is full please!)
   </label>
 </div>
           <div>
@@ -2255,7 +2255,7 @@ if (!upcomingHike) {
               {upcomingHike.registrationClosed ? (
   <div className="glass rounded-3xl p-6 mb-6 text-center">
     <h3 className="font-semibold text-gray-800 text-lg mb-2">Registration Closed</h3>
-    <p className="text-gray-600">Because life is that sometimes.</p>
+    <p className="text-gray-600">Because life is like sometimes.</p>
   </div>
 ) : (
   <div className="space-y-4">
@@ -2282,7 +2282,7 @@ if (!upcomingHike) {
       Register Now
     </button>
   </div>
-  )}
+)}
  
 
             {/* ── REGISTERED HIKERS (ADMIN ONLY) ── */}
@@ -2337,7 +2337,7 @@ if (!upcomingHike) {
               <ChevronRight className="w-5 h-5 ml-2" />
             </button>
           </>
-       
+       </div>
       </div>
     );
   };
