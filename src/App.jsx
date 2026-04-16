@@ -229,23 +229,24 @@ if (hikeData?.id) {
       
       // Insert new hike
       const hikeToSave = {
-        name: data.name,
-        date: data.date,
-        time: data.time,
-        location: data.location,
-        intro: data.intro,
-        what_to_expect: data.whatToExpect,
-        difficulty: data.difficulty,
-        duration: data.duration,
-        distance: data.distance,
-        elevation: data.elevation,
-        weather: data.weather,
-        meeting_point: data.meetingPoint,
-        cost: data.cost,
-        post_hike_manenos: data.postHikeManenos,
-        last_words: data.lastWords,
-        what_to_bring: data.whatToBring
-      };
+  name: data.name,
+  date: data.date,
+  time: data.time,
+  location: data.location,
+  intro: data.intro,
+  what_to_expect: data.whatToExpect,
+  difficulty: data.difficulty,
+  duration: data.duration,
+  distance: data.distance,
+  elevation: data.elevation,
+  weather: data.weather,
+  meeting_point: data.meetingPoint,
+  cost: data.cost,
+  post_hike_manenos: data.postHikeManenos,
+  last_words: data.lastWords,
+  what_to_bring: data.whatToBring,
+  registration_closed: data.registrationClosed || false
+};
 
       const { data: insertedData, error } = await supabase.from('upcoming_hike').insert([hikeToSave]).select();
 
