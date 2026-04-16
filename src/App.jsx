@@ -2282,7 +2282,7 @@ if (!upcomingHike) {
       Register Now
     </button>
   </div>
- 
+  )}
  
 
             {/* ── REGISTERED HIKERS (ADMIN ONLY) ── */}
