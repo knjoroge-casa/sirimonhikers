@@ -89,15 +89,14 @@ const [rotatingStat] = useState(() => {
 
     if (hikeData) {
       setUpcomingHike({
-  id: hikeData.id,
-  ...hikeData,
-  whatToExpect: hikeData.what_to_expect,
-  meetingPoint: hikeData.meeting_point,
-  postHikeManenos: hikeData.post_hike_manenos,
-  lastWords: hikeData.last_words,
-  whatToBring: hikeData.what_to_bring || {},
-  registrationClosed: hikeData.registration_closed || false
-});
+         id: hikeData.id,  // ← Add this line
+        ...hikeData,
+        whatToExpect: hikeData.what_to_expect,
+        meetingPoint: hikeData.meeting_point,
+        postHikeManenos: hikeData.post_hike_manenos,
+        lastWords: hikeData.last_words,
+        whatToBring: hikeData.what_to_bring || {}
+      });
     } else {
       setUpcomingHike(null);
     }
@@ -230,24 +229,23 @@ if (hikeData?.id) {
       
       // Insert new hike
       const hikeToSave = {
-  name: data.name,
-  date: data.date,
-  time: data.time,
-  location: data.location,
-  intro: data.intro,
-  what_to_expect: data.whatToExpect,
-  difficulty: data.difficulty,
-  duration: data.duration,
-  distance: data.distance,
-  elevation: data.elevation,
-  weather: data.weather,
-  meeting_point: data.meetingPoint,
-  cost: data.cost,
-  post_hike_manenos: data.postHikeManenos,
-  last_words: data.lastWords,
-  what_to_bring: data.whatToBring,
-  registration_closed: data.registrationClosed || false
-};
+        name: data.name,
+        date: data.date,
+        time: data.time,
+        location: data.location,
+        intro: data.intro,
+        what_to_expect: data.whatToExpect,
+        difficulty: data.difficulty,
+        duration: data.duration,
+        distance: data.distance,
+        elevation: data.elevation,
+        weather: data.weather,
+        meeting_point: data.meetingPoint,
+        cost: data.cost,
+        post_hike_manenos: data.postHikeManenos,
+        last_words: data.lastWords,
+        what_to_bring: data.whatToBring
+      };
 
       const { data: insertedData, error } = await supabase.from('upcoming_hike').insert([hikeToSave]).select();
 
@@ -1126,18 +1124,6 @@ style={{ backgroundColor: '#6B8E23' }}>
     placeholder="Final tips or encouragement"
     className="w-full px-4 py-2 glass rounded-2xl border-0"
   />
-</div>
-  <div className="flex items-center gap-3 p-4 glass-dark rounded-2xl">
-  <input
-    type="checkbox"
-    id="registration-closed"
-    checked={editData.registrationClosed || false}
-    onChange={(e) => setEditData({ ...editData, registrationClosed: e.target.checked })}
-    className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
-  />
-  <label htmlFor="registration-closed" className="font-semibold text-gray-800 cursor-pointer">
-    Close Registration (The bus is full please!)
-  </label>
 </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">What to Bring</label>
@@ -2252,38 +2238,31 @@ if (!upcomingHike) {
                 <Download className="w-5 h-5 mr-2" />
                 Add to My Calendar
               </button>
-              {upcomingHike.registrationClosed ? (
-  <div className="glass rounded-3xl p-6 mb-6 text-center">
-    <h3 className="font-semibold text-gray-800 text-lg mb-2">Registration Closed</h3>
-    <p className="text-gray-600">Because life is like sometimes.</p>
-  </div>
-) : (
-  <div className="space-y-4">
-    <h3 className="font-semibold text-gray-800 text-lg mb-3">Are you coming? Register here!</h3>
-    <input
-      type="text"
-      placeholder="Your Name"
-      value={formData.name}
-      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-      className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-    <input
-      type="tel"
-      placeholder="Phone Number"
-      value={formData.phone}
-      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-      className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-    <button
-      onClick={handleSubmit}
-      className="w-full py-3 rounded-2xl font-semibold text-white hover:opacity-90"
-      style={{ backgroundColor: '#6B8E23' }}
-    >
-      Register Now
-    </button>
-  </div>
-)}
- 
+              <div className="space-y-4">
+                <h3 className="font-semibold text-gray-800 text-lg mb-3">Are you coming? Register here!</h3>
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone Number"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={handleSubmit}
+                  className="w-full py-3 rounded-2xl font-semibold text-white hover:opacity-90"
+style={{ backgroundColor: '#6B8E23' }}
+                >
+                  Register Now
+                </button>
+              </div>
+            </div>
 
             {/* ── REGISTERED HIKERS (ADMIN ONLY) ── */}
 {isAdminAuthenticated && (
@@ -2337,7 +2316,7 @@ if (!upcomingHike) {
               <ChevronRight className="w-5 h-5 ml-2" />
             </button>
           </>
-       </div>
+        )}
       </div>
     );
   };
