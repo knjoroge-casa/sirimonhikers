@@ -246,7 +246,7 @@ if (hikeData?.id) {
   post_hike_manenos: data.postHikeManenos,
   last_words: data.lastWords,
   what_to_bring: data.whatToBring,
-  registration_closed: data. || false
+  registration_closed: data.registrationClosed || false
 };
 
       const { data: insertedData, error } = await supabase.from('upcoming_hike').insert([hikeToSave]).select();
