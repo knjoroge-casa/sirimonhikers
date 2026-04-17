@@ -2255,7 +2255,7 @@ if (!upcomingHike) {
               {upcomingHike.registrationClosed ? (
   <div className="glass rounded-3xl p-6 mb-6 text-center">
     <h3 className="font-semibold text-gray-800 text-lg mb-2">Registration Closed</h3>
-    <p className="text-gray-600">This hike has reached maximum capacity. Registration is no longer available.</p>
+    <p className="text-gray-600">The bus is probably full, and other short stories!</p>
   </div>
 ) : (
   <div className="space-y-4">
