@@ -2252,30 +2252,37 @@ if (!upcomingHike) {
                 <Download className="w-5 h-5 mr-2" />
                 Add to My Calendar
               </button>
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-800 text-lg mb-3">Are you coming? Register here!</h3>
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={handleSubmit}
-                  className="w-full py-3 rounded-2xl font-semibold text-white hover:opacity-90"
-style={{ backgroundColor: '#6B8E23' }}
-                >
-                  Register Now
-                </button>
-              </div>
+              {upcomingHike.registrationClosed ? (
+  <div className="glass rounded-3xl p-6 mb-6 text-center">
+    <h3 className="font-semibold text-gray-800 text-lg mb-2">Registration Closed</h3>
+    <p className="text-gray-600">This hike has reached maximum capacity. Registration is no longer available.</p>
+  </div>
+) : (
+  <div className="space-y-4">
+    <h3 className="font-semibold text-gray-800 text-lg mb-3">Are you coming? Register here!</h3>
+    <input
+      type="text"
+      placeholder="Your Name"
+      value={formData.name}
+      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+      className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    <input
+      type="tel"
+      placeholder="Phone Number"
+      value={formData.phone}
+      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+      className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    <button
+      onClick={handleSubmit}
+      className="w-full py-3 rounded-2xl font-semibold text-white hover:opacity-90"
+      style={{ backgroundColor: '#6B8E23' }}
+    >
+      Register Now
+    </button>
+  </div>
+)}
             </div>
 
             {/* ── REGISTERED HIKERS (ADMIN ONLY) ── */}
