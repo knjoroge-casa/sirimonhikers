@@ -407,7 +407,9 @@ const markHikeAsCompleted = async () => {
       what_to_bring: upcomingHike.whatToBring,
       participants: 0,
       write_up: '',
-      actual_cost: upcomingHike.cost
+      actual_cost: null,
+      actual_distance: null,
+      actual_elevation: null
     };
 
     const { error: insertError } = await supabase
