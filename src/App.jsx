@@ -224,49 +224,67 @@ if (hikeData?.id) {
   };
 
   const saveUpcomingHike = async (data) => {
-    try {
-      // First delete all existing hikes
+  try {
+    const hikeToSave = {
+      name: data.name,
+      date: data.date,
+      time: data.time,
+      location: data.location,
+      intro: data.intro,
+      what_to_expect: data.whatToExpect,
+      difficulty: data.difficulty,
+      duration: data.duration,
+      distance: data.distance,
+      elevation: data.elevation,
+      weather: data.weather,
+      meeting_point: data.meetingPoint,
+      cost: data.cost,
+      post_hike_manenos: data.postHikeManenos,
+      last_words: data.lastWords,
+      what_to_bring: data.whatToBring,
+      registration_closed: data.registrationClosed || false
+    };
+
+    let savedHike;
+
+    if (upcomingHike?.id) {
+      // UPDATE existing hike
+      const { data: updatedData, error } = await supabase
+        .from('upcoming_hike')
+        .update(hikeToSave)
+        .eq('id', upcomingHike.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      savedHike = updatedData;
+    } else {
+      // INSERT new hike (only if no existing hike)
+      // First delete any existing hikes
       await supabase.from('upcoming_hike').delete().neq('id', 0);
       
-      // Insert new hike
-      const hikeToSave = {
-  name: data.name,
-  date: data.date,
-  time: data.time,
-  location: data.location,
-  intro: data.intro,
-  what_to_expect: data.whatToExpect,
-  difficulty: data.difficulty,
-  duration: data.duration,
-  distance: data.distance,
-  elevation: data.elevation,
-  weather: data.weather,
-  meeting_point: data.meetingPoint,
-  cost: data.cost,
-  post_hike_manenos: data.postHikeManenos,
-  last_words: data.lastWords,
-  what_to_bring: data.whatToBring,
-  registration_closed: data.registrationClosed || false
-};
+      const { data: insertedData, error } = await supabase
+        .from('upcoming_hike')
+        .insert([hikeToSave])
+        .select()
+        .single();
 
-      const { data: insertedData, error } = await supabase.from('upcoming_hike').insert([hikeToSave]).select();
-
-if (error) throw error;
-
-// Use the returned data which includes the generated ID
-if (insertedData && insertedData.length > 0) {
-  setUpcomingHike({
-    ...data,
-    id: insertedData[0].id
-  });
-}
-      alert('Saved!');
-      setIsEditing(false);
-    } catch (e) {
-      console.error('Error saving:', e);
-      alert('Error saving');
+      if (error) throw error;
+      savedHike = insertedData;
     }
-  };
+    
+    setUpcomingHike({
+      ...data,
+      id: savedHike.id
+    });
+    
+    alert('Saved!');
+    setIsEditing(false);
+  } catch (e) {
+    console.error('Error saving:', e);
+    alert('Error saving');
+  }
+};
 
   const saveCalendar = async (data) => {
     try {
@@ -707,46 +725,64 @@ const selectedItems = Object.keys(allItems)
     alert('Error updating attendance');
   }
 };
-const useCountdown = (targetDate) => {
+const useCountdown = (targetDate, targetTime) => {
   const [countdown, setCountdown] = useState('');
 
   useEffect(() => {
     if (!targetDate) return;
 
     const calculate = () => {
-  const now = new Date();
-  const target = new Date(targetDate + 'T00:00:00');
-  const diff = target - now;
+      const now = new Date();
+      
+      // Parse target time (e.g., "5:30 AM" or "05:30")
+      let hours = 0;
+      let minutes = 0;
+      
+      if (targetTime) {
+        const timeStr = targetTime.toLowerCase().trim();
+        const match = timeStr.match(/(\d+):(\d+)\s*(am|pm)?/);
+        
+        if (match) {
+          hours = parseInt(match[1]);
+          minutes = parseInt(match[2]);
+          const ampm = match[3];
+          
+          if (ampm === 'pm' && hours !== 12) hours += 12;
+          if (ampm === 'am' && hours === 12) hours = 0;
+        }
+      }
+      
+      // Create target datetime in local timezone
+      const target = new Date(targetDate + 'T' + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':00');
+      const diff = target - now;
 
-  // If date has passed
-  if (diff <= 0) {
-  const daysPast = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24));
-  if (daysPast === 0) {
-    setCountdown('Today!');
-  } else if (daysPast === 1) {
-    setCountdown('Yesterday');
-  } else {
-    setCountdown(`${daysPast} days ago`);
-  }
-  return;
-}
+      if (diff <= 0) {
+        const daysPast = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24));
+        if (daysPast === 0) {
+          setCountdown('Today!');
+        } else if (daysPast === 1) {
+          setCountdown('Yesterday');
+        } else {
+          setCountdown(`${daysPast} days ago`);
+        }
+        return;
+      }
 
-  // If date is in the future
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hrs = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-  if (days > 0) {
-    setCountdown(`${days}d ${hours}h ${minutes}m`);
-  } else {
-    setCountdown(`${hours}h ${minutes}m`);
-  }
-};
+      if (days > 0) {
+        setCountdown(`${days}d ${hrs}h ${mins}m`);
+      } else {
+        setCountdown(`${hrs}h ${mins}m`);
+      }
+    };
 
-calculate();
-const interval = setInterval(calculate, 60000);
-return () => clearInterval(interval);
-  }, [targetDate]);
+    calculate();
+    const interval = setInterval(calculate, 60000);
+    return () => clearInterval(interval);
+  }, [targetDate, targetTime]);
 
   return countdown;
 };
@@ -1698,7 +1734,7 @@ const CarouselStats = () => {
 
   // Determine countdown target
   const countdownTarget = upcomingHike?.date || nextCalendarHike?.date || null;
-  const countdown = useCountdown(countdownTarget);
+  const countdown = useCountdown(countdownTarget, upcomingHike?.time || nextCalendarHike?.time);
 
   // Damage Report calculations
   const totalHikes = completedHikes.length;
@@ -2317,11 +2353,15 @@ if (!upcomingHike) {
                 <p className="text-xs text-gray-500">{reg.phone}</p>
               </div>
             </div>
-            {reg.checked_in && reg.checked_in_at && (
-              <span className="text-xs text-green-600 font-semibold">
-                ✓ {new Date(reg.checked_in_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            )}
+            {{reg.checked_in && reg.checked_in_at && (
+  <span className="text-xs text-green-600 font-semibold">
+    ✓ {new Date(reg.checked_in_at).toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      timeZone: 'Africa/Nairobi'
+    })}
+  </span>
+)}
           </div>
         ))}
       </div>
