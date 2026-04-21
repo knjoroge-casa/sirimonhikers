@@ -89,15 +89,16 @@ const [rotatingStat] = useState(() => {
     }
 
     if (hikeData) {
-      setUpcomingHike({
-         id: hikeData.id,  // ← Add this line
-        ...hikeData,
-        whatToExpect: hikeData.what_to_expect,
-        meetingPoint: hikeData.meeting_point,
-        postHikeManenos: hikeData.post_hike_manenos,
-        lastWords: hikeData.last_words,
-        whatToBring: hikeData.what_to_bring || {}
-      });
+     setUpcomingHike({
+  id: hikeData.id,
+  ...hikeData,
+  whatToExpect: hikeData.what_to_expect,
+  meetingPoint: hikeData.meeting_point,
+  postHikeManenos: hikeData.post_hike_manenos,
+  lastWords: hikeData.last_words,
+  whatToBring: hikeData.what_to_bring || {},
+  registrationClosed: hikeData.registration_closed || false
+});
     } else {
       setUpcomingHike(null);
     }
@@ -224,48 +225,67 @@ if (hikeData?.id) {
   };
 
   const saveUpcomingHike = async (data) => {
-    try {
-      // First delete all existing hikes
+  try {
+    const hikeToSave = {
+      name: data.name,
+      date: data.date,
+      time: data.time,
+      location: data.location,
+      intro: data.intro,
+      what_to_expect: data.whatToExpect,
+      difficulty: data.difficulty,
+      duration: data.duration,
+      distance: data.distance,
+      elevation: data.elevation,
+      weather: data.weather,
+      meeting_point: data.meetingPoint,
+      cost: data.cost,
+      post_hike_manenos: data.postHikeManenos,
+      last_words: data.lastWords,
+      what_to_bring: data.whatToBring,
+      registration_closed: data.registrationClosed || false
+    };
+
+    let savedHike;
+
+    if (upcomingHike?.id) {
+      // UPDATE existing hike
+      const { data: updatedData, error } = await supabase
+        .from('upcoming_hike')
+        .update(hikeToSave)
+        .eq('id', upcomingHike.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      savedHike = updatedData;
+    } else {
+      // INSERT new hike (only if no existing hike)
+      // First delete any existing hikes
       await supabase.from('upcoming_hike').delete().neq('id', 0);
       
-      // Insert new hike
-      const hikeToSave = {
-        name: data.name,
-        date: data.date,
-        time: data.time,
-        location: data.location,
-        intro: data.intro,
-        what_to_expect: data.whatToExpect,
-        difficulty: data.difficulty,
-        duration: data.duration,
-        distance: data.distance,
-        elevation: data.elevation,
-        weather: data.weather,
-        meeting_point: data.meetingPoint,
-        cost: data.cost,
-        post_hike_manenos: data.postHikeManenos,
-        last_words: data.lastWords,
-        what_to_bring: data.whatToBring
-      };
+      const { data: insertedData, error } = await supabase
+        .from('upcoming_hike')
+        .insert([hikeToSave])
+        .select()
+        .single();
 
-      const { data: insertedData, error } = await supabase.from('upcoming_hike').insert([hikeToSave]).select();
-
-if (error) throw error;
-
-// Use the returned data which includes the generated ID
-if (insertedData && insertedData.length > 0) {
-  setUpcomingHike({
-    ...data,
-    id: insertedData[0].id
-  });
-}
-      alert('Saved!');
-      setIsEditing(false);
-    } catch (e) {
-      console.error('Error saving:', e);
-      alert('Error saving');
+      if (error) throw error;
+      savedHike = insertedData;
     }
-  };
+    
+    setUpcomingHike({
+      ...data,
+      id: savedHike.id
+    });
+    
+    alert('Saved!');
+    setIsEditing(false);
+  } catch (e) {
+    console.error('Error saving:', e);
+    alert('Error saving');
+  }
+};
 
   const saveCalendar = async (data) => {
     try {
@@ -406,7 +426,9 @@ const markHikeAsCompleted = async () => {
       what_to_bring: upcomingHike.whatToBring,
       participants: 0,
       write_up: '',
-      actual_cost: upcomingHike.cost
+      actual_cost: null,
+      actual_distance: null,
+      actual_elevation: null
     };
 
     const { error: insertError } = await supabase
@@ -704,46 +726,64 @@ const selectedItems = Object.keys(allItems)
     alert('Error updating attendance');
   }
 };
-const useCountdown = (targetDate) => {
+const useCountdown = (targetDate, targetTime) => {
   const [countdown, setCountdown] = useState('');
 
   useEffect(() => {
     if (!targetDate) return;
 
     const calculate = () => {
-  const now = new Date();
-  const target = new Date(targetDate + 'T00:00:00');
-  const diff = target - now;
+      const now = new Date();
+      
+      // Parse target time (e.g., "5:30 AM" or "05:30")
+      let hours = 0;
+      let minutes = 0;
+      
+      if (targetTime) {
+        const timeStr = targetTime.toLowerCase().trim();
+        const match = timeStr.match(/(\d+):(\d+)\s*(am|pm)?/);
+        
+        if (match) {
+          hours = parseInt(match[1]);
+          minutes = parseInt(match[2]);
+          const ampm = match[3];
+          
+          if (ampm === 'pm' && hours !== 12) hours += 12;
+          if (ampm === 'am' && hours === 12) hours = 0;
+        }
+      }
+      
+      // Create target datetime in local timezone
+      const target = new Date(targetDate + 'T' + String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':00');
+      const diff = target - now;
 
-  // If date has passed
-  if (diff <= 0) {
-    const daysPast = Math.ceil(Math.abs(diff) / (1000 * 60 * 60 * 24));
-    if (daysPast === 0) {
-      setCountdown('Today!');
-    } else if (daysPast === 1) {
-      setCountdown('Yesterday');
-    } else {
-      setCountdown(`${daysPast} days ago`);
-    }
-    return;
-  }
+      if (diff <= 0) {
+        const daysPast = Math.floor(Math.abs(diff) / (1000 * 60 * 60 * 24));
+        if (daysPast === 0) {
+          setCountdown('Today!');
+        } else if (daysPast === 1) {
+          setCountdown('Yesterday');
+        } else {
+          setCountdown(`${daysPast} days ago`);
+        }
+        return;
+      }
 
-  // If date is in the future
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hrs = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-  if (days > 0) {
-    setCountdown(`${days}d ${hours}h ${minutes}m`);
-  } else {
-    setCountdown(`${hours}h ${minutes}m`);
-  }
-};
+      if (days > 0) {
+        setCountdown(`${days}d ${hrs}h ${mins}m`);
+      } else {
+        setCountdown(`${hrs}h ${mins}m`);
+      }
+    };
 
-calculate();
-const interval = setInterval(calculate, 60000);
-return () => clearInterval(interval);
-  }, [targetDate]);
+    calculate();
+    const interval = setInterval(calculate, 60000);
+    return () => clearInterval(interval);
+  }, [targetDate, targetTime]);
 
   return countdown;
 };
@@ -1125,6 +1165,18 @@ style={{ backgroundColor: '#6B8E23' }}>
     placeholder="Final tips or encouragement"
     className="w-full px-4 py-2 glass rounded-2xl border-0"
   />
+</div>
+          <div className="flex items-center gap-3 p-4 glass-dark rounded-2xl">
+  <input
+    type="checkbox"
+    id="registration-closed"
+    checked={editData.registrationClosed || false}
+    onChange={(e) => setEditData({ ...editData, registrationClosed: e.target.checked })}
+    className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
+  />
+  <label htmlFor="registration-closed" className="font-semibold text-gray-800 cursor-pointer">
+    Close Registration (The bus is full, and other short stories!)
+  </label>
 </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">What to Bring</label>
@@ -1683,7 +1735,7 @@ const CarouselStats = () => {
 
   // Determine countdown target
   const countdownTarget = upcomingHike?.date || nextCalendarHike?.date || null;
-  const countdown = useCountdown(countdownTarget);
+  const countdown = useCountdown(countdownTarget, upcomingHike?.time || nextCalendarHike?.time);
 
   // Damage Report calculations
   const totalHikes = completedHikes.length;
@@ -2239,30 +2291,37 @@ if (!upcomingHike) {
                 <Download className="w-5 h-5 mr-2" />
                 Add to My Calendar
               </button>
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-800 text-lg mb-3">Are you coming? Register here!</h3>
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={handleSubmit}
-                  className="w-full py-3 rounded-2xl font-semibold text-white hover:opacity-90"
-style={{ backgroundColor: '#6B8E23' }}
-                >
-                  Register Now
-                </button>
-              </div>
+              {upcomingHike.registrationClosed ? (
+  <div className="glass rounded-3xl p-6 mb-6 text-center">
+    <h3 className="font-semibold text-gray-800 text-lg mb-2">Registration Closed</h3>
+    <p className="text-gray-600">The bus is probably full, and other short stories!</p>
+  </div>
+) : (
+  <div className="space-y-4">
+    <h3 className="font-semibold text-gray-800 text-lg mb-3">Are you coming? Register here!</h3>
+    <input
+      type="text"
+      placeholder="Your Name"
+      value={formData.name}
+      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+      className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    <input
+      type="tel"
+      placeholder="Phone Number"
+      value={formData.phone}
+      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+      className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+    <button
+      onClick={handleSubmit}
+      className="w-full py-3 rounded-2xl font-semibold text-white hover:opacity-90"
+      style={{ backgroundColor: '#6B8E23' }}
+    >
+      Register Now
+    </button>
+  </div>
+)}
             </div>
 
             {/* ── REGISTERED HIKERS (ADMIN ONLY) ── */}
@@ -2296,10 +2355,14 @@ style={{ backgroundColor: '#6B8E23' }}
               </div>
             </div>
             {reg.checked_in && reg.checked_in_at && (
-              <span className="text-xs text-green-600 font-semibold">
-                ✓ {new Date(reg.checked_in_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            )}
+  <span className="text-xs text-green-600 font-semibold">
+    ✓ {new Date(reg.checked_in_at).toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      timeZone: 'Africa/Nairobi'
+    })}
+  </span>
+)}
           </div>
         ))}
       </div>
