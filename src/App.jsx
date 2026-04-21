@@ -2353,7 +2353,7 @@ if (!upcomingHike) {
                 <p className="text-xs text-gray-500">{reg.phone}</p>
               </div>
             </div>
-            {{reg.checked_in && reg.checked_in_at && (
+            {reg.checked_in && reg.checked_in_at && (
   <span className="text-xs text-green-600 font-semibold">
     ✓ {new Date(reg.checked_in_at).toLocaleTimeString('en-US', { 
       hour: '2-digit', 
