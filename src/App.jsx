@@ -7,6 +7,7 @@ const ADMIN_PASSWORD = "hiking2026";
 const itemLabels = {
   hikeBag: "Comfortable hiking backpack",
   hikeBoots: "Comfortable hiking boots or trail shoes with good traction",
+  shortsHike: "Shorts can be worn on this hike",
   pants: "Long hiking pants",
   top: "Light top",
   thermals: "Thermal mid-layers",
