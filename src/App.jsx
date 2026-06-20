@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, MapPin, Clock, Info, ChevronRight, Download, Edit, Save, X, Lock, FileText } from 'lucide-react';
 import { supabase } from './lib/supabase';
+import { Analytics } from '@vercel/analytics/react';
 
 const ADMIN_PASSWORD = "hiking2026";
 
@@ -2526,6 +2527,7 @@ if (!upcomingHike) {
   </div>
 </footer>
     {isEditingCompletedHike && <EditCompletedHikeModal />}
+    <Analytics />
   </div>
 );
 }
