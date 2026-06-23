@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, MapPin, Clock, Info, ChevronRight, Download, Edit, Save, X, Lock, FileText } from 'lucide-react';
 import { supabase } from './lib/supabase';
-import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
+import { useNavigate, useLocation, Routes, Route, Link } from 'react-router-dom';
 
 const ADMIN_PASSWORD = "hiking2026";
 
@@ -46,7 +46,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
-  const [showAdminLogin, setShowAdminLogin] = useState(false);
+
   const [isEditingCalendar, setIsEditingCalendar] = useState(false);
   const [isEditingItems, setIsEditingItems] = useState(false);
   const [customItems, setCustomItems] = useState({});
@@ -219,7 +219,6 @@ if (hikeData?.id) {
   const handleAdminLogin = () => {
     if (adminPassword === ADMIN_PASSWORD) {
       setIsAdminAuthenticated(true);
-      setShowAdminLogin(false);
       setAdminPassword('');
       setIsEditing(true);
     } else {
@@ -791,34 +790,6 @@ const useCountdown = (targetDate, targetTime) => {
 
   return countdown;
 };
-  const AdminLoginModal = () => {
-    if (!showAdminLogin) return null;
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold text-gray-800">Admin Login</h3>
-            <button onClick={() => { setShowAdminLogin(false); setAdminPassword(''); }} className="text-gray-600 hover:text-gray-800">
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-          <input
-            type="password"
-            placeholder="Enter admin password"
-            value={adminPassword}
-            onChange={(e) => setAdminPassword(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
-            autoFocus
-            className="w-full px-4 py-2 glass rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-          />
-          <button onClick={handleAdminLogin} className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
-            Login
-          </button>
-        </div>
-      </div>
-    );
-  };
-
   const EditItemsForm = () => {
     const [items, setItems] = useState({ ...customItems });
     const [newKey, setNewKey] = useState('');
@@ -1767,8 +1738,6 @@ const CarouselStats = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
-  <AdminLoginModal />
-
       {/* ── INTRO SECTION ── */}
       <div className="glass rounded-3xl p-6 mb-6 relative">
         <div className="flex justify-between items-start mb-2">
@@ -2095,7 +2064,6 @@ const CarouselStats = () => {
 if (!upcomingHike) {
   return (
     <div className="max-w-2xl mx-auto">
-      <AdminLoginModal />
       <div className="mb-4">
         <button
           onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
@@ -2139,12 +2107,12 @@ if (!upcomingHike) {
             Add Hike Details
           </button>
         ) : (
-          <button
-            onClick={() => setShowAdminLogin(true)}
+          <Link
+            to="/admin"
             className="text-gray-400 hover:text-gray-600 flex items-center justify-center mx-auto"
           >
             <Lock className="w-5 h-5 mr-2" /> Admin Login
-          </button>
+          </Link>
         )}
       </div>
     </div>
@@ -2153,7 +2121,6 @@ if (!upcomingHike) {
     
     return (
       <div className="max-w-2xl mx-auto">
-  <AdminLoginModal />
   {isEditingItems && <EditItemsForm />}
   <div className="mb-4">
     <button
@@ -2179,9 +2146,9 @@ if (!upcomingHike) {
                       <Edit className="w-5 h-5" />
                     </button>
                   ) : (
-                    <button onClick={() => setShowAdminLogin(true)} className="text-gray-600 hover:text-gray-700" title="Admin">
+                    <Link to="/admin" className="text-gray-600 hover:text-gray-700" title="Admin">
                       <Lock className="w-5 h-5" />
-                    </button>
+                    </Link>
                   )}
                 </div>
               </div>
@@ -2511,6 +2478,28 @@ if (!upcomingHike) {
       }
     };
 
+    if (isAdminAuthenticated) {
+      return (
+        <div className="min-h-screen flex items-center justify-center px-4">
+          <div className="glass rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <p className="text-lg font-semibold text-gray-700 mb-6">
+              You are logged in as admin.
+            </p>
+            <button
+              onClick={() => { setIsAdminAuthenticated(false); adminNavigate('/'); }}
+              className="w-full py-3 rounded-2xl font-semibold text-white transition mb-4"
+              style={{ backgroundColor: '#6B8E23' }}
+            >
+              Logout
+            </button>
+            <Link to="/" className="text-sm text-gray-500 hover:text-gray-700 underline">
+              Back to Dashboard
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="glass rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
@@ -2559,27 +2548,28 @@ if (!upcomingHike) {
 </Routes>
     <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
   <p>Questions? Contact your Sirimon Host. You know how!</p>
-  <div className="mt-4 pb-4">
-    {isAdminAuthenticated ? (
-      <button
-        onClick={() => setIsAdminAuthenticated(false)}
-        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold text-white transition-all"
-        style={{ backgroundColor: '#6B8E23' }}
-      >
-        <Lock className="w-3 h-3" /> Admin · Logout
-      </button>
-    ) : (
-      <button
-        onClick={() => setShowAdminLogin(true)}
-        className="text-white/30 hover:text-white/80 transition-opacity duration-300 text-lg"
+  {!isAdminAuthenticated && (
+    <div className="mt-4 pb-4">
+      <Link
+        to="/admin"
+        className="text-white/30 hover:text-white/80 transition-opacity duration-300 text-lg inline-block"
         title="Admin login"
       >
         🔒
-      </button>
-    )}
-  </div>
+      </Link>
+    </div>
+  )}
 </footer>
     {isEditingCompletedHike && <EditCompletedHikeModal />}
+    {isAdminAuthenticated && (
+      <Link
+        to="/admin"
+        className="fixed top-4 right-4 z-50 px-3 py-1 rounded-full text-xs font-semibold text-white shadow-lg"
+        style={{ backgroundColor: '#6B8E23' }}
+      >
+        Admin
+      </Link>
+    )}
   </div>
 );
 }
