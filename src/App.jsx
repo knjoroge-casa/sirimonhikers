@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, MapPin, Clock, Info, ChevronRight, Download, Edit, Save, X, Lock, FileText } from 'lucide-react';
 import { supabase } from './lib/supabase';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
 
 const ADMIN_PASSWORD = "hiking2026";
 
@@ -39,7 +39,7 @@ const itemLabels = {
 };
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+
   const [upcomingHike, setUpcomingHike] = useState(null);
   const [hikeCalendar, setHikeCalendar] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -1453,7 +1453,7 @@ const CompletedHikesPage = () => {
     <div className="max-w-2xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <button
-          onClick={() => setCurrentPage('home')}
+          onClick={() => navigate('/')}
           className="text-white/90 hover:text-white font-semibold flex items-center"
         >
           ← Back to Home
@@ -1842,7 +1842,7 @@ const CarouselStats = () => {
             )}
           </div>
           <button
-            onClick={() => { setCurrentPage('hike-details'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            onClick={() => { navigate('/nexthike'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             className="w-full py-3 rounded-2xl font-semibold text-white flex items-center justify-center"
             style={{ backgroundColor: '#6B8E23' }}
           >
@@ -1893,7 +1893,7 @@ const CarouselStats = () => {
           whatToBring: {}
         };
         setUpcomingHike(newHike);
-        setCurrentPage('hike-details');
+        navigate('/nexthike');
         setIsEditing(true); 
       }}
       className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 text-sm"
@@ -1931,7 +1931,7 @@ const CarouselStats = () => {
             whatToBring: {}
           };
           setUpcomingHike(newHike);
-          setCurrentPage('hike-details');
+          navigate('/nexthike');
           setIsEditing(true);
         }}
         className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
@@ -2055,13 +2055,13 @@ const CarouselStats = () => {
 
       {/* ── NAV BUTTONS ── */}
       <button
-        onClick={() => { setCurrentPage('calendar'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        onClick={() => { navigate('/fullcalendar'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center mb-4"
       >
         View Full Year Calendar <ChevronRight className="w-5 h-5 ml-2" />
       </button>
       <button
-        onClick={() => { setCurrentPage('completed'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+        onClick={() => { navigate('/completedhikes'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
       >
         View Completed Hikes <ChevronRight className="w-5 h-5 ml-2" />
@@ -2098,7 +2098,7 @@ if (!upcomingHike) {
       <AdminLoginModal />
       <div className="mb-4">
         <button
-          onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
           className="text-white/90 hover:text-white font-semibold flex items-center"
         >
           ← Back to Dashboard
@@ -2157,7 +2157,7 @@ if (!upcomingHike) {
   {isEditingItems && <EditItemsForm />}
   <div className="mb-4">
     <button
-      onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+      onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
       className="text-white/90 hover:text-white font-semibold flex items-center"
     >
       ← Back to Dashboard
@@ -2375,7 +2375,7 @@ if (!upcomingHike) {
 )}
             <button
   onClick={() => {
-    setCurrentPage('calendar');
+    navigate('/fullcalendar');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }}
     className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
@@ -2398,7 +2398,7 @@ if (!upcomingHike) {
           <>
             <div className="flex justify-between items-center mb-6">
               <button
-                onClick={() => setCurrentPage('home')}
+                onClick={() => navigate('/')}
                 className="text-white/90 hover:text-white font-semibold flex items-center"
               >
                 ← Back to Home
@@ -2505,7 +2505,12 @@ if (!upcomingHike) {
         </h1>
       </div>
     </div>
-{currentPage === 'home' ? <DashboardPage /> : currentPage === 'hike-details' ? <HikeDetailsPage /> : currentPage === 'calendar' ? <CalendarPage /> : <CompletedHikesPage />}   
+<Routes>
+  <Route path="/" element={<DashboardPage />} />
+  <Route path="/nexthike" element={<HikeDetailsPage />} />
+  <Route path="/fullcalendar" element={<CalendarPage />} />
+  <Route path="/completedhikes" element={<CompletedHikesPage />} />
+</Routes>
     <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
   <p>Questions? Contact your Sirimon Host. You know how!</p>
   <div className="mt-4 pb-4">
