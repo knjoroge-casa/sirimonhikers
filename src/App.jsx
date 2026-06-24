@@ -2051,6 +2051,58 @@ const CarouselStats = () => {
       }
     };
 
+    if (!upcomingHike) {
+      return (
+        <div className="max-w-2xl mx-auto">
+          <div className="mb-4">
+            <Link
+              to="/"
+              className="text-white/90 hover:text-white font-semibold flex items-center"
+            >
+              ← Back to Dashboard
+            </Link>
+          </div>
+          <div className="glass rounded-3xl p-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">No Upcoming Hike Details Yet</h2>
+            <p className="text-gray-600 mb-6">Add details for the next hike.</p>
+            {isAdminAuthenticated && (
+              <button
+                onClick={() => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const nextHike = hikeCalendar.find(h => new Date(h.date) >= today);
+                  const newHike = {
+                    name: nextHike?.hike || '',
+                    date: nextHike?.date || '',
+                    time: '',
+                    location: '',
+                    intro: '',
+                    whatToExpect: nextHike?.prerequisites || '',
+                    difficulty: '',
+                    duration: '',
+                    distance: '',
+                    elevation: '',
+                    weather: '',
+                    meetingPoint: '',
+                    cost: '',
+                    postHikeManenos: '',
+                    lastWords: '',
+                    whatToBring: {}
+                  };
+                  setUpcomingHike(newHike);
+                  setIsEditing(true);
+                }}
+                className="px-6 py-3 rounded-lg font-semibold text-white hover:opacity-90"
+                style={{ backgroundColor: '#6B8E23' }}
+              >
+                + Add Upcoming Hike
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     const formattedDate = new Date(upcomingHike.date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -2060,64 +2112,6 @@ const CarouselStats = () => {
     const selectedItems = Object.keys(allItems)
   .filter(key => upcomingHike.whatToBring[key])
   .map(key => allItems[key]);
-
-if (!upcomingHike) {
-  return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-4">
-        <button
-          onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          className="text-white/90 hover:text-white font-semibold flex items-center"
-        >
-          ← Back to Dashboard
-        </button>
-      </div>
-      <div className="glass rounded-3xl p-6 text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">No Upcoming Hike Details Yet</h2>
-        <p className="text-gray-600 mb-6">Full details haven't been added yet. Check back soon!</p>
-        {isAdminAuthenticated ? (
-          <button
-            onClick={() => {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              const nextHike = hikeCalendar.find(h => new Date(h.date) >= today);
-              const newHike = {
-                name: nextHike?.hike || '',
-                date: nextHike?.date || '',
-                time: '',
-                location: '',
-                intro: '',
-                whatToExpect: nextHike?.prerequisites || '',
-                difficulty: '',
-                duration: '',
-                distance: '',
-                elevation: '',
-                weather: '',
-                meetingPoint: '',
-                cost: '',
-                postHikeManenos: '',
-                lastWords: '',
-                whatToBring: {}
-              };
-              setUpcomingHike(newHike);
-              setIsEditing(true);
-            }}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
-          >
-            Add Hike Details
-          </button>
-        ) : (
-          <Link
-            to="/admin"
-            className="text-gray-400 hover:text-gray-600 flex items-center justify-center mx-auto"
-          >
-            <Lock className="w-5 h-5 mr-2" /> Admin Login
-          </Link>
-        )}
-      </div>
-    </div>
-  );
-}
     
     return (
       <div className="max-w-2xl mx-auto">
