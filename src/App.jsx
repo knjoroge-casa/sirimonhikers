@@ -2471,7 +2471,6 @@ if (!upcomingHike) {
     const handleSubmit = () => {
       if (pwd === ADMIN_PASSWORD) {
         setIsAdminAuthenticated(true);
-        adminNavigate('/');
       } else {
         setError(true);
         setPwd('');
@@ -2479,22 +2478,72 @@ if (!upcomingHike) {
     };
 
     if (isAdminAuthenticated) {
+      const navLinks = [
+        { label: 'Dashboard', to: '/' },
+        { label: 'Hike Details', to: '/nexthike' },
+        { label: 'Calendar', to: '/fullcalendar' },
+        { label: 'Completed Hikes', to: '/completedhikes' },
+      ];
+      const comingSoon = [
+        { title: 'Hike Curating Companies', desc: 'Coming soon — manage companies that curate our hikes' },
+        { title: 'Guides Directory', desc: 'Coming soon — directory of our hiking guides' },
+        { title: 'Resources Directory', desc: 'Coming soon — bus drivers, hotels, restaurants, etc.' },
+        { title: 'Hikers Contact List', desc: 'Coming soon — master contact list of all hikers' },
+      ];
       return (
-        <div className="min-h-screen flex items-center justify-center px-4">
-          <div className="glass rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
-            <p className="text-lg font-semibold text-gray-700 mb-6">
-              You are logged in as admin.
-            </p>
-            <button
-              onClick={() => { setIsAdminAuthenticated(false); adminNavigate('/'); }}
-              className="w-full py-3 rounded-2xl font-semibold text-white transition mb-4"
-              style={{ backgroundColor: '#6B8E23' }}
-            >
-              Logout
-            </button>
-            <Link to="/" className="text-sm text-gray-500 hover:text-gray-700 underline">
-              Back to Dashboard
-            </Link>
+        <div className="min-h-screen py-8 px-4">
+          <div className="max-w-2xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-display font-bold text-white drop-shadow-2xl mb-1">Admin Panel</h1>
+              <p className="text-white/80 text-sm font-medium tracking-wide">Manage Sirimon Hikers</p>
+            </div>
+
+            {/* Edit Public Pages */}
+            <div className="glass rounded-3xl p-6 mb-4">
+              <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Edit Public Pages</h2>
+              <div className="grid grid-cols-2 gap-3">
+                {navLinks.map(({ label, to }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    className="py-3 rounded-2xl font-semibold text-white text-center text-sm transition hover:opacity-90"
+                    style={{ backgroundColor: '#6B8E23' }}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Coming soon sections */}
+            {comingSoon.map(({ title, desc }) => (
+              <div key={title} className="glass rounded-3xl p-6 mb-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-bold text-gray-700 mb-1">{title}</h2>
+                    <p className="text-xs text-gray-400">{desc}</p>
+                  </div>
+                  <button
+                    disabled
+                    className="ml-4 px-4 py-2 rounded-2xl text-sm font-semibold text-gray-400 bg-gray-100 cursor-not-allowed shrink-0"
+                  >
+                    Manage
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Logout */}
+            <div className="text-center mt-6 pb-8">
+              <button
+                onClick={() => { setIsAdminAuthenticated(false); adminNavigate('/'); }}
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold text-white transition hover:opacity-90"
+                style={{ backgroundColor: '#6B8E23' }}
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       );
