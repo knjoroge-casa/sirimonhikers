@@ -1,0 +1,122 @@
+import React from 'react';
+import { Download, Edit } from 'lucide-react';
+import EditCalendarForm from '../components/EditCalendarForm';
+import EditNotesModal from '../components/EditNotesModal';
+
+const CalendarPage = ({
+  isEditingCalendar, setIsEditingCalendar,
+  isAdminAuthenticated,
+  navigate,
+  downloadAllEvents,
+  hikeCalendar,
+  downloadSingleEvent,
+  importantNotes,
+  isEditingNotes, setIsEditingNotes,
+  saveCalendar,
+  saveImportantNotes,
+}) => {
+  return (
+    <div className="max-w-2xl mx-auto">
+      {isEditingCalendar ? (
+        <EditCalendarForm
+          hikeCalendar={hikeCalendar}
+          setIsEditingCalendar={setIsEditingCalendar}
+          saveCalendar={saveCalendar}
+        />
+      ) : (
+        <>
+          <div className="flex justify-between items-center mb-6">
+            <button
+              onClick={() => navigate('/')}
+              className="text-white/90 hover:text-white font-semibold flex items-center"
+            >
+              ← Back to Home
+            </button>
+            <div className="flex gap-2">
+              {isAdminAuthenticated && (
+                <button
+                  onClick={() => setIsEditingCalendar(true)}
+                  className="text-blue-600 hover:text-blue-700"
+                  title="Edit calendar"
+                >
+                  <Edit className="w-5 h-5" />
+                </button>
+              )}
+              <button
+                onClick={downloadAllEvents}
+                className="bg-forest-olive text-white px-4 py-2 rounded-2xl font-semibold hover:brightness-90"
+              >
+                <Download className="w-5 h-5 mr-2" />
+                Download All
+              </button>
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">2026 Hiking Calendar</h1>
+          <div className="space-y-4">
+            {hikeCalendar.map(hike => {
+              const formattedDate = new Date(hike.date).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+              });
+              return (
+                <div key={hike.id} className="glass rounded-3xl p-5 hover:shadow-2xl transition-all">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="font-bold text-lg text-gray-800">{hike.hike}</h3>
+                      <p className="text-blue-600 font-semibold">{formattedDate}</p>
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                        {hike.month}
+                      </span>
+                      <button
+                        onClick={() => downloadSingleEvent(hike)}
+                        className="text-forest-olive hover:text-forest-moss"
+                        title="Add to calendar"
+                      >
+                        <Download className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mt-3 glass-dark p-3 rounded-2xl border-l-4 border-forest-olive">
+                    <p className="text-sm text-gray-700">
+                      <span className="font-semibold">Details:</span> {hike.prerequisites}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-8 bg-blue-50 p-5 rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-semibold text-gray-800">Important Notes</h3>
+              {isAdminAuthenticated && (
+                <button
+                  onClick={() => setIsEditingNotes(true)}
+                  className="text-blue-600 hover:text-blue-700 text-sm"
+                  title="Edit notes"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <ul className="space-y-2 text-sm text-gray-700">
+              {importantNotes.map((note, index) => (
+                <li key={index}>• {note}</li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
+      {isEditingNotes && (
+        <EditNotesModal
+          importantNotes={importantNotes}
+          setIsEditingNotes={setIsEditingNotes}
+          saveImportantNotes={saveImportantNotes}
+        />
+      )}
+    </div>
+  );
+};
+
+export default CalendarPage;
