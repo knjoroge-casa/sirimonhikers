@@ -699,7 +699,27 @@ export default function App() {
           path="/admin"
           element={
             isAdminAuthenticated
-              ? <AdminLayout setIsAdminAuthenticated={setIsAdminAuthenticated} completedHikes={completedHikes} />
+              ? <AdminLayout
+                  setIsAdminAuthenticated={setIsAdminAuthenticated}
+                  completedHikes={completedHikes}
+                  upcomingHike={upcomingHike}
+                  setUpcomingHike={setUpcomingHike}
+                  saveUpcomingHike={saveUpcomingHike}
+                  markHikeAsCompleted={markHikeAsCompleted}
+                  itemLabels={itemLabels}
+                  customItems={customItems}
+                  saveCustomItems={saveCustomItems}
+                  isEditingItems={isEditingItems}
+                  setIsEditingItems={setIsEditingItems}
+                  hikeCalendar={hikeCalendar}
+                  saveCalendar={saveCalendar}
+                  dashboardIntro={dashboardIntro}
+                  saveDashboardIntro={saveDashboardIntro}
+                  noticeBoard={noticeBoard}
+                  saveNotice={saveNotice}
+                  deleteNotice={deleteNotice}
+                  saveCompletedHike={saveCompletedHike}
+                />
               : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
           }
         >

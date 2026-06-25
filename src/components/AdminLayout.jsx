@@ -31,7 +31,27 @@ const NAV_GROUPS = [
   },
 ];
 
-const AdminLayout = ({ setIsAdminAuthenticated, completedHikes }) => {
+const AdminLayout = ({
+  setIsAdminAuthenticated,
+  completedHikes,
+  upcomingHike,
+  setUpcomingHike,
+  saveUpcomingHike,
+  markHikeAsCompleted,
+  itemLabels,
+  customItems,
+  saveCustomItems,
+  isEditingItems,
+  setIsEditingItems,
+  hikeCalendar,
+  saveCalendar,
+  dashboardIntro,
+  saveDashboardIntro,
+  noticeBoard,
+  saveNotice,
+  deleteNotice,
+  saveCompletedHike,
+}) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -140,7 +160,27 @@ const AdminLayout = ({ setIsAdminAuthenticated, completedHikes }) => {
         </div>
 
         <main className="flex-1 p-6 overflow-y-auto md:flex md:flex-col">
-          <Outlet context={{ completedHikes, setIsAdminAuthenticated }} />
+          <Outlet context={{
+            completedHikes,
+            setIsAdminAuthenticated,
+            upcomingHike,
+            setUpcomingHike,
+            saveUpcomingHike,
+            markHikeAsCompleted,
+            itemLabels,
+            customItems,
+            saveCustomItems,
+            isEditingItems,
+            setIsEditingItems,
+            hikeCalendar,
+            saveCalendar,
+            dashboardIntro,
+            saveDashboardIntro,
+            noticeBoard,
+            saveNotice,
+            deleteNotice,
+            saveCompletedHike,
+          }} />
         </main>
       </div>
     </div>

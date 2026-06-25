@@ -1,16 +1,19 @@
 import React from 'react';
-import { Calendar } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import EditCalendarForm from '../../components/EditCalendarForm';
 
-const EditCalendar = () => (
-  <div className="max-w-3xl">
-    <div className="glass rounded-3xl p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <Calendar className="w-6 h-6 text-forest-olive" />
-        <h1 className="text-2xl font-bold text-gray-800">Edit Calendar</h1>
-      </div>
-      <p className="text-gray-700 italic">Coming soon — edit full year calendar here.</p>
+const EditCalendar = () => {
+  const { hikeCalendar, saveCalendar } = useOutletContext();
+
+  return (
+    <div className="max-w-3xl">
+      <EditCalendarForm
+        hikeCalendar={hikeCalendar}
+        setIsEditingCalendar={() => {}}
+        saveCalendar={saveCalendar}
+      />
     </div>
-  </div>
-);
+  );
+};
 
 export default EditCalendar;
