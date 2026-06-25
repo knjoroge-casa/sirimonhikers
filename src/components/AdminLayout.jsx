@@ -98,7 +98,7 @@ const AdminLayout = ({ setIsAdminAuthenticated, completedHikes }) => {
   );
 
   return (
-    <div className="flex gap-4 items-start">
+    <div className="flex min-h-screen -mx-4 -my-8">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex flex-col w-64 flex-shrink-0 glass rounded-3xl overflow-hidden sticky top-4">
         <SidebarContent />
@@ -114,7 +114,7 @@ const AdminLayout = ({ setIsAdminAuthenticated, completedHikes }) => {
 
       {/* Mobile sidebar */}
       <aside
-        className={`fixed top-4 left-4 h-[calc(100vh-2rem)] w-64 glass rounded-3xl overflow-hidden z-40 md:hidden transform transition-transform duration-200
+        className={`fixed top-0 left-0 h-full w-64 glass z-40 md:hidden transform transition-transform duration-200
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <button
@@ -129,7 +129,7 @@ const AdminLayout = ({ setIsAdminAuthenticated, completedHikes }) => {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile top bar */}
-        <div className="md:hidden flex items-center gap-3 px-4 py-3 glass rounded-2xl mb-4">
+        <div className="md:hidden flex items-center gap-3 px-4 py-4 glass border-b border-white/20">
           <button
             onClick={() => setSidebarOpen(true)}
             className="text-gray-600 hover:text-gray-900"
@@ -139,7 +139,7 @@ const AdminLayout = ({ setIsAdminAuthenticated, completedHikes }) => {
           <span className="font-bold text-gray-800 text-sm">Admin Panel</span>
         </div>
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto">
           <Outlet context={{ completedHikes, setIsAdminAuthenticated }} />
         </main>
       </div>
