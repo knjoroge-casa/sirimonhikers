@@ -139,7 +139,7 @@ const AdminLayout = ({ setIsAdminAuthenticated, completedHikes }) => {
           <span className="font-bold text-gray-800 text-sm">Admin Panel</span>
         </div>
 
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto md:flex md:flex-col">
           <Outlet context={{ completedHikes, setIsAdminAuthenticated }} />
         </main>
       </div>
