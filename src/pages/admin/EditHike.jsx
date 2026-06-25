@@ -1,5 +1,5 @@
-import React from 'react';
-import { useOutletContext } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Mountain } from 'lucide-react';
 import EditHikeForm from '../../components/EditHikeForm';
 import EditItemsForm from '../../components/EditItemsForm';
@@ -7,7 +7,6 @@ import EditItemsForm from '../../components/EditItemsForm';
 const EditHike = () => {
   const {
     upcomingHike,
-    setUpcomingHike,
     saveUpcomingHike,
     markHikeAsCompleted,
     itemLabels,
@@ -18,12 +17,30 @@ const EditHike = () => {
     hikeCalendar,
   } = useOutletContext();
 
-  if (!upcomingHike) {
+  const navigate = useNavigate();
+  const [draftHike, setDraftHike] = useState(null);
+
+  const hikeToEdit = upcomingHike ?? draftHike;
+
+  const handleSave = async (data) => {
+    await saveUpcomingHike(data);
+    setDraftHike(null);
+  };
+
+  const handleClose = () => {
+    if (draftHike && !upcomingHike) {
+      setDraftHike(null);
+    } else {
+      navigate('/admin');
+    }
+  };
+
+  if (!hikeToEdit) {
     const handleCreate = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const nextCalendarHike = hikeCalendar?.find(h => new Date(h.date) >= today);
-      setUpcomingHike({
+      setDraftHike({
         name: nextCalendarHike?.hike || '',
         date: nextCalendarHike?.date || '',
         time: '',
@@ -67,9 +84,9 @@ const EditHike = () => {
   return (
     <div className="max-w-3xl">
       <EditHikeForm
-        upcomingHike={upcomingHike}
-        setIsEditing={() => {}}
-        saveUpcomingHike={saveUpcomingHike}
+        upcomingHike={hikeToEdit}
+        setIsEditing={handleClose}
+        saveUpcomingHike={handleSave}
         setIsEditingItems={setIsEditingItems}
         markHikeAsCompleted={markHikeAsCompleted}
         itemLabels={itemLabels}
