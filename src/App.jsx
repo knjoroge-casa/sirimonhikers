@@ -44,6 +44,7 @@ export default function App() {
   const [isEditingIntro, setIsEditingIntro] = useState(false);
   const [noticeBoard, setNoticeBoard] = useState([]);
   const [registrations, setRegistrations] = useState([]);
+  const [hikeCurators, setHikeCurators] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -134,6 +135,16 @@ export default function App() {
         setNoticeBoard(noticeData || []);
       } catch (e) {
         setNoticeBoard([]);
+      }
+
+      try {
+        const { data: curatorsData } = await supabase
+          .from('curating_companies')
+          .select('*')
+          .order('name', { ascending: true });
+        setHikeCurators(curatorsData || []);
+      } catch (e) {
+        console.error('Error loading curators:', e);
       }
 
       if (hikeData?.id) {
@@ -404,6 +415,50 @@ export default function App() {
     } catch (error) {
       console.error('Error saving completed hike:', error);
       alert('Error saving changes');
+    }
+  };
+
+  const saveHikeCurator = async (curator) => {
+    try {
+      const payload = {
+        name: curator.name,
+        contacts: curator.contacts,
+        rates: curator.rates,
+        notes: curator.notes,
+      };
+      if (curator.id) {
+        const { error } = await supabase
+          .from('curating_companies')
+          .update(payload)
+          .eq('id', curator.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('curating_companies')
+          .insert([payload]);
+        if (error) throw error;
+      }
+      await loadData();
+      return true;
+    } catch (e) {
+      console.error('Error saving curator:', e);
+      alert('Error saving curator');
+      return false;
+    }
+  };
+
+  const deleteHikeCurator = async (id) => {
+    if (!window.confirm('Delete this curator?')) return;
+    try {
+      const { error } = await supabase
+        .from('curating_companies')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      await loadData();
+    } catch (e) {
+      console.error('Error deleting curator:', e);
+      alert('Error deleting curator');
     }
   };
 
@@ -719,6 +774,9 @@ export default function App() {
                   saveNotice={saveNotice}
                   deleteNotice={deleteNotice}
                   saveCompletedHike={saveCompletedHike}
+                  hikeCurators={hikeCurators}
+                  saveHikeCurator={saveHikeCurator}
+                  deleteHikeCurator={deleteHikeCurator}
                 />
               : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
           }
