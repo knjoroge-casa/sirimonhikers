@@ -8,6 +8,17 @@ import CalendarPage from './pages/Calendar';
 import CompletedHikesPage from './pages/CompletedHikes';
 import AdminLogin from './pages/Admin';
 import EditCompletedHikeModal from './components/EditCompletedHikeModal';
+import AdminLayout from './components/AdminLayout';
+
+import AdminDashboard from './pages/admin/AdminDashboard';
+import EditDashboard from './pages/admin/EditDashboard';
+import EditHike from './pages/admin/EditHike';
+import EditCalendar from './pages/admin/EditCalendar';
+import EditCompleted from './pages/admin/EditCompleted';
+import Companies from './pages/admin/Companies';
+import Guides from './pages/admin/Guides';
+import Resources from './pages/admin/Resources';
+import HikersContacts from './pages/admin/HikersContacts';
 
 import itemLabels from './constants/itemLabels';
 
@@ -684,12 +695,24 @@ export default function App() {
             setIsEditingCompletedHike={setIsEditingCompletedHike}
           />
         } />
-        <Route path="/admin" element={
-          <AdminLogin
-            isAdminAuthenticated={isAdminAuthenticated}
-            setIsAdminAuthenticated={setIsAdminAuthenticated}
-          />
-        } />
+        <Route
+          path="/admin"
+          element={
+            isAdminAuthenticated
+              ? <AdminLayout setIsAdminAuthenticated={setIsAdminAuthenticated} completedHikes={completedHikes} />
+              : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="edit-dashboard" element={<EditDashboard />} />
+          <Route path="edit-hike" element={<EditHike />} />
+          <Route path="edit-calendar" element={<EditCalendar />} />
+          <Route path="edit-completed" element={<EditCompleted />} />
+          <Route path="companies" element={<Companies />} />
+          <Route path="guides" element={<Guides />} />
+          <Route path="resources" element={<Resources />} />
+          <Route path="hikers" element={<HikersContacts />} />
+        </Route>
       </Routes>
 
       <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
