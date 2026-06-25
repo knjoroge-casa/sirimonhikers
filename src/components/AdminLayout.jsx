@@ -98,7 +98,7 @@ const AdminLayout = ({ setIsAdminAuthenticated, completedHikes }) => {
   );
 
   return (
-    <div className="flex min-h-screen -mx-4 -my-8">
+    <div className="flex -mx-4 -my-8">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex flex-col w-64 flex-shrink-0 glass rounded-3xl overflow-hidden sticky top-4">
         <SidebarContent />

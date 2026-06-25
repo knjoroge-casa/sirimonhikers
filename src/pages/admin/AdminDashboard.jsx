@@ -24,8 +24,8 @@ const AdminDashboard = () => {
   const { completedHikes } = useOutletContext();
 
   return (
-    <div className="max-w-3xl md:flex-1 md:flex md:flex-col md:gap-6">
-      <div className="glass rounded-3xl p-6 mb-6 md:mb-0 md:flex-1">
+    <div className="max-w-3xl md:flex-1 md:flex md:flex-col md:justify-between">
+      <div className="glass rounded-3xl p-6 mb-6 md:mb-0">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Sirimon Hikers Admin</h1>
         <p className="text-gray-700 leading-relaxed">
           This panel lets you manage all aspects of the Sirimon Hikers community — from publishing hike
@@ -34,7 +34,7 @@ const AdminDashboard = () => {
         </p>
       </div>
 
-      <div className="glass rounded-3xl p-6 mb-6 md:mb-0 md:flex-1">
+      <div className="glass rounded-3xl p-6 mb-6 md:mb-0">
         <h2 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Overview</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <div className="glass rounded-3xl p-6 md:flex-1">
+      <div className="glass rounded-3xl p-6">
         <h2 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <ShortcutButton to="/admin/edit-hike" icon={Mountain} label="Add or Edit Upcoming Hike" />
