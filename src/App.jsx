@@ -45,6 +45,7 @@ export default function App() {
   const [noticeBoard, setNoticeBoard] = useState([]);
   const [registrations, setRegistrations] = useState([]);
   const [hikeCurators, setHikeCurators] = useState([]);
+  const [hikeGuides, setHikeGuides] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -145,6 +146,16 @@ export default function App() {
         setHikeCurators(curatorsData || []);
       } catch (e) {
         console.error('Error loading curators:', e);
+      }
+
+      try {
+        const { data: guidesData } = await supabase
+          .from('guides')
+          .select('*')
+          .order('name', { ascending: true });
+        setHikeGuides(guidesData || []);
+      } catch (e) {
+        console.error('Error loading guides:', e);
       }
 
       if (hikeData?.id) {
@@ -459,6 +470,52 @@ export default function App() {
     } catch (e) {
       console.error('Error deleting curator:', e);
       alert('Error deleting curator');
+    }
+  };
+
+  const saveHikeGuide = async (guide) => {
+    try {
+      const cleanAreas = (guide.area || []).filter(a => a && a.trim() !== '');
+      const payload = {
+        name: guide.name,
+        phone: guide.phone,
+        area: cleanAreas,
+        rates: guide.rates,
+        notes: guide.notes,
+      };
+      if (guide.id) {
+        const { error } = await supabase
+          .from('guides')
+          .update(payload)
+          .eq('id', guide.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('guides')
+          .insert([payload]);
+        if (error) throw error;
+      }
+      await loadData();
+      return true;
+    } catch (e) {
+      console.error('Error saving guide:', e);
+      alert('Error saving guide');
+      return false;
+    }
+  };
+
+  const deleteHikeGuide = async (id) => {
+    if (!window.confirm('Delete this guide?')) return;
+    try {
+      const { error } = await supabase
+        .from('guides')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      await loadData();
+    } catch (e) {
+      console.error('Error deleting guide:', e);
+      alert('Error deleting guide');
     }
   };
 
@@ -777,6 +834,9 @@ export default function App() {
                   hikeCurators={hikeCurators}
                   saveHikeCurator={saveHikeCurator}
                   deleteHikeCurator={deleteHikeCurator}
+                  hikeGuides={hikeGuides}
+                  saveHikeGuide={saveHikeGuide}
+                  deleteHikeGuide={deleteHikeGuide}
                 />
               : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
           }
