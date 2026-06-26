@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Package, Plus, Pencil, Trash2, Save, Phone } from 'lucide-react';
 
-const RESOURCE_TYPES = ['Bus Driver', 'Hotel', 'Restaurant', 'Transport', 'Other'];
+const RESOURCE_TYPES = ['Bus Driver', 'Accommodation', 'Restaurant', 'Transport', 'Other'];
 
 const EMPTY_RESOURCE = { type: 'Bus Driver', name: '', contact: '', notes: '' };
 
