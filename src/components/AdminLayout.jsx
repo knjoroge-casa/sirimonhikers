@@ -57,6 +57,9 @@ const AdminLayout = ({
   hikeGuides,
   saveHikeGuide,
   deleteHikeGuide,
+  hikeResources,
+  saveHikeResource,
+  deleteHikeResource,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
@@ -192,6 +195,9 @@ const AdminLayout = ({
             hikeGuides,
             saveHikeGuide,
             deleteHikeGuide,
+            hikeResources,
+            saveHikeResource,
+            deleteHikeResource,
           }} />
         </main>
       </div>

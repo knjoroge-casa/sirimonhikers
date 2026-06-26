@@ -46,6 +46,7 @@ export default function App() {
   const [registrations, setRegistrations] = useState([]);
   const [hikeCurators, setHikeCurators] = useState([]);
   const [hikeGuides, setHikeGuides] = useState([]);
+  const [hikeResources, setHikeResources] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -156,6 +157,17 @@ export default function App() {
         setHikeGuides(guidesData || []);
       } catch (e) {
         console.error('Error loading guides:', e);
+      }
+
+      try {
+        const { data: resourcesData } = await supabase
+          .from('resources_directory')
+          .select('*')
+          .order('type', { ascending: true })
+          .order('name', { ascending: true });
+        setHikeResources(resourcesData || []);
+      } catch (e) {
+        console.error('Error loading resources:', e);
       }
 
       if (hikeData?.id) {
@@ -519,6 +531,50 @@ export default function App() {
     }
   };
 
+  const saveHikeResource = async (resource) => {
+    try {
+      const payload = {
+        type: resource.type,
+        name: resource.name,
+        contact: resource.contact,
+        notes: resource.notes,
+      };
+      if (resource.id) {
+        const { error } = await supabase
+          .from('resources_directory')
+          .update(payload)
+          .eq('id', resource.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('resources_directory')
+          .insert([payload]);
+        if (error) throw error;
+      }
+      await loadData();
+      return true;
+    } catch (e) {
+      console.error('Error saving resource:', e);
+      alert('Error saving resource');
+      return false;
+    }
+  };
+
+  const deleteHikeResource = async (id) => {
+    if (!window.confirm('Delete this resource?')) return;
+    try {
+      const { error } = await supabase
+        .from('resources_directory')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      await loadData();
+    } catch (e) {
+      console.error('Error deleting resource:', e);
+      alert('Error deleting resource');
+    }
+  };
+
   const saveAsPDF = () => {
     const allItems = { ...itemLabels, ...customItems };
     const printWindow = window.open('', '_blank');
@@ -837,6 +893,9 @@ export default function App() {
                   hikeGuides={hikeGuides}
                   saveHikeGuide={saveHikeGuide}
                   deleteHikeGuide={deleteHikeGuide}
+                  hikeResources={hikeResources}
+                  saveHikeResource={saveHikeResource}
+                  deleteHikeResource={deleteHikeResource}
                 />
               : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
           }
