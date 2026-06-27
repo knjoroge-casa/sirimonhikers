@@ -47,6 +47,7 @@ export default function App() {
   const [hikeCurators, setHikeCurators] = useState([]);
   const [hikeGuides, setHikeGuides] = useState([]);
   const [hikeResources, setHikeResources] = useState([]);
+  const [hikersContacts, setHikersContacts] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -168,6 +169,16 @@ export default function App() {
         setHikeResources(resourcesData || []);
       } catch (e) {
         console.error('Error loading resources:', e);
+      }
+
+      try {
+        const { data: contactsData } = await supabase
+          .from('hikers_contacts')
+          .select('*')
+          .order('name', { ascending: true });
+        setHikersContacts(contactsData || []);
+      } catch (e) {
+        console.error('Error loading hikers contacts:', e);
       }
 
       if (hikeData?.id) {
@@ -575,6 +586,55 @@ export default function App() {
     }
   };
 
+  const saveHikerContact = async (contact) => {
+    try {
+      if (!contact.name || !contact.phone) {
+        alert('Name and phone are required');
+        return false;
+      }
+      const payload = {
+        name: contact.name,
+        phone: contact.phone,
+        email: contact.email,
+        notes: contact.notes,
+        birthday: contact.birthday || null,
+      };
+      if (contact.id) {
+        const { error } = await supabase
+          .from('hikers_contacts')
+          .update(payload)
+          .eq('id', contact.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('hikers_contacts')
+          .insert([payload]);
+        if (error) throw error;
+      }
+      await loadData();
+      return true;
+    } catch (e) {
+      console.error('Error saving contact:', e);
+      alert('Error saving contact');
+      return false;
+    }
+  };
+
+  const deleteHikerContact = async (id) => {
+    if (!window.confirm('Delete this contact?')) return;
+    try {
+      const { error } = await supabase
+        .from('hikers_contacts')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      await loadData();
+    } catch (e) {
+      console.error('Error deleting contact:', e);
+      alert('Error deleting contact');
+    }
+  };
+
   const saveAsPDF = () => {
     const allItems = { ...itemLabels, ...customItems };
     const printWindow = window.open('', '_blank');
@@ -896,6 +956,10 @@ export default function App() {
                   hikeResources={hikeResources}
                   saveHikeResource={saveHikeResource}
                   deleteHikeResource={deleteHikeResource}
+                  hikersContacts={hikersContacts}
+                  saveHikerContact={saveHikerContact}
+                  deleteHikerContact={deleteHikerContact}
+                  registrations={registrations}
                 />
               : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
           }

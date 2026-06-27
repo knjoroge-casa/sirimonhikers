@@ -21,7 +21,7 @@ const ShortcutButton = ({ to, icon: Icon, label }) => (
 );
 
 const AdminDashboard = () => {
-  const { completedHikes, hikeGuides, hikeCurators, hikeResources } = useOutletContext();
+  const { completedHikes, hikeGuides, hikeCurators, hikeResources, hikersContacts } = useOutletContext();
 
   return (
     <div className="max-w-3xl md:flex-1 md:flex md:flex-col md:justify-between">
@@ -42,7 +42,11 @@ const AdminDashboard = () => {
             value={completedHikes?.length ?? 0}
             note={completedHikes?.length > 0 ? 'and counting.' : 'None yet.'}
           />
-          <StatCard label="Hikers Contacts" value="—" note="Coming soon" />
+          <StatCard
+            label="Hikers Contacts"
+            value={hikersContacts?.length ?? 0}
+            note={hikersContacts?.length > 0 ? 'in directory.' : 'None yet.'}
+          />
           <StatCard
             label="Guides"
             value={hikeGuides?.length ?? 0}
