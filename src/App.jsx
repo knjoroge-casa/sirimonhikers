@@ -608,6 +608,7 @@ export default function App() {
         email: contact.email,
         notes: contact.notes,
         birthday: contact.birthday || null,
+        manual_hike_count: contact.manual_hike_count !== null && contact.manual_hike_count !== undefined && contact.manual_hike_count !== '' ? parseInt(contact.manual_hike_count) : null,
       };
       if (contact.id) {
         const { error } = await supabase

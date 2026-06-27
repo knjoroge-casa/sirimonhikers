@@ -2,17 +2,22 @@ import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Users, Plus, Pencil, Trash2, Save, Phone, Mail, Search } from 'lucide-react';
 
-const EMPTY_CONTACT = { name: '', phone: '', email: '', birthday: '', notes: '' };
+const EMPTY_CONTACT = { name: '', phone: '', email: '', birthday: '', manual_hike_count: '', notes: '' };
 
-const getHikeCount = (phone, registrations) => {
-  if (!phone || !registrations) return 0;
-  const contactDigits = phone.replace(/\D/g, '');
-  const last6 = contactDigits.slice(-6);
-  if (last6.length < 6) return 0;
-  return registrations.filter(reg => {
-    const regDigits = (reg.phone || '').replace(/\D/g, '');
-    return regDigits.slice(-6) === last6 && reg.checked_in === true;
-  }).length;
+const getHikeCount = (contact, registrations) => {
+  let autoCount = 0;
+  if (contact.phone && registrations) {
+    const contactDigits = contact.phone.replace(/\D/g, '');
+    const last6 = contactDigits.slice(-6);
+    if (last6.length >= 6) {
+      autoCount = registrations.filter(reg => {
+        const regDigits = (reg.phone || '').replace(/\D/g, '');
+        return regDigits.slice(-6) === last6 && reg.checked_in === true;
+      }).length;
+    }
+  }
+  const manualCount = contact.manual_hike_count || 0;
+  return { total: autoCount + manualCount, manual: manualCount, auto: autoCount };
 };
 
 const ContactForm = ({ initial, onSave, onCancel }) => {
@@ -68,6 +73,19 @@ const ContactForm = ({ initial, onSave, onCancel }) => {
           onChange={e => setForm(prev => ({ ...prev, birthday: e.target.value }))}
           className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
         />
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Historical Hike Count</label>
+        <input
+          type="number"
+          min="0"
+          value={form.manual_hike_count}
+          onChange={e => setForm(prev => ({ ...prev, manual_hike_count: e.target.value }))}
+          className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
+          placeholder="Hikes before app tracking (optional)"
+        />
+        <p className="text-xs text-gray-400 mt-1">Added to auto-tracked hikes for the total displayed on the card.</p>
       </div>
 
       <div>
@@ -182,7 +200,7 @@ const HikersContacts = () => {
 
       {/* Contact cards */}
       {filtered.map(contact => {
-        const hikeCount = getHikeCount(contact.phone, allRegistrations);
+        const hikeCount = getHikeCount(contact, allRegistrations);
         return (
           <div key={contact.id} className="glass rounded-3xl p-6">
             {editingId === contact.id ? (
@@ -202,8 +220,10 @@ const HikersContacts = () => {
                     <span
                       className="px-2.5 py-0.5 rounded-full text-xs font-semibold text-white flex-shrink-0"
                       style={{ backgroundColor: '#6B8E23' }}
+                      title={hikeCount.manual > 0 ? `${hikeCount.manual} historical + ${hikeCount.auto} tracked` : undefined}
                     >
-                      {hikeCount} {hikeCount === 1 ? 'hike' : 'hikes'}
+                      {hikeCount.total} {hikeCount.total === 1 ? 'hike' : 'hikes'}
+                      {hikeCount.manual > 0 && ` (${hikeCount.manual} historical + ${hikeCount.auto} tracked)`}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
