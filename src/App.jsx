@@ -20,6 +20,7 @@ import Guides from './pages/admin/Guides';
 import Resources from './pages/admin/Resources';
 import HikersContacts from './pages/admin/HikersContacts';
 import OutOfTownHikes from './pages/admin/OutOfTownHikes';
+import OutOfTownPublic from './pages/OutOfTownPublic';
 
 import itemLabels from './constants/itemLabels';
 
@@ -731,6 +732,26 @@ export default function App() {
     }
   };
 
+  const saveOutOfTownConfirmation = async (confirmation) => {
+    try {
+      const { error } = await supabase
+        .from('out_of_town_confirmations')
+        .insert([{
+          out_of_town_hike_id: confirmation.out_of_town_hike_id,
+          name: confirmation.name,
+          phone: confirmation.phone,
+          dietary: confirmation.dietary || null,
+        }]);
+      if (error) throw error;
+      await loadData();
+      return true;
+    } catch (e) {
+      console.error('Error saving confirmation:', e);
+      alert('Error saving confirmation');
+      return false;
+    }
+  };
+
   const deleteHikerContact = async (id) => {
     if (!window.confirm('Delete this contact?')) return;
     try {
@@ -984,6 +1005,7 @@ export default function App() {
             saveDashboardIntro={saveDashboardIntro}
             saveNotice={saveNotice}
             deleteNotice={deleteNotice}
+            outOfTownHikes={outOfTownHikes}
           />
         } />
         <Route path="/nexthike" element={
@@ -1023,6 +1045,13 @@ export default function App() {
             setIsEditingNotes={setIsEditingNotes}
             saveCalendar={saveCalendar}
             saveImportantNotes={saveImportantNotes}
+          />
+        } />
+        <Route path="/outoftown" element={
+          <OutOfTownPublic
+            outOfTownHikes={outOfTownHikes}
+            outOfTownConfirmations={outOfTownConfirmations}
+            saveOutOfTownConfirmation={saveOutOfTownConfirmation}
           />
         } />
         <Route path="/completedhikes" element={
