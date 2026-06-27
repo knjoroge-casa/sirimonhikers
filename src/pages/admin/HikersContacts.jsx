@@ -220,10 +220,8 @@ const HikersContacts = () => {
                     <span
                       className="px-2.5 py-0.5 rounded-full text-xs font-semibold text-white flex-shrink-0"
                       style={{ backgroundColor: '#6B8E23' }}
-                      title={hikeCount.manual > 0 ? `${hikeCount.manual} historical + ${hikeCount.auto} tracked` : undefined}
                     >
-                      {hikeCount.total} {hikeCount.total === 1 ? 'hike' : 'hikes'}
-                      {hikeCount.manual > 0 && ` (${hikeCount.manual} historical + ${hikeCount.auto} tracked)`}
+                      {hikeCount.total} {hikeCount.total === 1 ? 'Hike' : 'Hikes'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
