@@ -17,7 +17,6 @@ const DashboardPage = ({
   saveDashboardIntro,
   saveNotice,
   deleteNotice,
-  outOfTownHikes,
 }) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -341,18 +340,10 @@ const DashboardPage = ({
       </button>
       <button
         onClick={() => { navigate('/completedhikes'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-        className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center mb-4"
+        className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
       >
         View Completed Hikes <ChevronRight className="w-5 h-5 ml-2" />
       </button>
-      {(outOfTownHikes || []).filter(h => h.status === 'open').length > 0 && (
-        <button
-          onClick={() => { navigate('/outoftown'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
-        >
-          View Out of Town Hikes <ChevronRight className="w-5 h-5 ml-2" />
-        </button>
-      )}
     </div>
   );
 };
