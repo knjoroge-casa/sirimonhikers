@@ -102,7 +102,7 @@ const ContactForm = ({ initial, onSave, onCancel }) => {
 };
 
 const HikersContacts = () => {
-  const { hikersContacts, registrations, saveHikerContact, deleteHikerContact } = useOutletContext();
+  const { hikersContacts, allRegistrations, saveHikerContact, deleteHikerContact } = useOutletContext();
   const [editingId, setEditingId] = useState(null);
   const [search, setSearch] = useState('');
 
@@ -182,7 +182,7 @@ const HikersContacts = () => {
 
       {/* Contact cards */}
       {filtered.map(contact => {
-        const hikeCount = getHikeCount(contact.phone, registrations);
+        const hikeCount = getHikeCount(contact.phone, allRegistrations);
         return (
           <div key={contact.id} className="glass rounded-3xl p-6">
             {editingId === contact.id ? (

@@ -64,6 +64,7 @@ const AdminLayout = ({
   saveHikerContact,
   deleteHikerContact,
   registrations,
+  allRegistrations,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
@@ -206,6 +207,7 @@ const AdminLayout = ({
             saveHikerContact,
             deleteHikerContact,
             registrations,
+            allRegistrations,
           }} />
         </main>
       </div>

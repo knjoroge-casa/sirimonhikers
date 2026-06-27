@@ -48,6 +48,7 @@ export default function App() {
   const [hikeGuides, setHikeGuides] = useState([]);
   const [hikeResources, setHikeResources] = useState([]);
   const [hikersContacts, setHikersContacts] = useState([]);
+  const [allRegistrations, setAllRegistrations] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -179,6 +180,15 @@ export default function App() {
         setHikersContacts(contactsData || []);
       } catch (e) {
         console.error('Error loading hikers contacts:', e);
+      }
+
+      try {
+        const { data: allRegData } = await supabase
+          .from('registrations')
+          .select('id, phone, hike_id, hike_name');
+        setAllRegistrations(allRegData || []);
+      } catch (e) {
+        console.error('Error loading all registrations:', e);
       }
 
       if (hikeData?.id) {
@@ -960,6 +970,7 @@ export default function App() {
                   saveHikerContact={saveHikerContact}
                   deleteHikerContact={deleteHikerContact}
                   registrations={registrations}
+                  allRegistrations={allRegistrations}
                 />
               : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
           }
