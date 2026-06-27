@@ -121,6 +121,64 @@ const DashboardPage = ({
         )}
       </div>
 
+      {/* ── OUT OF TOWN HIKE CARD ── */}
+      {nextOotHike && (() => {
+        const confirmCount = ootGetConfirmationCount(nextOotHike.id);
+        const capacity = parseInt(nextOotHike.max_capacity) || 0;
+        const fillPercent = capacity > 0 ? Math.min(100, Math.round((confirmCount / capacity) * 100)) : 0;
+        const isFull = capacity > 0 && confirmCount >= capacity;
+        const daysLeft = ootGetDaysUntilDeadline(nextOotHike.confirmation_deadline);
+        const deadlinePassed = daysLeft === 'Passed';
+        return (
+          <div className="glass rounded-3xl p-6 mb-6">
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#6B8E23' }}>
+              Out of Town Hike
+            </p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">{nextOotHike.name}</h2>
+            {(nextOotHike.start_date || nextOotHike.end_date) && (
+              <p className="text-gray-600 mb-2">{ootFormatDateRange(nextOotHike.start_date, nextOotHike.end_date)}</p>
+            )}
+            {nextOotHike.location && (
+              <div className="flex items-center text-gray-600 text-sm mb-3">
+                <MapPin className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#6B8E23' }} />
+                {nextOotHike.location}
+              </div>
+            )}
+            {nextOotHike.difficulty && (
+              <div className="mb-3">
+                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${DIFFICULTY_COLORS[nextOotHike.difficulty] || 'bg-gray-100 text-gray-700'}`}>
+                  {nextOotHike.difficulty}
+                </span>
+              </div>
+            )}
+            {nextOotHike.confirmation_deadline && (
+              <p className={`text-sm font-semibold mb-3 ${deadlinePassed ? 'text-red-500' : 'text-gray-600'}`}>
+                {deadlinePassed ? 'Confirmations closed' : `Confirmations close in ${daysLeft}`}
+              </p>
+            )}
+            <div className="mb-4">
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>{confirmCount} of {capacity} spots confirmed</span>
+                <span>{fillPercent}%</span>
+              </div>
+              <div className="w-full bg-white/30 rounded-full h-2">
+                <div
+                  className="h-2 rounded-full transition-all"
+                  style={{ width: `${fillPercent}%`, backgroundColor: isFull ? '#ef4444' : '#6B8E23' }}
+                />
+              </div>
+            </div>
+            <button
+              onClick={() => { navigate('/outoftown'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="w-full py-3 rounded-2xl font-semibold text-white flex items-center justify-center hover:opacity-90"
+              style={{ backgroundColor: '#6B8E23' }}
+            >
+              Confirm Your Spot <ChevronRight className="w-5 h-5 ml-1" />
+            </button>
+          </div>
+        );
+      })()}
+
       {/* ── NEXT HIKE CARD ── */}
       {upcomingHike ? (
         <div className="glass rounded-3xl p-6 mb-6">
@@ -169,8 +227,16 @@ const DashboardPage = ({
         <div className="glass rounded-3xl p-6 mb-6">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#6B8E23' }}>Save the Date</p>
+              <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#6B8E23' }}>Next Hike</p>
               <h2 className="text-2xl font-bold text-gray-800">{nextCalendarHike.hike}</h2>
+              {nextCalendarHike.is_out_of_town && (
+                <span
+                  className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
+                  style={{ backgroundColor: '#6B8E23' }}
+                >
+                  Out of Town
+                </span>
+              )}
               <p className="text-gray-600 mt-1">
                 {new Date(nextCalendarHike.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
@@ -257,64 +323,6 @@ const DashboardPage = ({
           )}
         </div>
       )}
-
-      {/* ── OUT OF TOWN HIKE CARD ── */}
-      {nextOotHike && (() => {
-        const confirmCount = ootGetConfirmationCount(nextOotHike.id);
-        const capacity = parseInt(nextOotHike.max_capacity) || 0;
-        const fillPercent = capacity > 0 ? Math.min(100, Math.round((confirmCount / capacity) * 100)) : 0;
-        const isFull = capacity > 0 && confirmCount >= capacity;
-        const daysLeft = ootGetDaysUntilDeadline(nextOotHike.confirmation_deadline);
-        const deadlinePassed = daysLeft === 'Passed';
-        return (
-          <div className="glass rounded-3xl p-6 mb-6">
-            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#6B8E23' }}>
-              Out of Town Hike
-            </p>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">{nextOotHike.name}</h2>
-            {(nextOotHike.start_date || nextOotHike.end_date) && (
-              <p className="text-gray-600 mb-2">{ootFormatDateRange(nextOotHike.start_date, nextOotHike.end_date)}</p>
-            )}
-            {nextOotHike.location && (
-              <div className="flex items-center text-gray-600 text-sm mb-3">
-                <MapPin className="w-4 h-4 mr-2 flex-shrink-0" style={{ color: '#6B8E23' }} />
-                {nextOotHike.location}
-              </div>
-            )}
-            {nextOotHike.difficulty && (
-              <div className="mb-3">
-                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${DIFFICULTY_COLORS[nextOotHike.difficulty] || 'bg-gray-100 text-gray-700'}`}>
-                  {nextOotHike.difficulty}
-                </span>
-              </div>
-            )}
-            {nextOotHike.confirmation_deadline && (
-              <p className={`text-sm font-semibold mb-3 ${deadlinePassed ? 'text-red-500' : 'text-gray-600'}`}>
-                {deadlinePassed ? 'Confirmations closed' : `Confirmations close in ${daysLeft}`}
-              </p>
-            )}
-            <div className="mb-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>{confirmCount} of {capacity} spots confirmed</span>
-                <span>{fillPercent}%</span>
-              </div>
-              <div className="w-full bg-white/30 rounded-full h-2">
-                <div
-                  className="h-2 rounded-full transition-all"
-                  style={{ width: `${fillPercent}%`, backgroundColor: isFull ? '#ef4444' : '#6B8E23' }}
-                />
-              </div>
-            </div>
-            <button
-              onClick={() => { navigate('/outoftown'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className="w-full py-3 rounded-2xl font-semibold text-white flex items-center justify-center hover:opacity-90"
-              style={{ backgroundColor: '#6B8E23' }}
-            >
-              Confirm Your Spot <ChevronRight className="w-5 h-5 ml-1" />
-            </button>
-          </div>
-        );
-      })()}
 
       {/* ── DAMAGE REPORT ── */}
       <div className="glass rounded-3xl p-6 mb-6">
