@@ -19,6 +19,7 @@ import Companies from './pages/admin/Companies';
 import Guides from './pages/admin/Guides';
 import Resources from './pages/admin/Resources';
 import HikersContacts from './pages/admin/HikersContacts';
+import OutOfTownHikes from './pages/admin/OutOfTownHikes';
 
 import itemLabels from './constants/itemLabels';
 
@@ -49,6 +50,8 @@ export default function App() {
   const [hikeResources, setHikeResources] = useState([]);
   const [hikersContacts, setHikersContacts] = useState([]);
   const [allRegistrations, setAllRegistrations] = useState([]);
+  const [outOfTownHikes, setOutOfTownHikes] = useState([]);
+  const [outOfTownConfirmations, setOutOfTownConfirmations] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -189,6 +192,26 @@ export default function App() {
         setAllRegistrations(allRegData || []);
       } catch (e) {
         console.error('Error loading all registrations:', e);
+      }
+
+      try {
+        const { data: ootData } = await supabase
+          .from('out_of_town_hikes')
+          .select('*')
+          .order('start_date', { ascending: true });
+        setOutOfTownHikes(ootData || []);
+      } catch (e) {
+        console.error('Error loading out of town hikes:', e);
+      }
+
+      try {
+        const { data: confData } = await supabase
+          .from('out_of_town_confirmations')
+          .select('*')
+          .order('confirmed_at', { ascending: true });
+        setOutOfTownConfirmations(confData || []);
+      } catch (e) {
+        console.error('Error loading confirmations:', e);
       }
 
       if (hikeData?.id) {
@@ -631,6 +654,83 @@ export default function App() {
     }
   };
 
+  const saveOutOfTownHike = async (hike) => {
+    try {
+      if (hike.id) {
+        const { error } = await supabase
+          .from('out_of_town_hikes')
+          .update({
+            name: hike.name,
+            start_date: hike.start_date,
+            end_date: hike.end_date,
+            location: hike.location,
+            rough_cost: hike.rough_cost,
+            difficulty: hike.difficulty,
+            description: hike.description,
+            max_capacity: parseInt(hike.max_capacity),
+            confirmation_deadline: hike.confirmation_deadline,
+            status: hike.status,
+            show_on_dashboard: hike.show_on_dashboard,
+          })
+          .eq('id', hike.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('out_of_town_hikes')
+          .insert([{
+            name: hike.name,
+            start_date: hike.start_date,
+            end_date: hike.end_date,
+            location: hike.location,
+            rough_cost: hike.rough_cost,
+            difficulty: hike.difficulty,
+            description: hike.description,
+            max_capacity: parseInt(hike.max_capacity),
+            confirmation_deadline: hike.confirmation_deadline,
+            status: hike.status || 'open',
+            show_on_dashboard: hike.show_on_dashboard !== false,
+          }]);
+        if (error) throw error;
+      }
+      await loadData();
+      return true;
+    } catch (e) {
+      console.error('Error saving out of town hike:', e);
+      alert('Error saving out of town hike');
+      return false;
+    }
+  };
+
+  const deleteOutOfTownHike = async (id) => {
+    if (!window.confirm('Delete this out of town hike? All confirmations will be deleted too.')) return;
+    try {
+      const { error } = await supabase
+        .from('out_of_town_hikes')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      await loadData();
+    } catch (e) {
+      console.error('Error deleting hike:', e);
+      alert('Error deleting hike');
+    }
+  };
+
+  const deleteOutOfTownConfirmation = async (id) => {
+    if (!window.confirm('Remove this confirmation?')) return;
+    try {
+      const { error } = await supabase
+        .from('out_of_town_confirmations')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+      await loadData();
+    } catch (e) {
+      console.error('Error deleting confirmation:', e);
+      alert('Error removing confirmation');
+    }
+  };
+
   const deleteHikerContact = async (id) => {
     if (!window.confirm('Delete this contact?')) return;
     try {
@@ -972,6 +1072,11 @@ export default function App() {
                   deleteHikerContact={deleteHikerContact}
                   registrations={registrations}
                   allRegistrations={allRegistrations}
+                  outOfTownHikes={outOfTownHikes}
+                  outOfTownConfirmations={outOfTownConfirmations}
+                  saveOutOfTownHike={saveOutOfTownHike}
+                  deleteOutOfTownHike={deleteOutOfTownHike}
+                  deleteOutOfTownConfirmation={deleteOutOfTownConfirmation}
                 />
               : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
           }
@@ -985,6 +1090,7 @@ export default function App() {
           <Route path="guides" element={<Guides />} />
           <Route path="resources" element={<Resources />} />
           <Route path="hikers" element={<HikersContacts />} />
+          <Route path="outoftown" element={<OutOfTownHikes />} />
         </Route>
       </Routes>
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Edit3, Mountain, Calendar, CheckCircle,
-  Building2, Compass, Package, Users, LogOut, Menu, X
+  Building2, Compass, Package, Users, LogOut, Menu, X, Map
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -18,6 +18,7 @@ const NAV_GROUPS = [
       { label: 'Edit Hike Details', to: '/admin/edit-hike', icon: Mountain },
       { label: 'Edit Calendar', to: '/admin/edit-calendar', icon: Calendar },
       { label: 'Edit Completed Hikes', to: '/admin/edit-completed', icon: CheckCircle },
+      { label: 'Out of Town Hikes', to: '/admin/outoftown', icon: Map },
     ],
   },
   {
@@ -65,6 +66,11 @@ const AdminLayout = ({
   deleteHikerContact,
   registrations,
   allRegistrations,
+  outOfTownHikes,
+  outOfTownConfirmations,
+  saveOutOfTownHike,
+  deleteOutOfTownHike,
+  deleteOutOfTownConfirmation,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
@@ -208,6 +214,11 @@ const AdminLayout = ({
             deleteHikerContact,
             registrations,
             allRegistrations,
+            outOfTownHikes,
+            outOfTownConfirmations,
+            saveOutOfTownHike,
+            deleteOutOfTownHike,
+            deleteOutOfTownConfirmation,
           }} />
         </main>
       </div>
