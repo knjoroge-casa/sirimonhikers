@@ -21,12 +21,11 @@ const ShortcutButton = ({ to, icon: Icon, label }) => (
 );
 
 const AdminDashboard = () => {
-  const { completedHikes, hikeGuides, hikeCurators, hikeResources, hikersContacts, outOfTownHikes } = useOutletContext();
-  const openOotHikes = (outOfTownHikes || []).filter(h => h.status === 'open').length;
+  const { completedHikes, hikeGuides, hikeCurators, hikeResources, hikersContacts } = useOutletContext();
 
   return (
-    <div className="max-w-3xl md:flex-1 md:flex md:flex-col md:justify-between">
-      <div className="glass rounded-3xl p-6 mb-6 md:mb-0">
+    <div className="max-w-3xl space-y-6">
+      <div className="glass rounded-3xl p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Sirimon Hikers Admin</h1>
         <p className="text-gray-700 leading-relaxed">
           This panel lets you manage all aspects of the Sirimon Hikers community — from publishing hike
@@ -35,7 +34,7 @@ const AdminDashboard = () => {
         </p>
       </div>
 
-      <div className="glass rounded-3xl p-6 mb-6 md:mb-0">
+      <div className="glass rounded-3xl p-6">
         <h2 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Overview</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <StatCard
@@ -62,11 +61,6 @@ const AdminDashboard = () => {
             label="Resources"
             value={hikeResources?.length ?? 0}
             note={hikeResources?.length > 0 ? 'on record.' : 'None yet.'}
-          />
-          <StatCard
-            label="OOT Hikes Open"
-            value={openOotHikes}
-            note={openOotHikes > 0 ? 'accepting sign-ups.' : 'None open.'}
           />
         </div>
       </div>
