@@ -1007,6 +1007,7 @@ export default function App() {
             saveNotice={saveNotice}
             deleteNotice={deleteNotice}
             outOfTownHikes={outOfTownHikes}
+            outOfTownConfirmations={outOfTownConfirmations}
           />
         } />
         <Route path="/nexthike" element={
