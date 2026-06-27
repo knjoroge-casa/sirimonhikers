@@ -185,7 +185,7 @@ export default function App() {
       try {
         const { data: allRegData } = await supabase
           .from('registrations')
-          .select('id, phone, hike_id, hike_name');
+          .select('id, phone, hike_id, hike_name, checked_in');
         setAllRegistrations(allRegData || []);
       } catch (e) {
         console.error('Error loading all registrations:', e);

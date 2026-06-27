@@ -11,7 +11,7 @@ const getHikeCount = (phone, registrations) => {
   if (last6.length < 6) return 0;
   return registrations.filter(reg => {
     const regDigits = (reg.phone || '').replace(/\D/g, '');
-    return regDigits.slice(-6) === last6;
+    return regDigits.slice(-6) === last6 && reg.checked_in === true;
   }).length;
 };
 
