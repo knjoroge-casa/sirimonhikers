@@ -62,7 +62,17 @@ const CalendarPage = ({
                 <div key={hike.id} className="glass rounded-3xl p-5 hover:shadow-2xl transition-all">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <h3 className="font-bold text-lg text-gray-800">{hike.hike}</h3>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-bold text-lg text-gray-800">{hike.hike}</h3>
+                        {hike.is_out_of_town && (
+                          <span
+                            className="px-2 py-0.5 rounded-full text-xs font-semibold text-white flex-shrink-0"
+                            style={{ backgroundColor: '#6B8E23' }}
+                          >
+                            Out of Town
+                          </span>
+                        )}
+                      </div>
                       <p className="text-blue-600 font-semibold">{formattedDate}</p>
                     </div>
                     <div className="flex gap-2 items-center">

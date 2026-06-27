@@ -16,7 +16,8 @@ const EditCalendarForm = ({ hikeCalendar, setIsEditingCalendar, saveCalendar }) 
       month: "",
       hike: "",
       date: "",
-      prerequisites: ""
+      prerequisites: "",
+      is_out_of_town: false
     }]);
   };
 
@@ -70,6 +71,15 @@ const EditCalendarForm = ({ hikeCalendar, setIsEditingCalendar, saveCalendar }) 
               rows="2"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
             />
+            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={hike.is_out_of_town || false}
+                onChange={(e) => handleUpdateHike(index, 'is_out_of_town', e.target.checked)}
+                className="w-4 h-4 rounded"
+              />
+              This is an Out of Town hike
+            </label>
           </div>
         ))}
       </div>

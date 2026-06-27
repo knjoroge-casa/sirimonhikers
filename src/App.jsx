@@ -310,7 +310,8 @@ export default function App() {
         month: item.month,
         hike: item.hike,
         date: item.date,
-        prerequisites: item.prerequisites
+        prerequisites: item.prerequisites,
+        is_out_of_town: item.is_out_of_town || false
       }));
       const { error } = await supabase.from('hike_calendar').insert(calendarToSave);
       if (error) throw error;
