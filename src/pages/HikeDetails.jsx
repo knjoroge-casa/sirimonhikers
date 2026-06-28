@@ -36,7 +36,7 @@ const HikeDetailsPage = ({
 
   if (!upcomingHike) {
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto pb-20 md:pb-0">
         <div className="mb-4">
           <Link
             to="/"

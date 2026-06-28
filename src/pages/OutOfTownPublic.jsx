@@ -109,7 +109,7 @@ const OutOfTownPublic = ({ outOfTownHikes, outOfTownConfirmations, saveOutOfTown
     (outOfTownConfirmations || []).filter(c => c.out_of_town_hike_id === hikeId).length;
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto pb-20 md:pb-0">
       <div className="mb-4">
         <Link to="/" className="text-white/90 hover:text-white font-semibold flex items-center">
           ← Back to Dashboard

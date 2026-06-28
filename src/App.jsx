@@ -21,6 +21,7 @@ import Resources from './pages/admin/Resources';
 import HikersContacts from './pages/admin/HikersContacts';
 import OutOfTownHikes from './pages/admin/OutOfTownHikes';
 import OutOfTownPublic from './pages/OutOfTownPublic';
+import MobileTabBar from './components/MobileTabBar';
 
 import itemLabels from './constants/itemLabels';
 
@@ -1193,6 +1194,10 @@ export default function App() {
           <Route path="outoftown" element={<OutOfTownHikes />} />
         </Route>
       </Routes>
+
+      {!location.pathname.startsWith('/admin') && (
+        <MobileTabBar outOfTownHikes={outOfTownHikes} />
+      )}
 
       <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
         <p>Questions? Contact your Sirimon Host. You know how!</p>

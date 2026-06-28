@@ -84,7 +84,7 @@ const DashboardPage = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto pb-20 md:pb-0">
       {/* ── INTRO SECTION ── */}
       <div className="glass rounded-3xl p-6 mb-6 relative">
         <div className="flex justify-between items-start mb-2">
