@@ -252,7 +252,9 @@ const DashboardPage = ({
                 </span>
               )}
               <p className="text-gray-600 mt-1">
-                {new Date(nextCalendarHike.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {nextCalendarHike.is_out_of_town && nextCalendarHike.end_date
+                  ? ootFormatDateRange(nextCalendarHike.date, nextCalendarHike.end_date)
+                  : new Date(nextCalendarHike.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
             <div className="text-right">
