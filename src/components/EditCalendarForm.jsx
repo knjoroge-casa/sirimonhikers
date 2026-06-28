@@ -17,7 +17,8 @@ const EditCalendarForm = ({ hikeCalendar, setIsEditingCalendar, saveCalendar }) 
       hike: "",
       date: "",
       prerequisites: "",
-      is_out_of_town: false
+      is_out_of_town: false,
+      end_date: null
     }]);
   };
 
@@ -75,11 +76,33 @@ const EditCalendarForm = ({ hikeCalendar, setIsEditingCalendar, saveCalendar }) 
               <input
                 type="checkbox"
                 checked={hike.is_out_of_town || false}
-                onChange={(e) => handleUpdateHike(index, 'is_out_of_town', e.target.checked)}
+                onChange={(e) => {
+                  const updated = [...calendarData];
+                  updated[index] = {
+                    ...updated[index],
+                    is_out_of_town: e.target.checked,
+                    end_date: e.target.checked ? updated[index].end_date : null
+                  };
+                  setCalendarData(updated);
+                }}
                 className="w-4 h-4 rounded"
               />
               This is an Out of Town hike
             </label>
+            {hike.is_out_of_town && (
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">
+                  End Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={hike.end_date || ''}
+                  onChange={(e) => handleUpdateHike(index, 'end_date', e.target.value || null)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  required
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -87,7 +110,14 @@ const EditCalendarForm = ({ hikeCalendar, setIsEditingCalendar, saveCalendar }) 
         + Add Hike
       </button>
       <button
-        onClick={() => saveCalendar(calendarData)}
+        onClick={() => {
+          const missing = calendarData.find(h => h.is_out_of_town && !h.end_date);
+          if (missing) {
+            alert(`End date is required for Out of Town hikes. Missing on: "${missing.hike || 'unnamed entry'}"`);
+            return;
+          }
+          saveCalendar(calendarData);
+        }}
         className="w-full mt-4 py-3 rounded-2xl font-semibold text-white hover:opacity-90 flex items-center justify-center"
         style={{ backgroundColor: '#6B8E23' }}
       >

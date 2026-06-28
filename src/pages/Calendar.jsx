@@ -3,6 +3,20 @@ import { Download, Edit } from 'lucide-react';
 import EditCalendarForm from '../components/EditCalendarForm';
 import EditNotesModal from '../components/EditNotesModal';
 
+const formatCalendarDate = (hike) => {
+  const s = new Date(hike.date + 'T00:00:00');
+  if (!hike.is_out_of_town || !hike.end_date) {
+    return s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  const e = new Date(hike.end_date + 'T00:00:00');
+  const short = { day: 'numeric', month: 'short' };
+  const full = { day: 'numeric', month: 'short', year: 'numeric' };
+  if (s.getFullYear() === e.getFullYear()) {
+    return `${s.toLocaleDateString('en-GB', short)} – ${e.toLocaleDateString('en-GB', full)}`;
+  }
+  return `${s.toLocaleDateString('en-GB', full)} – ${e.toLocaleDateString('en-GB', full)}`;
+};
+
 const CalendarPage = ({
   isEditingCalendar, setIsEditingCalendar,
   isAdminAuthenticated,
@@ -54,10 +68,7 @@ const CalendarPage = ({
           <h1 className="text-2xl font-bold text-gray-800 mb-6">2026 Hiking Calendar</h1>
           <div className="space-y-4">
             {hikeCalendar.map(hike => {
-              const formattedDate = new Date(hike.date).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric'
-              });
+              const formattedDate = formatCalendarDate(hike);
               return (
                 <div key={hike.id} className="glass rounded-3xl p-5 hover:shadow-2xl transition-all">
                   <div className="flex justify-between items-start mb-2">
