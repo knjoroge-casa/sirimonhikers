@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Map, Plus, Pencil, Trash2, Save, ChevronDown, ChevronUp } from 'lucide-react';
+import { Map, Plus, Pencil, Trash2, Save, ChevronDown, ChevronUp, ArrowUpCircle } from 'lucide-react';
 
 const DIFFICULTY_OPTIONS = ['Friendly', 'Moderate', "Let's Challenge Ourselves"];
 
@@ -16,6 +16,7 @@ const EMPTY_HIKE = {
   confirmation_deadline: '',
   status: 'open',
   show_on_dashboard: true,
+  confirmations_open: true,
 };
 
 const STATUS_STYLES = {
@@ -184,6 +185,17 @@ const HikeForm = ({ initial, onSave, onCancel }) => {
         <label htmlFor="show_on_dashboard" className="text-sm text-gray-700">Show on Dashboard</label>
       </div>
 
+      <div className="flex items-center gap-3">
+        <input
+          type="checkbox"
+          id="confirmations_open"
+          checked={form.confirmations_open !== false}
+          onChange={e => setForm(prev => ({ ...prev, confirmations_open: e.target.checked }))}
+          className="w-4 h-4 rounded"
+        />
+        <label htmlFor="confirmations_open" className="text-sm text-gray-700">Accept new confirmations</label>
+      </div>
+
       <div className="flex gap-3 pt-1">
         <button
           onClick={handleSave}
@@ -204,6 +216,36 @@ const HikeForm = ({ initial, onSave, onCancel }) => {
   );
 };
 
+const ConvertModal = ({ hike, confirmCount, onConfirm, onCancel }) => (
+  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="glass rounded-3xl p-6 max-w-md w-full shadow-2xl">
+      <h2 className="text-lg font-bold text-gray-800 mb-4">Convert to Upcoming Hike?</h2>
+      <div className="space-y-2 mb-5 text-sm text-gray-700">
+        <p className="font-semibold text-base">{hike.name}</p>
+        <p>{formatDateRange(hike.start_date, hike.end_date)}</p>
+        <p>{confirmCount} confirmed hiker{confirmCount !== 1 ? 's' : ''} will be migrated to the registration list.</p>
+        <p>This OOT hike will be marked completed and removed from the public Out of Town page.</p>
+        <p className="text-amber-600 font-semibold mt-3">Note: Make sure there's no existing upcoming hike before converting.</p>
+      </div>
+      <div className="flex gap-3">
+        <button
+          onClick={onConfirm}
+          className="flex-1 py-2.5 rounded-2xl font-semibold text-white hover:opacity-90"
+          style={{ backgroundColor: '#6B8E23' }}
+        >
+          Confirm Conversion
+        </button>
+        <button
+          onClick={onCancel}
+          className="flex-1 py-2.5 rounded-2xl font-semibold text-gray-700 glass hover:bg-white/40 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
 const OutOfTownHikes = () => {
   const {
     outOfTownHikes,
@@ -211,21 +253,38 @@ const OutOfTownHikes = () => {
     saveOutOfTownHike,
     deleteOutOfTownHike,
     deleteOutOfTownConfirmation,
+    convertOutOfTownToUpcomingHike,
   } = useOutletContext();
 
   const [editingId, setEditingId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+  const [convertingHike, setConvertingHike] = useState(null);
 
   const getConfirmationCount = (hikeId) =>
-    outOfTownConfirmations.filter(c => c.hike_id === hikeId).length;
+    outOfTownConfirmations.filter(c => c.out_of_town_hike_id === hikeId).length;
 
   const handleSave = async (hike) => {
     const ok = await saveOutOfTownHike(hike);
     if (ok) setEditingId(null);
   };
 
+  const handleConvert = async () => {
+    if (!convertingHike) return;
+    const ok = await convertOutOfTownToUpcomingHike(convertingHike.id);
+    if (ok) setConvertingHike(null);
+  };
+
   return (
     <div className="max-w-3xl space-y-4">
+      {convertingHike && (
+        <ConvertModal
+          hike={convertingHike}
+          confirmCount={getConfirmationCount(convertingHike.id)}
+          onConfirm={handleConvert}
+          onCancel={() => setConvertingHike(null)}
+        />
+      )}
+
       {/* Header */}
       <div className="glass rounded-3xl p-6">
         <div className="flex items-start justify-between">
@@ -270,7 +329,7 @@ const OutOfTownHikes = () => {
       {outOfTownHikes.map(hike => {
         const confirmCount = getConfirmationCount(hike.id);
         const daysLeft = getDaysUntilDeadline(hike.confirmation_deadline);
-        const confirmations = outOfTownConfirmations.filter(c => c.hike_id === hike.id);
+        const confirmations = outOfTownConfirmations.filter(c => c.out_of_town_hike_id === hike.id);
         const isExpanded = expandedId === hike.id;
 
         return (
@@ -294,6 +353,12 @@ const OutOfTownHikes = () => {
                         {hike.status.charAt(0).toUpperCase() + hike.status.slice(1)}
                       </span>
                     </div>
+                    <p className="text-xs text-gray-500">
+                      Confirmations:{' '}
+                      <span className={hike.confirmations_open !== false ? 'text-green-600 font-semibold' : 'text-gray-400 font-semibold'}>
+                        {hike.confirmations_open !== false ? 'Open' : 'Closed'}
+                      </span>
+                    </p>
                     {(hike.start_date || hike.end_date) && (
                       <p className="text-sm text-gray-600">{formatDateRange(hike.start_date, hike.end_date)}</p>
                     )}
@@ -327,21 +392,34 @@ const OutOfTownHikes = () => {
                     )}
                   </div>
 
-                  <div className="flex gap-2 flex-shrink-0">
-                    <button
-                      onClick={() => setEditingId(hike.id)}
-                      className="p-2 glass rounded-xl text-gray-500 hover:text-gray-800 transition-colors"
-                      title="Edit"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => deleteOutOfTownHike(hike.id)}
-                      className="p-2 glass rounded-xl text-red-400 hover:text-red-600 transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <div className="flex flex-col gap-2 flex-shrink-0 items-end">
+                    {hike.status === 'open' && (
+                      <button
+                        onClick={() => setConvertingHike(hike)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white hover:opacity-90"
+                        style={{ backgroundColor: '#6B8E23' }}
+                        title="Convert to Upcoming Hike"
+                      >
+                        <ArrowUpCircle className="w-3.5 h-3.5" />
+                        Convert
+                      </button>
+                    )}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingId(hike.id)}
+                        className="p-2 glass rounded-xl text-gray-500 hover:text-gray-800 transition-colors"
+                        title="Edit"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => deleteOutOfTownHike(hike.id)}
+                        className="p-2 glass rounded-xl text-red-400 hover:text-red-600 transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 

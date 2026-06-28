@@ -71,6 +71,7 @@ const AdminLayout = ({
   saveOutOfTownHike,
   deleteOutOfTownHike,
   deleteOutOfTownConfirmation,
+  convertOutOfTownToUpcomingHike,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
@@ -219,6 +220,7 @@ const AdminLayout = ({
             saveOutOfTownHike,
             deleteOutOfTownHike,
             deleteOutOfTownConfirmation,
+            convertOutOfTownToUpcomingHike,
           }} />
         </main>
       </div>

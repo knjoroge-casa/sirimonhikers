@@ -213,13 +213,17 @@ const OutOfTownPublic = ({ outOfTownHikes, outOfTownConfirmations, saveOutOfTown
                 </div>
 
                 {/* CTA */}
-                {isFull ? (
+                {hike.confirmations_open === false ? (
+                  <div className="w-full py-3 rounded-2xl font-semibold text-center text-gray-500 glass-dark">
+                    Confirmations Paused
+                  </div>
+                ) : isFull ? (
                   <div className="w-full py-3 rounded-2xl font-semibold text-center text-gray-500 glass-dark">
                     Trip is Full
                   </div>
                 ) : deadlinePassed ? (
                   <div className="w-full py-3 rounded-2xl font-semibold text-center text-gray-500 glass-dark">
-                    Confirmations Closed
+                    Deadline Passed
                   </div>
                 ) : isConfirming ? (
                   <ConfirmationForm

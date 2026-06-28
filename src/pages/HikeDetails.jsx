@@ -86,11 +86,20 @@ const HikeDetailsPage = ({
     );
   }
 
-  const formattedDate = new Date(upcomingHike.date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const formattedDate = (() => {
+    const s = new Date(upcomingHike.date + 'T00:00:00');
+    const e = upcomingHike.end_date ? new Date(upcomingHike.end_date + 'T00:00:00') : null;
+    if (!e) return s.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const full = { day: 'numeric', month: 'short', year: 'numeric' };
+    const dayMonth = { day: 'numeric', month: 'short' };
+    if (s.getFullYear() === e.getFullYear() && s.getMonth() === e.getMonth()) {
+      return `${s.getDate()} – ${e.toLocaleDateString('en-GB', full)}`;
+    }
+    if (s.getFullYear() === e.getFullYear()) {
+      return `${s.toLocaleDateString('en-GB', dayMonth)} – ${e.toLocaleDateString('en-GB', full)}`;
+    }
+    return `${s.toLocaleDateString('en-GB', full)} – ${e.toLocaleDateString('en-GB', full)}`;
+  })();
 
   const selectedItems = Object.keys(allItems)
     .filter(key => upcomingHike.whatToBring[key])

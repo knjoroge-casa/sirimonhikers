@@ -57,6 +57,18 @@ const EditHikeForm = ({ upcomingHike, setIsEditing, saveUpcomingHike, setIsEditi
         </div>
 
         <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            End Date <span className="font-normal text-gray-400">(optional – for multi-day hikes)</span>
+          </label>
+          <input
+            type="date"
+            value={editData.end_date || ''}
+            onChange={(e) => setEditData({ ...editData, end_date: e.target.value || null })}
+            className="w-full px-4 py-2 glass rounded-2xl border-0"
+          />
+        </div>
+
+        <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">Hike Location</label>
           <input
             type="text"

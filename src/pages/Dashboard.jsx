@@ -168,13 +168,27 @@ const DashboardPage = ({
                 />
               </div>
             </div>
-            <button
-              onClick={() => { navigate('/outoftown'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className="w-full py-3 rounded-2xl font-semibold text-white flex items-center justify-center hover:opacity-90"
-              style={{ backgroundColor: '#6B8E23' }}
-            >
-              Confirm Your Spot <ChevronRight className="w-5 h-5 ml-1" />
-            </button>
+            {nextOotHike.confirmations_open === false ? (
+              <div className="w-full py-3 rounded-2xl font-semibold text-center text-gray-500 glass-dark">
+                Confirmations Paused
+              </div>
+            ) : isFull ? (
+              <div className="w-full py-3 rounded-2xl font-semibold text-center text-gray-500 glass-dark">
+                Trip is Full
+              </div>
+            ) : deadlinePassed ? (
+              <div className="w-full py-3 rounded-2xl font-semibold text-center text-gray-500 glass-dark">
+                Deadline Passed
+              </div>
+            ) : (
+              <button
+                onClick={() => { navigate('/outoftown'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                className="w-full py-3 rounded-2xl font-semibold text-white flex items-center justify-center hover:opacity-90"
+                style={{ backgroundColor: '#6B8E23' }}
+              >
+                Confirm Your Spot <ChevronRight className="w-5 h-5 ml-1" />
+              </button>
+            )}
           </div>
         );
       })()}

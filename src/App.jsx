@@ -267,7 +267,8 @@ export default function App() {
         post_hike_manenos: data.postHikeManenos,
         last_words: data.lastWords,
         what_to_bring: data.whatToBring,
-        registration_closed: data.registrationClosed || false
+        registration_closed: data.registrationClosed || false,
+        end_date: data.end_date || null
       };
 
       let savedHike;
@@ -673,6 +674,7 @@ export default function App() {
             confirmation_deadline: hike.confirmation_deadline,
             status: hike.status,
             show_on_dashboard: hike.show_on_dashboard,
+            confirmations_open: hike.confirmations_open !== false,
           })
           .eq('id', hike.id);
         if (error) throw error;
@@ -691,6 +693,7 @@ export default function App() {
             confirmation_deadline: hike.confirmation_deadline,
             status: hike.status || 'open',
             show_on_dashboard: hike.show_on_dashboard !== false,
+            confirmations_open: hike.confirmations_open !== false,
           }]);
         if (error) throw error;
       }
@@ -730,6 +733,70 @@ export default function App() {
     } catch (e) {
       console.error('Error deleting confirmation:', e);
       alert('Error removing confirmation');
+    }
+  };
+
+  const convertOutOfTownToUpcomingHike = async (ootHikeId) => {
+    try {
+      const ootHike = outOfTownHikes.find(h => h.id === ootHikeId);
+      if (!ootHike) { alert('Hike not found'); return false; }
+
+      const confirmations = outOfTownConfirmations.filter(c => c.out_of_town_hike_id === ootHikeId);
+
+      const newUpcomingHike = {
+        name: ootHike.name,
+        date: ootHike.start_date,
+        end_date: ootHike.end_date,
+        location: ootHike.location,
+        cost: ootHike.rough_cost,
+        difficulty: ootHike.difficulty,
+        intro: ootHike.description,
+        time: '',
+        what_to_expect: '',
+        duration: '',
+        distance: '',
+        elevation: '',
+        weather: '',
+        meeting_point: '',
+        post_hike_manenos: '',
+        last_words: '',
+        what_to_bring: {},
+        registration_closed: false,
+      };
+
+      const { data: insertedData, error: insertError } = await supabase
+        .from('upcoming_hike')
+        .insert([newUpcomingHike])
+        .select()
+        .single();
+      if (insertError) throw insertError;
+
+      if (confirmations.length > 0 && insertedData) {
+        const newRegistrations = confirmations.map(c => ({
+          hike_id: insertedData.id,
+          hike_name: ootHike.name,
+          hike_date: ootHike.start_date,
+          name: c.name,
+          phone: c.phone,
+          checked_in: false,
+        }));
+        const { error: regError } = await supabase.from('registrations').insert(newRegistrations);
+        if (regError) console.error('Error copying registrations:', regError);
+      }
+
+      const { error: updateError } = await supabase
+        .from('out_of_town_hikes')
+        .update({ status: 'completed' })
+        .eq('id', ootHikeId);
+      if (updateError) throw updateError;
+
+      await loadData();
+      alert(`Converted to upcoming hike. ${confirmations.length} confirmation(s) migrated to registrations.`);
+      return true;
+    } catch (e) {
+      console.error('Error converting OOT hike:', e);
+      alert('Error converting hike: ' + e.message);
+      return false;
     }
   };
 
@@ -1108,6 +1175,7 @@ export default function App() {
                   saveOutOfTownHike={saveOutOfTownHike}
                   deleteOutOfTownHike={deleteOutOfTownHike}
                   deleteOutOfTownConfirmation={deleteOutOfTownConfirmation}
+                  convertOutOfTownToUpcomingHike={convertOutOfTownToUpcomingHike}
                 />
               : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
           }
