@@ -1199,7 +1199,7 @@ export default function App() {
         <MobileTabBar outOfTownHikes={outOfTownHikes} />
       )}
 
-      <footer className="max-w-2xl mx-auto mt-12 text-center text-white/90 text-sm">
+      <footer className="max-w-2xl mx-auto mt-12 pb-24 md:pb-0 text-center text-white/90 text-sm">
         <p>Questions? Contact your Sirimon Host. You know how!</p>
         {!isAdminAuthenticated && (
           <div className="mt-4 pb-4">

@@ -84,7 +84,7 @@ const DashboardPage = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto pb-20 md:pb-0">
+    <div className="max-w-2xl mx-auto pb-24 md:pb-0">
       {/* ── INTRO SECTION ── */}
       <div className="glass rounded-3xl p-6 mb-6 relative">
         <div className="flex justify-between items-start mb-2">
@@ -122,6 +122,7 @@ const DashboardPage = ({
       </div>
 
       {/* ── OUT OF TOWN HIKE CARD ── */}
+      <div className="hidden md:block">
       {nextOotHike && (() => {
         const confirmCount = ootGetConfirmationCount(nextOotHike.id);
         const capacity = parseInt(nextOotHike.max_capacity) || 0;
@@ -192,8 +193,10 @@ const DashboardPage = ({
           </div>
         );
       })()}
+      </div>
 
       {/* ── NEXT HIKE CARD ── */}
+      <div className="hidden md:block">
       {upcomingHike ? (
         <div className="glass rounded-3xl p-6 mb-6">
           <div className="flex justify-between items-start mb-4">
@@ -339,6 +342,7 @@ const DashboardPage = ({
           )}
         </div>
       )}
+      </div>
 
       {/* ── DAMAGE REPORT ── */}
       <div className="glass rounded-3xl p-6 mb-6">
@@ -452,13 +456,13 @@ const DashboardPage = ({
       {/* ── NAV BUTTONS ── */}
       <button
         onClick={() => { navigate('/fullcalendar'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-        className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center mb-4"
+        className="hidden md:flex w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition items-center justify-center mb-4"
       >
         View Full Year Calendar <ChevronRight className="w-5 h-5 ml-2" />
       </button>
       <button
         onClick={() => { navigate('/completedhikes'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-        className="w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition flex items-center justify-center"
+        className="hidden md:flex w-full glass text-trail-brown py-3 rounded-2xl hover:bg-gray-200 transition items-center justify-center"
       >
         View Completed Hikes <ChevronRight className="w-5 h-5 ml-2" />
       </button>

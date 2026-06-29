@@ -9,7 +9,7 @@ const CompletedHikesPage = ({ completedHikes, isAdminAuthenticated, navigate, se
   };
 
   return (
-    <div className="max-w-2xl mx-auto pb-20 md:pb-0">
+    <div className="max-w-2xl mx-auto pb-24 md:pb-0">
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={() => navigate('/')}

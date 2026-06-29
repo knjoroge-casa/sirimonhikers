@@ -3,6 +3,7 @@ import { Calendar, MapPin, Clock, Info, ChevronRight, Download, Edit, Lock, File
 import { Link } from 'react-router-dom';
 import EditHikeForm from '../components/EditHikeForm';
 import EditItemsForm from '../components/EditItemsForm';
+import useCountdown from '../hooks/useCountdown';
 
 const HikeDetailsPage = ({
   upcomingHike, setUpcomingHike,
@@ -25,6 +26,13 @@ const HikeDetailsPage = ({
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const allItems = { ...itemLabels, ...customItems };
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const nextCalendarHike = !upcomingHike
+    ? (hikeCalendar || []).find(h => new Date(h.date) >= today)
+    : null;
+  const countdown = useCountdown(nextCalendarHike?.date || null, nextCalendarHike?.time);
+
   const handleSubmit = () => {
     if (formData.name && formData.phone) {
       handleRegister(formData.name, formData.phone);
@@ -35,13 +43,86 @@ const HikeDetailsPage = ({
   };
 
   if (!upcomingHike) {
+    if (nextCalendarHike) {
+      const calFormattedDate = (() => {
+        const s = new Date(nextCalendarHike.date + 'T00:00:00');
+        if (nextCalendarHike.is_out_of_town && nextCalendarHike.end_date) {
+          const e = new Date(nextCalendarHike.end_date + 'T00:00:00');
+          const short = { day: 'numeric', month: 'short' };
+          const full = { day: 'numeric', month: 'short', year: 'numeric' };
+          if (s.getFullYear() === e.getFullYear()) {
+            return `${s.toLocaleDateString('en-GB', short)} – ${e.toLocaleDateString('en-GB', full)}`;
+          }
+          return `${s.toLocaleDateString('en-GB', full)} – ${e.toLocaleDateString('en-GB', full)}`;
+        }
+        return s.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      })();
+
+      return (
+        <div className="max-w-2xl mx-auto pb-24 md:pb-0">
+          <div className="glass rounded-3xl p-6 mb-6">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#6B8E23' }}>Next Hike</p>
+                <h2 className="text-2xl font-bold text-gray-800">{nextCalendarHike.hike}</h2>
+                {nextCalendarHike.is_out_of_town && (
+                  <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: '#6B8E23' }}>
+                    Out of Town
+                  </span>
+                )}
+                <p className="text-gray-600 mt-1">{calFormattedDate}</p>
+              </div>
+              <div className="text-right">
+                <div className="rounded-2xl px-4 py-3" style={{ backgroundColor: '#f5f7ee' }}>
+                  <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#6B8E23' }}>Countdown</p>
+                  <p className="text-2xl font-bold font-mono" style={{ color: '#4a6015' }}>{countdown}</p>
+                </div>
+              </div>
+            </div>
+            {nextCalendarHike.prerequisites && (
+              <p className="text-gray-600 text-sm mb-4">{nextCalendarHike.prerequisites}</p>
+            )}
+            <div className="rounded-2xl px-4 py-3 text-center" style={{ backgroundColor: '#f5f7ee' }}>
+              <p className="text-sm font-semibold mb-3" style={{ color: '#4a6015' }}>Full hike details coming soon</p>
+              {isAdminAuthenticated && (
+                <button
+                  onClick={() => {
+                    const newHike = {
+                      name: nextCalendarHike.hike,
+                      date: nextCalendarHike.date,
+                      time: '',
+                      location: '',
+                      intro: '',
+                      whatToExpect: nextCalendarHike.prerequisites,
+                      difficulty: '',
+                      duration: '',
+                      distance: '',
+                      elevation: '',
+                      weather: '',
+                      meetingPoint: '',
+                      cost: '',
+                      postHikeManenos: '',
+                      lastWords: '',
+                      whatToBring: {}
+                    };
+                    setUpcomingHike(newHike);
+                    setIsEditing(true);
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 text-sm"
+                >
+                  Add Full Details
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
-      <div className="max-w-2xl mx-auto pb-20 md:pb-0">
+      <div className="max-w-2xl mx-auto pb-24 md:pb-0">
         <div className="mb-4">
-          <Link
-            to="/"
-            className="text-white/90 hover:text-white font-semibold flex items-center"
-          >
+          <Link to="/" className="text-white/90 hover:text-white font-semibold flex items-center">
             ← Back to Dashboard
           </Link>
         </div>
@@ -51,8 +132,6 @@ const HikeDetailsPage = ({
           {isAdminAuthenticated && (
             <button
               onClick={() => {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
                 const nextHike = hikeCalendar.find(h => new Date(h.date) >= today);
                 const newHike = {
                   name: nextHike?.hike || '',
@@ -106,7 +185,7 @@ const HikeDetailsPage = ({
     .map(key => allItems[key]);
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto pb-24 md:pb-0">
       {isEditingItems && (
         <EditItemsForm
           customItems={customItems}

@@ -28,7 +28,7 @@ const MobileTabBar = ({ outOfTownHikes }) => {
               to={to}
               aria-label={label}
               className="flex-1 flex items-center justify-center"
-              style={{ minHeight: '56px' }}
+              style={{ minHeight: '70px' }}
             >
               <Icon
                 className="w-6 h-6"
