@@ -4,7 +4,7 @@ import { Home, Mountain, Map, Calendar, CheckCircle } from 'lucide-react';
 
 const MobileTabBar = ({ outOfTownHikes }) => {
   const location = useLocation();
-  const hasOpenOOT = (outOfTownHikes || []).some(h => h.status === 'open');
+  const hasOpenOOT = (outOfTownHikes || []).some(h => h.status === 'open' && h.show_on_dashboard === true);
 
   const tabs = [
     { to: '/', icon: Home, label: 'Home' },
