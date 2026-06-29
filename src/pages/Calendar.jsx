@@ -1,7 +1,6 @@
 import React from 'react';
 import { Download, Edit } from 'lucide-react';
 import EditCalendarForm from '../components/EditCalendarForm';
-import EditNotesModal from '../components/EditNotesModal';
 
 const formatCalendarDate = (hike) => {
   const s = new Date(hike.date + 'T00:00:00');
@@ -24,10 +23,7 @@ const CalendarPage = ({
   downloadAllEvents,
   hikeCalendar,
   downloadSingleEvent,
-  importantNotes,
-  isEditingNotes, setIsEditingNotes,
   saveCalendar,
-  saveImportantNotes,
 }) => {
   return (
     <div className="max-w-2xl mx-auto pb-24 md:pb-0">
@@ -108,33 +104,7 @@ const CalendarPage = ({
               );
             })}
           </div>
-          <div className="mt-8 bg-blue-50 p-5 rounded-lg">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-gray-800">Important Notes</h3>
-              {isAdminAuthenticated && (
-                <button
-                  onClick={() => setIsEditingNotes(true)}
-                  className="text-blue-600 hover:text-blue-700 text-sm"
-                  title="Edit notes"
-                >
-                  <Edit className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-            <ul className="space-y-2 text-sm text-gray-700">
-              {importantNotes.map((note, index) => (
-                <li key={index}>• {note}</li>
-              ))}
-            </ul>
-          </div>
         </>
-      )}
-      {isEditingNotes && (
-        <EditNotesModal
-          importantNotes={importantNotes}
-          setIsEditingNotes={setIsEditingNotes}
-          saveImportantNotes={saveImportantNotes}
-        />
       )}
     </div>
   );

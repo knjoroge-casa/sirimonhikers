@@ -38,8 +38,6 @@ export default function App() {
   const [isEditingCalendar, setIsEditingCalendar] = useState(false);
   const [isEditingItems, setIsEditingItems] = useState(false);
   const [customItems, setCustomItems] = useState({});
-  const [importantNotes, setImportantNotes] = useState([]);
-  const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [completedHikes, setCompletedHikes] = useState([]);
   const [currentCompletedHike, setCurrentCompletedHike] = useState(null);
   const [isEditingCompletedHike, setIsEditingCompletedHike] = useState(false);
@@ -108,14 +106,6 @@ export default function App() {
         itemsData.forEach(item => { itemsObj[item.item_key] = item.item_label; });
         setCustomItems(itemsObj);
       }
-
-      const { data: notesData, error: notesError } = await supabase
-        .from('important_notes')
-        .select('*')
-        .order('order_index', { ascending: true });
-
-      if (notesError) console.error('Error loading notes:', notesError);
-      setImportantNotes(notesData && notesData.length > 0 ? notesData.map(n => n.note) : []);
 
       const { data: completedData, error: completedError } = await supabase
         .from('completed_hikes')
@@ -343,21 +333,6 @@ export default function App() {
       setIsEditingItems(false);
     } catch (e) {
       console.error('Error saving items:', e);
-      alert('Error');
-    }
-  };
-
-  const saveImportantNotes = async (notes) => {
-    try {
-      await supabase.from('important_notes').delete().neq('id', 0);
-      const notesToSave = notes.map((note, index) => ({ note, order_index: index }));
-      const { error } = await supabase.from('important_notes').insert(notesToSave);
-      if (error) throw error;
-      setImportantNotes(notes);
-      alert('Notes saved!');
-      setIsEditingNotes(false);
-    } catch (e) {
-      console.error('Error saving notes:', e);
       alert('Error');
     }
   };
@@ -1113,11 +1088,7 @@ export default function App() {
             downloadAllEvents={downloadAllEvents}
             hikeCalendar={hikeCalendar}
             downloadSingleEvent={downloadSingleEvent}
-            importantNotes={importantNotes}
-            isEditingNotes={isEditingNotes}
-            setIsEditingNotes={setIsEditingNotes}
             saveCalendar={saveCalendar}
-            saveImportantNotes={saveImportantNotes}
           />
         } />
         <Route path="/outoftown" element={
