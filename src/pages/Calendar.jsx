@@ -39,13 +39,7 @@ const CalendarPage = ({
         />
       ) : (
         <>
-          <div className="flex justify-between items-center mb-6">
-            <button
-              onClick={() => navigate('/')}
-              className="text-white/90 hover:text-white font-semibold flex items-center"
-            >
-              ← Back to Home
-            </button>
+          <div className="flex justify-end mb-6">
             <div className="flex gap-2">
               {isAdminAuthenticated && (
                 <button

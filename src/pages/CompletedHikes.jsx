@@ -10,15 +10,6 @@ const CompletedHikesPage = ({ completedHikes, isAdminAuthenticated, navigate, se
 
   return (
     <div className="max-w-2xl mx-auto pb-24 md:pb-0">
-      <div className="flex justify-between items-center mb-6">
-        <button
-          onClick={() => navigate('/')}
-          className="text-white/90 hover:text-white font-semibold flex items-center"
-        >
-          ← Back to Home
-        </button>
-      </div>
-
       <h1 className="text-2xl font-bold text-gray-800 mb-2">Completed Hikes</h1>
       <p className="text-gray-600 mb-6">
         {completedHikes.length} hike{completedHikes.length !== 1 ? 's' : ''} completed

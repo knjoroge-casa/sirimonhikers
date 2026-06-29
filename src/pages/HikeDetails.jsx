@@ -121,11 +121,6 @@ const HikeDetailsPage = ({
 
     return (
       <div className="max-w-2xl mx-auto pb-24 md:pb-0">
-        <div className="mb-4">
-          <Link to="/" className="text-white/90 hover:text-white font-semibold flex items-center">
-            ← Back to Dashboard
-          </Link>
-        </div>
         <div className="glass rounded-3xl p-6 text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">No Upcoming Hike Details Yet</h2>
           <p className="text-gray-600 mb-6">Add details for the next hike.</p>
@@ -194,14 +189,6 @@ const HikeDetailsPage = ({
           itemLabels={itemLabels}
         />
       )}
-      <div className="mb-4">
-        <button
-          onClick={() => { navigate('/'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          className="text-white/90 hover:text-white font-semibold flex items-center"
-        >
-          ← Back to Dashboard
-        </button>
-      </div>
       {isEditing ? (
         <EditHikeForm
           upcomingHike={upcomingHike}
