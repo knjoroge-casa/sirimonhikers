@@ -110,6 +110,12 @@ const OutOfTownPublic = ({ outOfTownHikes, outOfTownConfirmations, saveOutOfTown
 
   return (
     <div className="max-w-2xl mx-auto pb-24 md:pb-0">
+      <div className="hidden md:block mb-4">
+        <Link to="/" className="text-white/90 hover:text-white font-semibold flex items-center">
+          ← Back to Dashboard
+        </Link>
+      </div>
+
       <div className="glass rounded-3xl p-6 mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-1">Out of Town Hikes</h1>
         <p className="text-sm text-gray-500">Multi-day getaways with the Sirimon crew</p>

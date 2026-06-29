@@ -1052,9 +1052,11 @@ export default function App() {
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto mb-8">
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-display font-bold text-white mb-2 drop-shadow-2xl">
-            Sirimon Hikers
-          </h1>
+          <a href="https://sirimonhikers.vercel.app/">
+            <h1 className="text-5xl font-display font-bold text-white mb-2 drop-shadow-2xl">
+              Sirimon Hikers
+            </h1>
+          </a>
         </div>
       </div>
 
