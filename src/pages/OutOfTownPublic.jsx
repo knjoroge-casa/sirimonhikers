@@ -103,7 +103,7 @@ const ConfirmationForm = ({ hike, onSubmit, onCancel }) => {
 const OutOfTownPublic = ({ outOfTownHikes, outOfTownConfirmations, saveOutOfTownConfirmation }) => {
   const [confirmingId, setConfirmingId] = useState(null);
 
-  const openHikes = (outOfTownHikes || []).filter(h => h.status === 'open');
+  const visibleHikes = (outOfTownHikes || []).filter(h => h.status === 'open' && h.show_on_dashboard === true);
 
   const getConfirmationCount = (hikeId) =>
     (outOfTownConfirmations || []).filter(c => c.out_of_town_hike_id === hikeId).length;
@@ -116,18 +116,25 @@ const OutOfTownPublic = ({ outOfTownHikes, outOfTownConfirmations, saveOutOfTown
         </Link>
       </div>
 
-      <div className="glass rounded-3xl p-6 mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-1">Out of Town Hikes</h1>
-        <p className="text-sm text-gray-500">Multi-day getaways with the Sirimon crew</p>
-      </div>
-
-      {openHikes.length === 0 ? (
-        <div className="glass rounded-3xl p-6 text-center">
-          <p className="text-gray-500 italic">No out of town hikes open for confirmation right now.</p>
+      {visibleHikes.length === 0 ? (
+        <div className="hidden md:block">
+          <div className="glass rounded-3xl p-6 mb-6">
+            <h1 className="text-2xl font-bold text-gray-800 mb-1">Out of Town Hikes</h1>
+            <p className="text-sm text-gray-500">Multi-day getaways with the Sirimon crew</p>
+          </div>
+          <div className="glass rounded-3xl p-8 text-center">
+            <p className="text-4xl mb-4">🏕️</p>
+            <p className="text-gray-600 italic">Caught us mid-planning. Pop back in a bit — there's always something brewing.</p>
+          </div>
         </div>
       ) : (
-        <div className="space-y-6">
-          {openHikes.map(hike => {
+        <>
+          <div className="glass rounded-3xl p-6 mb-6">
+            <h1 className="text-2xl font-bold text-gray-800 mb-1">Out of Town Hikes</h1>
+            <p className="text-sm text-gray-500">Multi-day getaways with the Sirimon crew</p>
+          </div>
+          <div className="space-y-6">
+          {visibleHikes.map(hike => {
             const confirmCount = getConfirmationCount(hike.id);
             const capacity = parseInt(hike.max_capacity) || 0;
             const isFull = capacity > 0 && confirmCount >= capacity;
@@ -243,7 +250,8 @@ const OutOfTownPublic = ({ outOfTownHikes, outOfTownConfirmations, saveOutOfTown
               </div>
             );
           })}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );
