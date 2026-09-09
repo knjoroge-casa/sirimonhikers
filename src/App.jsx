@@ -1145,6 +1145,10 @@ export default function App() {
                   deleteHikerContact={deleteHikerContact}
                   registrations={registrations}
                   allRegistrations={allRegistrations}
+                  toggleCheckIn={toggleCheckIn}
+                  handleRegister={handleRegister}
+                  saveAsPDF={saveAsPDF}
+                  downloadSingleEvent={downloadSingleEvent}
                   outOfTownHikes={outOfTownHikes}
                   outOfTownConfirmations={outOfTownConfirmations}
                   saveOutOfTownHike={saveOutOfTownHike}
