@@ -350,13 +350,38 @@ export default function App() {
     }
   };
 
-  const saveNotice = async (title, body) => {
+  const saveNotice = async (title, body, imageFile = null) => {
     try {
       if (noticeBoard.length >= 3) {
         alert('Maximum 3 notices allowed. Please delete one first.');
         return;
       }
-      const { error } = await supabase.from('notice_board').insert([{ title, body }]);
+
+      let imageUrl = null;
+
+      if (imageFile) {
+        if (imageFile.size > 5 * 1024 * 1024) {
+          alert('Image must be under 5MB');
+          return;
+        }
+        if (!['image/jpeg', 'image/png'].includes(imageFile.type)) {
+          alert('Only JPG and PNG images are supported');
+          return;
+        }
+
+        const fileName = `${Date.now()}_${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        const { error: uploadError } = await supabase.storage
+          .from('notice-images')
+          .upload(fileName, imageFile);
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('notice-images')
+          .getPublicUrl(fileName);
+        imageUrl = urlData.publicUrl;
+      }
+
+      const { error } = await supabase.from('notice_board').insert([{ title, body, image_url: imageUrl }]);
       if (error) throw error;
       await loadData();
     } catch (e) {
@@ -367,8 +392,20 @@ export default function App() {
 
   const deleteNotice = async (id) => {
     try {
+      const notice = noticeBoard.find(n => n.id === id);
+
       const { error } = await supabase.from('notice_board').delete().eq('id', id);
       if (error) throw error;
+
+      if (notice?.image_url) {
+        const urlParts = notice.image_url.split('/');
+        const fileName = urlParts[urlParts.length - 1];
+        const { error: storageError } = await supabase.storage
+          .from('notice-images')
+          .remove([fileName]);
+        if (storageError) console.error('Error deleting image from storage:', storageError);
+      }
+
       await loadData();
     } catch (e) {
       console.error('Error deleting notice:', e);

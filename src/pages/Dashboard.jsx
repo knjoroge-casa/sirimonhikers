@@ -442,6 +442,13 @@ const DashboardPage = ({
                       </button>
                     )}
                   </div>
+                  {notice.image_url && (
+                    <img
+                      src={notice.image_url}
+                      alt={notice.title}
+                      className="my-3 max-w-full max-h-72 object-contain rounded-2xl mx-auto block"
+                    />
+                  )}
                   <p className="text-gray-600 text-sm mt-1" style={{ whiteSpace: 'pre-wrap' }}>{notice.body}</p>
                   <p className="text-xs text-gray-400 mt-2">
                     {new Date(notice.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
