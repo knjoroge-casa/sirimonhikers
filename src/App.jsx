@@ -22,6 +22,7 @@ import HikersContacts from './pages/admin/HikersContacts';
 import OutOfTownHikes from './pages/admin/OutOfTownHikes';
 import ChristmasAdmin from './pages/admin/ChristmasAdmin';
 import OutOfTownPublic from './pages/OutOfTownPublic';
+import ChristmasPublic from './pages/ChristmasPublic';
 import MobileTabBar from './components/MobileTabBar';
 
 import itemLabels from './constants/itemLabels';
@@ -889,6 +890,29 @@ export default function App() {
     }
   };
 
+  const saveChristmasRsvp = async (rsvp) => {
+    try {
+      const { error } = await supabase
+        .from('christmas_rsvps')
+        .insert([{
+          party_id: rsvp.party_id,
+          name: rsvp.name,
+          phone: rsvp.phone,
+          attending: rsvp.attending,
+          guest_count: rsvp.attending ? (parseInt(rsvp.guest_count) || 0) : 0,
+          dietary: rsvp.attending ? (rsvp.dietary || null) : null,
+          bringing: rsvp.attending ? (rsvp.bringing || null) : null,
+        }]);
+      if (error) throw error;
+      await loadData();
+      return true;
+    } catch (e) {
+      console.error('Error saving RSVP:', e);
+      alert('Error submitting RSVP');
+      return false;
+    }
+  };
+
   const convertOutOfTownToUpcomingHike = async (ootHikeId) => {
     try {
       const ootHike = outOfTownHikes.find(h => h.id === ootHikeId);
@@ -1272,6 +1296,13 @@ export default function App() {
             outOfTownHikes={outOfTownHikes}
             outOfTownConfirmations={outOfTownConfirmations}
             saveOutOfTownConfirmation={saveOutOfTownConfirmation}
+          />
+        } />
+        <Route path="/christmas" element={
+          <ChristmasPublic
+            christmasParties={christmasParties}
+            christmasRsvps={christmasRsvps}
+            saveChristmasRsvp={saveChristmasRsvp}
           />
         } />
         <Route path="/completedhikes" element={
