@@ -1,20 +1,22 @@
 import React, { useState, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Gift, Plus, Pencil, Trash2, Save, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { Gift, Plus, Pencil, Trash2, Save, ChevronDown, ChevronUp, X, CheckCircle } from 'lucide-react';
 
 const EMPTY_PARTY = {
   year: new Date().getFullYear(),
   party_date: '',
   party_time: '',
   venue: '',
-  theme: '',
   dress_code: '',
   contribution: '',
   what_to_bring: '',
   instructions: '',
+  writeup: '',
+  recap: '',
   image_url: null,
   rsvp_deadline: '',
   is_visible: false,
+  status: 'upcoming',
 };
 
 const formatDate = (dateString) => {
@@ -73,6 +75,7 @@ const PartyForm = ({ initial, onSave, onCancel }) => {
   const [imagePreview, setImagePreview] = useState(initial.image_url || null);
   const fileInputRef = useRef(null);
 
+  const isCompleted = initial.status === 'completed';
   const set = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
 
   const handleFileChange = (e) => {
@@ -104,6 +107,17 @@ const PartyForm = ({ initial, onSave, onCancel }) => {
           onChange={set('year')}
           className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
           placeholder="e.g. 2026"
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Write-up</label>
+        <textarea
+          value={form.writeup || ''}
+          onChange={set('writeup')}
+          rows="4"
+          className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
+          placeholder="Describe this year's party..."
         />
       </div>
 
@@ -140,27 +154,15 @@ const PartyForm = ({ initial, onSave, onCancel }) => {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Theme</label>
-          <input
-            type="text"
-            value={form.theme || ''}
-            onChange={set('theme')}
-            className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
-            placeholder="e.g. Winter Wonderland"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Dress Code</label>
-          <input
-            type="text"
-            value={form.dress_code || ''}
-            onChange={set('dress_code')}
-            className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
-            placeholder="e.g. Smart Casual"
-          />
-        </div>
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Dress Code</label>
+        <input
+          type="text"
+          value={form.dress_code || ''}
+          onChange={set('dress_code')}
+          className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
+          placeholder="e.g. Smart Casual"
+        />
       </div>
 
       <div>
@@ -172,6 +174,7 @@ const PartyForm = ({ initial, onSave, onCancel }) => {
           className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
           placeholder="e.g. KES 2,000 per person"
         />
+        <p className="text-xs text-gray-400 mt-1">Leave blank if no contribution needed</p>
       </div>
 
       <div>
@@ -186,7 +189,7 @@ const PartyForm = ({ initial, onSave, onCancel }) => {
       </div>
 
       <div>
-        <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Instructions</label>
+        <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">What You Need to Know</label>
         <textarea
           value={form.instructions || ''}
           onChange={set('instructions')}
@@ -194,33 +197,6 @@ const PartyForm = ({ initial, onSave, onCancel }) => {
           className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
           placeholder="Any additional instructions..."
         />
-      </div>
-
-      <div>
-        <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Image</label>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/jpeg,image/png"
-          onChange={handleFileChange}
-          className="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-white/60 file:text-gray-700 hover:file:bg-white/80"
-        />
-        <p className="text-xs text-gray-400 mt-1">JPG or PNG, max 5MB</p>
-        {imagePreview && (
-          <div className="mt-3 flex items-start gap-3">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="max-h-32 max-w-[200px] object-contain rounded-xl"
-            />
-            <button
-              onClick={handleRemoveImage}
-              className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-semibold mt-1"
-            >
-              <X className="w-3 h-3" /> Remove image
-            </button>
-          </div>
-        )}
       </div>
 
       <div>
@@ -243,6 +219,52 @@ const PartyForm = ({ initial, onSave, onCancel }) => {
         />
         <label htmlFor="is_visible" className="text-sm text-gray-700">Show on public /christmas page</label>
       </div>
+
+      {isCompleted && (
+        <>
+          <div className="border-t border-white/20 pt-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Post-Party</p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Recap</label>
+            <textarea
+              value={form.recap || ''}
+              onChange={set('recap')}
+              rows="4"
+              className="w-full px-4 py-2 glass-dark rounded-2xl border-0 text-gray-800"
+              placeholder="How did the party go?"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Group Photo</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png"
+              onChange={handleFileChange}
+              className="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-white/60 file:text-gray-700 hover:file:bg-white/80"
+            />
+            <p className="text-xs text-gray-400 mt-1">JPG or PNG, max 5MB</p>
+            {imagePreview && (
+              <div className="mt-3 flex items-start gap-3">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="max-h-32 max-w-[200px] object-contain rounded-xl"
+                />
+                <button
+                  onClick={handleRemoveImage}
+                  className="flex items-center gap-1 text-xs text-red-500 hover:text-red-700 font-semibold mt-1"
+                >
+                  <X className="w-3 h-3" /> Remove image
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       <div className="flex gap-3 pt-1">
         <button
@@ -269,6 +291,7 @@ const ChristmasAdmin = () => {
     christmasParties,
     christmasRsvps,
     saveChristmasParty,
+    markChristmasPartyCompleted,
     deleteChristmasParty,
     deleteChristmasRsvp,
   } = useOutletContext();
@@ -281,7 +304,7 @@ const ChristmasAdmin = () => {
   const getDeclinedCount = (partyId) => christmasRsvps.filter(r => r.party_id === partyId && r.attending === false).length;
   const getTotalGuests = (partyId) => christmasRsvps
     .filter(r => r.party_id === partyId && r.attending === true)
-    .reduce((sum, r) => sum + (r.guest_count || 0), 0);
+    .reduce((sum, r) => sum + 1 + (r.guest_count || 0), 0);
 
   const handleSave = async (party, imageFile) => {
     const ok = await saveChristmasParty(party, imageFile);
@@ -338,6 +361,7 @@ const ChristmasAdmin = () => {
         const rsvps = getRsvpsForParty(party.id);
         const daysLeft = getDaysUntilDeadline(party.rsvp_deadline);
         const isExpanded = expandedId === party.id;
+        const isUpcoming = party.status !== 'completed';
         const attending = rsvps.filter(r => r.attending === true);
         const declined = rsvps.filter(r => r.attending === false);
 
@@ -356,11 +380,19 @@ const ChristmasAdmin = () => {
               <>
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1.5 min-w-0">
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="text-2xl font-bold text-gray-800">{party.year}</h2>
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${party.is_visible ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'}`}>
-                        {party.is_visible ? 'Visible' : 'Hidden'}
+                      <span
+                        className="px-2.5 py-0.5 rounded-full text-xs font-semibold text-white"
+                        style={{ backgroundColor: isUpcoming ? '#6B8E23' : '#3B82F6' }}
+                      >
+                        {isUpcoming ? 'Upcoming' : 'Completed'}
                       </span>
+                      {isUpcoming && (
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${party.is_visible ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'}`}>
+                          {party.is_visible ? 'Visible' : 'Hidden'}
+                        </span>
+                      )}
                     </div>
 
                     {(party.party_date || party.party_time || party.venue) && (
@@ -370,52 +402,64 @@ const ChristmasAdmin = () => {
                       </p>
                     )}
 
-                    {(party.theme || party.dress_code) && (
-                      <p className="text-sm text-gray-600">
-                        {[party.theme ? `Theme: ${party.theme}` : null, party.dress_code ? `Dress: ${party.dress_code}` : null]
-                          .filter(Boolean).join(' · ')}
-                      </p>
+                    {party.dress_code && (
+                      <p className="text-sm text-gray-600">Dress: {party.dress_code}</p>
                     )}
 
                     <p className="text-sm text-gray-600">
                       <span className="font-semibold">RSVPs:</span>{' '}
                       {attendingCount} attending
-                      {totalGuests > 0 && `, +${totalGuests} guest${totalGuests !== 1 ? 's' : ''}`}
                       {declinedCount > 0 && `, ${declinedCount} declined`}
+                      {totalGuests > 0 && `, ${totalGuests} total guests`}
                     </p>
 
-                    {daysLeft && (
+                    {isUpcoming && daysLeft && (
                       <p className={`text-xs font-semibold ${daysLeft === 'Deadline passed' ? 'text-red-500' : 'text-gray-500'}`}>
                         RSVP Deadline: {daysLeft}
                       </p>
                     )}
 
-                    <label className="flex items-center gap-2 cursor-pointer mt-1">
-                      <input
-                        type="checkbox"
-                        checked={party.is_visible || false}
-                        onChange={() => saveChristmasParty({ ...party, is_visible: !party.is_visible }, null)}
-                        className="w-4 h-4 rounded"
-                      />
-                      <span className="text-sm text-gray-600">Show on public /christmas page</span>
-                    </label>
+                    {isUpcoming && (
+                      <label className="flex items-center gap-2 cursor-pointer mt-1">
+                        <input
+                          type="checkbox"
+                          checked={party.is_visible || false}
+                          onChange={() => saveChristmasParty({ ...party, is_visible: !party.is_visible }, null)}
+                          className="w-4 h-4 rounded"
+                        />
+                        <span className="text-sm text-gray-600">Show on public /christmas page</span>
+                      </label>
+                    )}
                   </div>
 
-                  <div className="flex gap-2 flex-shrink-0">
-                    <button
-                      onClick={() => setEditingId(party.id)}
-                      className="p-2 glass rounded-xl text-gray-500 hover:text-gray-800 transition-colors"
-                      title="Edit"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => deleteChristmasParty(party.id)}
-                      className="p-2 glass rounded-xl text-red-400 hover:text-red-600 transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  <div className="flex flex-col gap-2 flex-shrink-0 items-end">
+                    {isUpcoming && (
+                      <button
+                        onClick={() => markChristmasPartyCompleted(party.id)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white hover:opacity-90"
+                        style={{ backgroundColor: '#6B8E23' }}
+                        title="Mark as Completed"
+                      >
+                        <CheckCircle className="w-3.5 h-3.5" />
+                        Mark Completed
+                      </button>
+                    )}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setEditingId(party.id)}
+                        className="p-2 glass rounded-xl text-gray-500 hover:text-gray-800 transition-colors"
+                        title="Edit"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => deleteChristmasParty(party.id)}
+                        className="p-2 glass rounded-xl text-red-400 hover:text-red-600 transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -425,6 +469,10 @@ const ChristmasAdmin = () => {
                     alt={`Christmas ${party.year}`}
                     className="mt-3 w-full max-h-48 object-cover rounded-2xl"
                   />
+                )}
+
+                {party.recap && (
+                  <p className="mt-3 text-sm text-gray-600 italic border-t border-white/20 pt-3">{party.recap}</p>
                 )}
 
                 <button

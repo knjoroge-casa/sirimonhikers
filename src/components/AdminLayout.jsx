@@ -80,6 +80,7 @@ const AdminLayout = ({
   christmasParties,
   christmasRsvps,
   saveChristmasParty,
+  markChristmasPartyCompleted,
   deleteChristmasParty,
   deleteChristmasRsvp,
 }) => {
@@ -238,6 +239,7 @@ const AdminLayout = ({
             christmasParties,
             christmasRsvps,
             saveChristmasParty,
+            markChristmasPartyCompleted,
             deleteChristmasParty,
             deleteChristmasRsvp,
           }} />

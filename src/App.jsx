@@ -804,7 +804,6 @@ export default function App() {
         party_date: party.party_date || null,
         party_time: party.party_time || null,
         venue: party.venue || null,
-        theme: party.theme || null,
         dress_code: party.dress_code || null,
         contribution: party.contribution || null,
         what_to_bring: party.what_to_bring || null,
@@ -812,6 +811,9 @@ export default function App() {
         image_url: imageUrl,
         rsvp_deadline: party.rsvp_deadline || null,
         is_visible: party.is_visible || false,
+        status: party.status || 'upcoming',
+        writeup: party.writeup || null,
+        recap: party.recap || null,
       };
 
       if (party.id) {
@@ -836,6 +838,21 @@ export default function App() {
         alert('Error saving party: ' + e.message);
       }
       return false;
+    }
+  };
+
+  const markChristmasPartyCompleted = async (id) => {
+    if (!window.confirm('Mark this party as completed? You can then add a recap and group photo.')) return;
+    try {
+      const { error } = await supabase
+        .from('christmas_parties')
+        .update({ status: 'completed' })
+        .eq('id', id);
+      if (error) throw error;
+      await loadData();
+    } catch (e) {
+      console.error('Error marking completed:', e);
+      alert('Error marking party as completed');
     }
   };
 
@@ -1317,6 +1334,7 @@ export default function App() {
                   christmasParties={christmasParties}
                   christmasRsvps={christmasRsvps}
                   saveChristmasParty={saveChristmasParty}
+                  markChristmasPartyCompleted={markChristmasPartyCompleted}
                   deleteChristmasParty={deleteChristmasParty}
                   deleteChristmasRsvp={deleteChristmasRsvp}
                 />
