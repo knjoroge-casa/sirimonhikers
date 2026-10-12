@@ -20,6 +20,7 @@ import Guides from './pages/admin/Guides';
 import Resources from './pages/admin/Resources';
 import HikersContacts from './pages/admin/HikersContacts';
 import OutOfTownHikes from './pages/admin/OutOfTownHikes';
+import ChristmasAdmin from './pages/admin/ChristmasAdmin';
 import OutOfTownPublic from './pages/OutOfTownPublic';
 import MobileTabBar from './components/MobileTabBar';
 
@@ -52,6 +53,8 @@ export default function App() {
   const [allRegistrations, setAllRegistrations] = useState([]);
   const [outOfTownHikes, setOutOfTownHikes] = useState([]);
   const [outOfTownConfirmations, setOutOfTownConfirmations] = useState([]);
+  const [christmasParties, setChristmasParties] = useState([]);
+  const [christmasRsvps, setChristmasRsvps] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -204,6 +207,26 @@ export default function App() {
         setOutOfTownConfirmations(confData || []);
       } catch (e) {
         console.error('Error loading confirmations:', e);
+      }
+
+      try {
+        const { data: partiesData } = await supabase
+          .from('christmas_parties')
+          .select('*')
+          .order('year', { ascending: false });
+        setChristmasParties(partiesData || []);
+      } catch (e) {
+        console.error('Error loading Christmas parties:', e);
+      }
+
+      try {
+        const { data: rsvpsData } = await supabase
+          .from('christmas_rsvps')
+          .select('*')
+          .order('rsvped_at', { ascending: true });
+        setChristmasRsvps(rsvpsData || []);
+      } catch (e) {
+        console.error('Error loading Christmas RSVPs:', e);
       }
 
       if (hikeData?.id) {
@@ -750,6 +773,105 @@ export default function App() {
     }
   };
 
+  const saveChristmasParty = async (party, imageFile = null) => {
+    try {
+      let imageUrl = party.image_url || null;
+
+      if (imageFile) {
+        if (imageFile.size > 5 * 1024 * 1024) {
+          alert('Image must be under 5MB');
+          return false;
+        }
+        if (!['image/jpeg', 'image/png'].includes(imageFile.type)) {
+          alert('Only JPG and PNG images are supported');
+          return false;
+        }
+
+        const fileName = `${Date.now()}_${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        const { error: uploadError } = await supabase.storage
+          .from('christmas-images')
+          .upload(fileName, imageFile);
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('christmas-images')
+          .getPublicUrl(fileName);
+        imageUrl = urlData.publicUrl;
+      }
+
+      const payload = {
+        year: parseInt(party.year),
+        party_date: party.party_date || null,
+        party_time: party.party_time || null,
+        venue: party.venue || null,
+        theme: party.theme || null,
+        dress_code: party.dress_code || null,
+        contribution: party.contribution || null,
+        what_to_bring: party.what_to_bring || null,
+        instructions: party.instructions || null,
+        image_url: imageUrl,
+        rsvp_deadline: party.rsvp_deadline || null,
+        is_visible: party.is_visible || false,
+      };
+
+      if (party.id) {
+        const { error } = await supabase
+          .from('christmas_parties')
+          .update(payload)
+          .eq('id', party.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('christmas_parties')
+          .insert([payload]);
+        if (error) throw error;
+      }
+      await loadData();
+      return true;
+    } catch (e) {
+      console.error('Error saving Christmas party:', e);
+      if (e.code === '23505') {
+        alert(`A Christmas party for ${party.year} already exists.`);
+      } else {
+        alert('Error saving party: ' + e.message);
+      }
+      return false;
+    }
+  };
+
+  const deleteChristmasParty = async (id) => {
+    if (!window.confirm('Delete this Christmas party? All RSVPs will be deleted too.')) return;
+    try {
+      const party = christmasParties.find(p => p.id === id);
+
+      const { error } = await supabase.from('christmas_parties').delete().eq('id', id);
+      if (error) throw error;
+
+      if (party?.image_url) {
+        const urlParts = party.image_url.split('/');
+        const fileName = urlParts[urlParts.length - 1];
+        await supabase.storage.from('christmas-images').remove([fileName]);
+      }
+
+      await loadData();
+    } catch (e) {
+      console.error('Error deleting party:', e);
+      alert('Error deleting party');
+    }
+  };
+
+  const deleteChristmasRsvp = async (id) => {
+    if (!window.confirm('Remove this RSVP?')) return;
+    try {
+      const { error } = await supabase.from('christmas_rsvps').delete().eq('id', id);
+      if (error) throw error;
+      await loadData();
+    } catch (e) {
+      console.error('Error deleting RSVP:', e);
+      alert('Error removing RSVP');
+    }
+  };
+
   const convertOutOfTownToUpcomingHike = async (ootHikeId) => {
     try {
       const ootHike = outOfTownHikes.find(h => h.id === ootHikeId);
@@ -1192,6 +1314,11 @@ export default function App() {
                   deleteOutOfTownHike={deleteOutOfTownHike}
                   deleteOutOfTownConfirmation={deleteOutOfTownConfirmation}
                   convertOutOfTownToUpcomingHike={convertOutOfTownToUpcomingHike}
+                  christmasParties={christmasParties}
+                  christmasRsvps={christmasRsvps}
+                  saveChristmasParty={saveChristmasParty}
+                  deleteChristmasParty={deleteChristmasParty}
+                  deleteChristmasRsvp={deleteChristmasRsvp}
                 />
               : <AdminLogin setIsAdminAuthenticated={setIsAdminAuthenticated} />
           }
@@ -1206,6 +1333,7 @@ export default function App() {
           <Route path="resources" element={<Resources />} />
           <Route path="hikers" element={<HikersContacts />} />
           <Route path="outoftown" element={<OutOfTownHikes />} />
+          <Route path="christmas" element={<ChristmasAdmin />} />
         </Route>
       </Routes>
 

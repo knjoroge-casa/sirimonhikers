@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Edit3, Mountain, Calendar, CheckCircle,
-  Building2, Compass, Package, Users, LogOut, Menu, X, Map
+  Building2, Compass, Package, Users, LogOut, Menu, X, Map, Gift
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -19,6 +19,7 @@ const NAV_GROUPS = [
       { label: 'Edit Calendar', to: '/admin/edit-calendar', icon: Calendar },
       { label: 'Edit Completed Hikes', to: '/admin/edit-completed', icon: CheckCircle },
       { label: 'Out of Town Hikes', to: '/admin/outoftown', icon: Map },
+      { label: 'Christmas Party', to: '/admin/christmas', icon: Gift },
     ],
   },
   {
@@ -76,6 +77,11 @@ const AdminLayout = ({
   deleteOutOfTownHike,
   deleteOutOfTownConfirmation,
   convertOutOfTownToUpcomingHike,
+  christmasParties,
+  christmasRsvps,
+  saveChristmasParty,
+  deleteChristmasParty,
+  deleteChristmasRsvp,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
@@ -229,6 +235,11 @@ const AdminLayout = ({
             deleteOutOfTownHike,
             deleteOutOfTownConfirmation,
             convertOutOfTownToUpcomingHike,
+            christmasParties,
+            christmasRsvps,
+            saveChristmasParty,
+            deleteChristmasParty,
+            deleteChristmasRsvp,
           }} />
         </main>
       </div>
