@@ -1308,6 +1308,7 @@ export default function App() {
         <Route path="/completedhikes" element={
           <CompletedHikesPage
             completedHikes={completedHikes}
+            christmasParties={christmasParties}
             isAdminAuthenticated={isAdminAuthenticated}
             navigate={navigate}
             setCurrentCompletedHike={setCurrentCompletedHike}

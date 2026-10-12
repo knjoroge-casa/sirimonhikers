@@ -1,12 +1,41 @@
 import React, { useState } from 'react';
-import { ChevronRight, Edit } from 'lucide-react';
+import { ChevronRight, Edit, Gift } from 'lucide-react';
 
-const CompletedHikesPage = ({ completedHikes, isAdminAuthenticated, navigate, setCurrentCompletedHike, setIsEditingCompletedHike }) => {
+const PARTY_RED = '#C0392B';
+
+const formatPartyDate = (dateString) => {
+  if (!dateString) return '';
+  return new Date(dateString + 'T00:00:00').toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
+};
+
+const CompletedHikesPage = ({ completedHikes, christmasParties, isAdminAuthenticated, navigate, setCurrentCompletedHike, setIsEditingCompletedHike }) => {
   const [expandedHike, setExpandedHike] = useState(null);
 
   const toggleExpand = (hikeId) => {
     setExpandedHike(expandedHike === hikeId ? null : hikeId);
   };
+
+  const completedParties = (christmasParties || []).filter(p => p.status === 'completed');
+
+  const mergedEntries = [
+    ...(completedHikes || []).map(h => ({ ...h, _type: 'hike' })),
+    ...completedParties.map(p => ({
+      ...p,
+      _type: 'party',
+      date: p.party_date,
+      name: `Year-End Party ${p.year}`,
+      location: p.venue,
+    })),
+  ].sort((a, b) => {
+    if (!a.date && !b.date) return 0;
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  const hikeCount = (completedHikes || []).length;
 
   return (
     <div className="max-w-2xl mx-auto pb-24 md:pb-0">
@@ -20,21 +49,57 @@ const CompletedHikesPage = ({ completedHikes, isAdminAuthenticated, navigate, se
       </div>
       <h1 className="text-2xl font-bold text-gray-800 mb-2">Completed Hikes</h1>
       <p className="text-gray-600 mb-6">
-        {completedHikes.length} hike{completedHikes.length !== 1 ? 's' : ''} completed
+        {hikeCount} hike{hikeCount !== 1 ? 's' : ''} completed
       </p>
 
-      {completedHikes.length === 0 ? (
+      {mergedEntries.length === 0 ? (
         <div className="glass rounded-3xl p-6 text-center">
           <p className="text-gray-600">No completed hikes yet. Check back after your first adventure!</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {completedHikes.map(hike => {
+          {mergedEntries.map(entry => {
+            if (entry._type === 'party') {
+              return (
+                <div key={`party-${entry.id}`} className="glass rounded-3xl overflow-hidden border-l-4" style={{ borderColor: PARTY_RED }}>
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Gift className="w-4 h-4 flex-shrink-0" style={{ color: PARTY_RED }} />
+                      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: PARTY_RED }}>
+                        Christmas Party
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-lg text-gray-800 mb-1">{entry.name}</h3>
+                    {(entry.date || entry.venue) && (
+                      <p className="text-sm text-gray-600 mb-3">
+                        {[entry.date ? formatPartyDate(entry.date) : null, entry.venue]
+                          .filter(Boolean).join(' · ')}
+                      </p>
+                    )}
+                    {entry.image_url && (
+                      <img
+                        src={entry.image_url}
+                        alt={`${entry.name} group photo`}
+                        className="w-full max-h-72 object-contain rounded-2xl mb-3"
+                      />
+                    )}
+                    {entry.recap && (
+                      <p className="text-gray-700 leading-relaxed text-sm" style={{ whiteSpace: 'pre-wrap' }}>
+                        {entry.recap}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            }
+
+            // _type === 'hike'
+            const hike = entry;
             const isExpanded = expandedHike === hike.id;
             const formattedDate = new Date(hike.date).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
-              day: 'numeric'
+              day: 'numeric',
             });
 
             return (
