@@ -1388,7 +1388,7 @@ export default function App() {
       </Routes>
 
       {!location.pathname.startsWith('/admin') && (
-        <MobileTabBar outOfTownHikes={outOfTownHikes} />
+        <MobileTabBar outOfTownHikes={outOfTownHikes} christmasParties={christmasParties} />
       )}
 
       <footer className="max-w-2xl mx-auto mt-12 pb-24 md:pb-0 text-center text-white/90 text-sm">
