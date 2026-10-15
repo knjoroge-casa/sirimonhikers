@@ -26,13 +26,13 @@ const DecoratedTree = ({ className = '', size = 24 }) => (
     {/* trunk */}
     <rect x="10.5" y="20" width="3" height="2.5" rx="0.5" />
     {/* baubles */}
-    <circle cx="11" cy="9" r="0.75" fill="currentColor" stroke="none" />
-    <circle cx="14" cy="9" r="0.75" fill="currentColor" stroke="none" />
-    <circle cx="8" cy="12.5" r="0.75" fill="currentColor" stroke="none" />
-    <circle cx="15" cy="12.5" r="0.75" fill="currentColor" stroke="none" />
-    <circle cx="7" cy="17.5" r="0.75" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none" />
-    <circle cx="17.5" cy="18" r="0.75" fill="currentColor" stroke="none" />
+    <circle cx="11" cy="9" r="1" />
+    <circle cx="14" cy="9" r="1" />
+    <circle cx="8" cy="12.5" r="1" />
+    <circle cx="15" cy="12.5" r="1" />
+    <circle cx="7" cy="17.5" r="1" />
+    <circle cx="12" cy="17" r="1" />
+    <circle cx="17.5" cy="18" r="1" />
   </svg>
 );
 
