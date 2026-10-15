@@ -16,23 +16,23 @@ const DecoratedTree = ({ className = '', size = 24 }) => (
     className={className}
   >
     {/* star topper */}
-    <polygon points="12,0.5 12.6,2.5 14.8,2.5 13.1,3.8 13.7,5.8 12,4.5 10.3,5.8 10.9,3.8 9.2,2.5 11.4,2.5" />
+    <polygon fill="none" points="12,0.5 12.6,2.5 14.8,2.5 13.1,3.8 13.7,5.8 12,4.5 10.3,5.8 10.9,3.8 9.2,2.5 11.4,2.5" />
     {/* top tier */}
-    <polygon points="12,5 8,10 16,10" />
+    <polygon fill="none" points="12,5 8,10 16,10" />
     {/* middle tier */}
-    <polygon points="12,8.5 5,14 19,14" />
+    <polygon fill="none" points="12,8.5 5,14 19,14" />
     {/* bottom tier */}
-    <polygon points="12,12 3,20 21,20" />
+    <polygon fill="none" points="12,12 3,20 21,20" />
     {/* trunk */}
-    <rect x="10.5" y="20" width="3" height="2.5" rx="0.5" />
+    <rect fill="none" x="10.5" y="20" width="3" height="2.5" rx="0.5" />
     {/* baubles */}
-    <circle cx="11" cy="9" r="1" />
-    <circle cx="14" cy="9" r="1" />
-    <circle cx="8" cy="12.5" r="1" />
-    <circle cx="15" cy="12.5" r="1" />
-    <circle cx="7" cy="17.5" r="1" />
-    <circle cx="12" cy="17" r="1" />
-    <circle cx="17.5" cy="18" r="1" />
+    <circle fill="none" cx="11" cy="9" r="1" />
+    <circle fill="none" cx="14" cy="9" r="1" />
+    <circle fill="none" cx="8" cy="12.5" r="1" />
+    <circle fill="none" cx="15" cy="12.5" r="1" />
+    <circle fill="none" cx="7" cy="17.5" r="1" />
+    <circle fill="none" cx="12" cy="17" r="1" />
+    <circle fill="none" cx="17.5" cy="18" r="1" />
   </svg>
 );
 
